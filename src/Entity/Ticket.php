@@ -24,11 +24,11 @@ class Ticket
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::SIMPLE_ARRAY, enumType: Status::class)]
-    private array $status = [];
+    #[ORM\Column(enumType: Status::class)]
+    private Status $status = Status::Open;
 
     #[ORM\Column(enumType: Priority::class)]
-    private ?Priority $priority = null;
+    private Priority $priority = Priority::Low;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -81,14 +81,14 @@ class Ticket
     }
 
     /**
-     * @return Status[]
+     * @return Status
      */
-    public function getStatus(): array
+    public function getStatus(): Status
     {
         return $this->status;
     }
 
-    public function setStatus(array $status): static
+    public function setStatus(Status $status): static
     {
         $this->status = $status;
 
