@@ -6,5 +6,5 @@ enum Priority : string
 {
     case Low = 'low';
     case Medium = 'medium';
-    case Hight = 'high';
+    case High = 'high';
 }

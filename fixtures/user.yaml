@@ -1,0 +1,12 @@
+App\Entity\User:
+  admin:
+    password: "\\$2a\\$12\\$tgToh4.R6krRGSBEdvx4s.3Z8S7l8dSO/lOK1h208iHLMYPOJgR8." #admin
+    email: admin@gmail.com
+    roles:
+      - <(App\Enum\Roles::Admin)>
+
+  user_with_tickets:
+    password: "\\$2a\\$12\\$BDcKEFYg8sofQVMlp.x4regIoioNwQHY5RBbM6863zUxyHKCaFP0K" #user
+    email: user_with_tickets@gmail.com
+    roles: 
+      - <(App\Enum\Roles::User)>
