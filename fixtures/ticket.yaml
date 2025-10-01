@@ -1,9 +1,27 @@
 App\Entity\Ticket:
-  ticket_admin:
+  ticket_1_user_1_with_2_tickets:
     title: Issue 1
     description: <text()>
     status: <(App\Enum\Status::Closed)>
     priority: <(App\Enum\Priority::High)>
     createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
-    user: '@admin'
+    user: '@user_1_with_2_tickets'
+
+  ticket_2_user_1_with_2_tickets:
+    title: Issue 2
+    description: <text()>
+    status: <(App\Enum\Status::Closed)>
+    priority: <(App\Enum\Priority::High)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_1_with_2_tickets'
+
+  ticket_3_user_2_with_1_ticket:
+    title: Issue 3
+    description: <text()>
+    status: <(App\Enum\Status::Closed)>
+    priority: <(App\Enum\Priority::High)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_2_with_1_ticket'

@@ -1,0 +1,64 @@
+App\Entity\Comment:
+  # user_1_with_2_tickets
+  comment_1_ticket_1:
+    content: <text(100)>
+    createdAt: '<(new DateTimeImmutable("2025-09-29 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-29 12:00:00"))>'
+    user: '@user_1_with_2_tickets'
+    ticket: '@ticket_1_user_1_with_2_tickets'
+
+  # user_1_with_2_tickets
+  comment_2_ticket_1:
+    content: <text(150)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_1_with_2_tickets'
+    ticket: '@ticket_1_user_1_with_2_tickets'
+
+  # admin_1
+  comment_3_ticket_1:
+    content: <text(50)>
+    createdAt: '<(new DateTimeImmutable("2025-10-01 08:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-10-01 08:00:00"))>'
+    user: '@admin_1'
+    ticket: '@ticket_1_user_1_with_2_tickets'
+
+  # user_1_with_2_tickets
+  comment_1_ticket_2:
+    content: <text(150)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_1_with_2_tickets'
+    ticket: '@ticket_2_user_1_with_2_tickets'
+
+  # user_1_with_2_tickets
+  comment_2_ticket_2:
+    content: <text(150)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_1_with_2_tickets'
+    ticket: '@ticket_2_user_1_with_2_tickets'
+
+  # admin_1
+  comment_3_ticket_2:
+    content: <text(150)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@admin_1'
+    ticket: '@ticket_2_user_1_with_2_tickets'
+
+  # user_2_with_1_ticket
+  comment_1_ticket_3:
+    content: <text(150)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_2_with_1_ticket'
+    ticket: '@ticket_3_user_2_with_1_ticket'
+
+  # admin_1
+  comment_2_ticket_3:
+    content: <text(150)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@admin_1'
+    ticket: '@ticket_3_user_2_with_1_ticket'
