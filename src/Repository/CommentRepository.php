@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Comment;
+use App\Trait\PaginateRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -11,9 +12,30 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CommentRepository extends ServiceEntityRepository
 {
+
+    use PaginateRepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Comment::class);
+    }
+
+    public function findByUser(
+        int $userId,
+        int $page = 1,
+        int $limit = 1,
+    ): array {
+
+        $qb = $this->createQueryBuilder('c');
+
+        $qb
+            ->andWhere('c.user = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('c.createdAt', 'DESC');
+
+        $this->paginate($qb, $page, $limit);
+
+        return $qb->getQuery()->getResult();
     }
 
     //    /**

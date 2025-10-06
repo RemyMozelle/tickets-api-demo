@@ -9,26 +9,35 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: TicketRepository::class)]
 class Ticket
 {
+    public const FIELD_STATUS = 'status';
+    public const FIELD_PRIORITY = 'priority';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['ticket:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['ticket:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['ticket:read'])]
     private ?string $description = null;
 
     #[ORM\Column(enumType: Status::class)]
+    #[Groups(['ticket:read'])]
     private Status $status = Status::Open;
 
     #[ORM\Column(enumType: Priority::class)]
-    private Priority $priority = Priority::Low;
+    #[Groups(['ticket:read'])]
+    private Priority $priority = Priority::High;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -38,6 +47,7 @@ class Ticket
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['ticket:read'])]
     private ?User $user = null;
 
     /**
