@@ -5,14 +5,20 @@ App\Entity\User:
     roles:
       - <(App\Constant\Roles::ROLE_ADMIN)>
 
-  user_1_with_2_tickets:
+  user_2_with_2_tickets:
     password: "\\$2a\\$12\\$BDcKEFYg8sofQVMlp.x4regIoioNwQHY5RBbM6863zUxyHKCaFP0K" #user
-    email: user_1_with_2_tickets@gmail.com
+    email: user_2_with_2_tickets@gmail.com
     roles: 
       - <(App\Constant\Roles::ROLE_USER)>
 
-  user_2_with_1_ticket:
+  user_3_with_1_ticket:
     password: "\\$2a\\$12\\$BDcKEFYg8sofQVMlp.x4regIoioNwQHY5RBbM6863zUxyHKCaFP0K" #user
-    email: user_2_with_1_ticket@gmail.com
+    email: user_3_with_1_ticket@gmail.com
+    roles: 
+      - <(App\Constant\Roles::ROLE_USER)>
+  
+  user_dummy{4..300}:
+    password: "\\$2a\\$12\\$BDcKEFYg8sofQVMlp.x4regIoioNwQHY5RBbM6863zUxyHKCaFP0K" #user
+    email: <email()>
     roles: 
       - <(App\Constant\Roles::ROLE_USER)>
