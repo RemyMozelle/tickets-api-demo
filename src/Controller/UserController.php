@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Ticket;
+use App\Entity\User;
 use App\Repository\CommentRepository;
 use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
@@ -28,7 +29,7 @@ final class UserController extends AbstractController
         private readonly int $page
     ) {}
 
-    #[Route(path: '/', name: 'app_user')]
+    #[Route(path: '', name: 'app_user', methods: ['GET'])]
     public function getUsers(Request $request): JsonResponse
     {
         $page = (int) $request->get('page') ?: $this->page;
@@ -38,6 +39,14 @@ final class UserController extends AbstractController
         $total = $this->userRepository->count([]);
 
         return $this->apiResponse->createApiResponse(data: $users, page: $page, total: $total, limit: $limit);
+    }
+
+    #[Route(path: '/{userId}', name: 'app_user_detail', methods: ['GET', 'POST'])]
+    public function getUserDetail(
+        User $userId
+    ): JsonResponse
+    {
+        return $this->apiResponse->createApiResponse(data: $userId);
     }
 
     #[Route('/{userId}/comments', name: 'app_user_comments')]
