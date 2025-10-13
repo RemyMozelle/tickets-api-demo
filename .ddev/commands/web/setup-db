@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+bin/console doctrine:database:drop --if-exists --force --env=$@
+bin/console doctrine:database:create --env=$@
+bin/console doctrine:migrations:migrate --no-interaction --env=$@
+bin/console hautelook:fixtures:load --quiet --env=$@
