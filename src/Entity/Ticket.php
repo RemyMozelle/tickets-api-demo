@@ -47,7 +47,6 @@ class Ticket
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['ticket:read'])]
     private ?User $user = null;
 
     /**

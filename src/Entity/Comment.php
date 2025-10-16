@@ -34,7 +34,6 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['comment:read'])]
     private ?Ticket $ticket = null;
 
     public function getId(): ?int
