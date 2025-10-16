@@ -25,3 +25,48 @@ App\Entity\Ticket:
     createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
     user: '@user_3_with_1_ticket'
+
+  ticket_4_user_4_with_5_tickets:
+    title: Issue 4
+    description: <text()>
+    status: <(App\Enum\Status::Closed)>
+    priority: <(App\Enum\Priority::High)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_4_with_5_tickets'
+
+  ticket_5_user_4_with_5_tickets:
+    title: Issue 5
+    description: <text()>
+    status: <(App\Enum\Status::Open)>
+    priority: <(App\Enum\Priority::Low)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_4_with_5_tickets'
+
+  ticket_6_user_4_with_5_tickets:
+    title: Issue 6
+    description: <text()>
+    status: <(App\Enum\Status::Open)>
+    priority: <(App\Enum\Priority::Medium)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_4_with_5_tickets'
+  
+  ticket_7_user_4_with_5_tickets:
+    title: Issue 7
+    description: <text()>
+    status: <(App\Enum\Status::InProgress)>
+    priority: <(App\Enum\Priority::Low)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_4_with_5_tickets'
+
+  ticket_8_user_4_with_5_tickets:
+    title: Issue 8
+    description: <text()>
+    status: <(App\Enum\Status::Open)>
+    priority: <(App\Enum\Priority::Medium)>
+    createdAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-09-30 12:00:00"))>'
+    user: '@user_4_with_5_tickets'
