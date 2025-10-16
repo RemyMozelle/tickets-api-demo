@@ -13,9 +13,7 @@ class ApiResponse
     {
         $response = [];
 
-        $jsonData = $this->serializer->serialize(data: $data, format: 'json', context: [
-            'groups' => ['user:read', 'comment:read', 'ticket:read']
-        ]);
+        $jsonData = $this->serializer->serialize(data: $data, format: 'json', context: $context);
 
         $response['data'] = json_decode($jsonData, true) ?: [];
 
