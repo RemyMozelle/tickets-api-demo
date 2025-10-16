@@ -2,7 +2,6 @@
 
 namespace App\Trait;
 
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 
 trait PaginateRepositoryTrait

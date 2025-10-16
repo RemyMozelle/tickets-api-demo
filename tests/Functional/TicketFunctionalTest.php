@@ -2,7 +2,6 @@
 
 namespace App\Tests;
 
-use App\Entity\Ticket;
 use App\Enum\Priority;
 use App\Enum\Status;
 use PHPUnit\Framework\Attributes\DataProvider;

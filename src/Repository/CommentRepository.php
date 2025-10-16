@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Dto\PaginationDto;
 use App\Entity\Comment;
-use App\Entity\Ticket;
 use App\Trait\PaginateRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

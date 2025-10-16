@@ -4,19 +4,13 @@ namespace App\Controller;
 
 use App\Dto\PaginationDto;
 use App\Dto\TicketFiltersDto;
-use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Repository\CommentRepository;
 use App\Repository\TicketRepository;
 use App\Service\ApiResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
 
