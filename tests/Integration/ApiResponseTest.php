@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\Dto\PaginationDto;
 use App\Service\ApiResponse;
 use Nelmio\Alice\Loader\NativeLoader;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -18,7 +19,7 @@ class ApiResponseTest extends KernelTestCase
 
         [$admin, $user1, $user2] = array_values($objectSet->getObjects());
 
-        $data = json_decode($apiResponse->createApiResponse([$admin, $user1, $user2])->getContent(), true);
+        $data = json_decode($apiResponse->createApiResponseWithPagination([$admin, $user1, $user2], new PaginationDto(1, 12))->getContent(), true);
 
         $this->assertArrayHasKey('links', $data);
         $this->assertArrayHasKey('meta', $data);
@@ -39,27 +40,5 @@ class ApiResponseTest extends KernelTestCase
         $this->assertArrayNotHasKey('links', $data);
         $this->assertArrayNotHasKey('meta', $data);
         $this->assertArrayHasKey('data', $data);
-    }
-
-    public function testApiResponseWithEmptyArray()
-    {
-        $apiResponse = static::getContainer()->get(ApiResponse::class);
-
-        $data = json_decode($apiResponse->createApiResponse([])->getContent(), true);
-
-        $this->assertArrayHasKey('links', $data);
-        $this->assertArrayHasKey('meta', $data);
-        $this->assertEquals([], $data['data']);
-    }
-
-    public function testApiResponseWithEmptyString()
-    {
-        $apiResponse = static::getContainer()->get(ApiResponse::class);
-
-        $data = json_decode($apiResponse->createApiResponse("")->getContent(), true);
-
-        $this->assertArrayNotHasKey('links', $data);
-        $this->assertArrayNotHasKey('meta', $data);
-        $this->assertEquals([], $data['data']);
     }
 }

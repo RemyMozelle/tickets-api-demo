@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Dto\PaginationDto;
 use App\Entity\User;
 use App\Trait\PaginateRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -38,11 +39,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    public function getUsers(int $page = 1, int $limit)
+    public function getUsers(PaginationDto $paginationDto)
     {
         $qb = $this->createQueryBuilder('u');
 
-        $this->paginate($qb, $page, $limit);
+        $this->paginate($qb, $paginationDto);
 
         return $qb
             ->getQuery()

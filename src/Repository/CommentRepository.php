@@ -29,7 +29,7 @@ class CommentRepository extends ServiceEntityRepository
             ->andWhere('c.user = :userId')
             ->setParameter('userId', $ticketId);
 
-        $this->paginate($qb, $paginationDto->page, $paginationDto->limit);
+        $this->paginate($qb, $paginationDto);
 
         return $qb
             ->getQuery()
@@ -38,8 +38,7 @@ class CommentRepository extends ServiceEntityRepository
 
     public function findByUser(
         int $userId,
-        int $page = 1,
-        int $limit = 1,
+        PaginationDto $paginationDto,
     ): array {
 
         $qb = $this->createQueryBuilder('c');
@@ -49,7 +48,7 @@ class CommentRepository extends ServiceEntityRepository
             ->setParameter('userId', $userId)
             ->orderBy('c.createdAt', 'DESC');
 
-        $this->paginate($qb, $page, $limit);
+        $this->paginate($qb, $paginationDto);
 
         return $qb->getQuery()->getResult();
     }

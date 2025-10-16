@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Dto\PaginationDto;
 use App\Entity\Ticket;
 use App\Trait\PaginateRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -20,7 +21,7 @@ class TicketRepository extends ServiceEntityRepository
         parent::__construct($registry, Ticket::class);
     }
 
-    public function getTickets(int $page = 1, int $limit, array $filters = []): mixed
+    public function getTickets(PaginationDto $paginationDto, array $filters = []): mixed
     {
         $qb = $this->createQueryBuilder('t');
 
@@ -48,7 +49,7 @@ class TicketRepository extends ServiceEntityRepository
             }
         }
 
-        $this->paginate($qb, $page, $limit);
+        $this->paginate($qb, $paginationDto);
 
         return $qb
             ->getQuery()
@@ -57,8 +58,7 @@ class TicketRepository extends ServiceEntityRepository
 
     public function findByUser(
         int $userId,
-        int $page = 1,
-        int $limit = 1,
+        PaginationDto $paginationDto,
         array $filters = [],
     ): array {
 
@@ -81,7 +81,7 @@ class TicketRepository extends ServiceEntityRepository
             ->setParameter('userId', $userId)
             ->orderBy('t.createdAt', 'DESC');
 
-        $this->paginate($qb, $page, $limit);
+        $this->paginate($qb, $paginationDto);
 
         return $qb
             ->getQuery()

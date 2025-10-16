@@ -27,30 +27,35 @@ final class TicketController extends AbstractController
         #[MapQueryString()] PaginationDto $paginationDto,
         #[MapQueryString()] TicketFiltersDto $ticketFiltersDto
     ): JsonResponse {
-        $page = $paginationDto->page;
-        $limit = $paginationDto->limit;
 
         $filters = array_filter([
             Ticket::FIELD_STATUS => $ticketFiltersDto->status,
             Ticket::FIELD_PRIORITY => $ticketFiltersDto->priority,
         ]);
 
-        $tickets = $this->ticketRepository->getTickets(page: $page, limit: $limit, filters: $filters);
+        $tickets = $this->ticketRepository->getTickets(paginationDto: $paginationDto, filters: $filters);
         $total = $this->ticketRepository->count($filters);
 
 
-        return $this->apiResponse->createApiResponse(data: $tickets, page: $page, total: $total, limit: $limit, context: [
-            'groups' => [
-                'ticket:read',
+        return $this->apiResponse->createApiResponseWithPagination(
+            data: $tickets,
+            paginationDto: $paginationDto,
+            total: $total,
+            context: [
+                'groups' => [
+                    'ticket:read',
+                ]
             ]
-        ]);
+        );
     }
 
     #[Route('/{ticket}', name: 'app_ticket_detail', methods: ['GET'])]
     public function getTicket(
         Ticket $ticket
     ): JsonResponse {
-        return $this->apiResponse->createApiResponse(data: $ticket, context: [
+        return $this->apiResponse->createApiResponse(
+            data: $ticket, 
+            context: [
             'groups' => ['ticket:read']
         ]);
     }
@@ -61,12 +66,17 @@ final class TicketController extends AbstractController
         CommentRepository $commentRepository,
         #[MapQueryString()] PaginationDto $paginationDto,
     ): JsonResponse {
-        $page = $paginationDto->page;
-        $limit = $paginationDto->limit;
 
         $comments = $commentRepository->getCommentsTicketId(ticketId: $ticket->getId(), paginationDto: $paginationDto);
         $total = $commentRepository->count(['ticket' => $ticket]);
 
-        return $this->apiResponse->createApiResponse(data: $comments, page: $page, total: $total, limit: $limit, context: ['groups' => 'comment:read']);
+        return $this->apiResponse->createApiResponseWithPagination(
+            data: $comments,
+            paginationDto: $paginationDto,
+            total: $total,
+            context: [
+                'groups' => 'comment:read'
+            ]
+        );
     }
 }

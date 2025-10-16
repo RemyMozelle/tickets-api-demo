@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Dto\PaginationDto;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -9,32 +10,43 @@ class ApiResponse
 {
     public function __construct(private readonly SerializerInterface $serializer) {}
 
-    public function createApiResponse(mixed $data, int $page = 1, int $total = 0, int $limit = 12, array $context = [])
-    {
-        $response = [];
+    public function createApiResponse(
+        object $data,
+        array $context = [],
+        int $status = 200
+    ): JsonResponse {
+        $jsonData = $this->serializer->serialize($data, 'json', $context);
 
-        $jsonData = $this->serializer->serialize(data: $data, format: 'json', context: $context);
+        return new JsonResponse([
+            'data' => json_decode($jsonData, true) ?: [],
+        ], $status);
+    }
 
-        $response['data'] = json_decode($jsonData, true) ?: [];
+    public function createApiResponseWithPagination(
+        array $data,
+        PaginationDto $paginationDto,
+        int $total = 0,
+        array $context = [],
+        int $status = 200
+    ): JsonResponse {
+        $jsonData = $this->serializer->serialize($data, 'json', $context);
 
-        if (is_array($data)) {
-            $response['meta'] = [
+        $response = [
+            'data' => json_decode($jsonData, true) ?: [],
+            'meta' => [
                 'total' => $total,
-                'per_page' => $limit,
-                'current_page' => $page === 0 ? $page = 1 : $page,
-                'total_pages' => ceil($total / $limit),
-            ];
+                'per_page' => $paginationDto->limit,
+                'current_page' => $paginationDto->page,
+                'total_pages' => (int) ceil($total / $paginationDto->limit),
+            ],
+            'links' => [
+                'first' => '',
+                'last'  => '',
+                'next'  => '',
+                'prev'  => '',
+            ],
+        ];
 
-            $response['links'] = [
-                'links' => [
-                    'first' => "",
-                    'last' => "",
-                    'next' => "",
-                    'prev' => "",
-                ],
-            ];
-        }
-
-        return new JsonResponse($response);
+        return new JsonResponse($response, $status);
     }
 }
