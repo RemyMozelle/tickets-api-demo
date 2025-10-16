@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Dto\PaginationDto;
 use App\Entity\Comment;
+use App\Entity\Ticket;
 use App\Trait\PaginateRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,6 +20,21 @@ class CommentRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Comment::class);
+    }
+
+    public function getCommentsTicketId($ticketId, PaginationDto $paginationDto): mixed
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        $qb
+            ->andWhere('c.user = :userId')
+            ->setParameter('userId', $ticketId);
+
+        $this->paginate($qb, $paginationDto->page, $paginationDto->limit);
+
+        return $qb
+            ->getQuery()
+            ->getResult();
     }
 
     public function findByUser(

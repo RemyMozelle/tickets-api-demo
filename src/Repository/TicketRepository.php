@@ -22,6 +22,41 @@ class TicketRepository extends ServiceEntityRepository
         parent::__construct($registry, Ticket::class);
     }
 
+    public function getTickets(int $page = 1, int $limit, array $filters = []): mixed
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        if (isset($filters['status'])) {
+            if (is_array($filters['status'])) {
+                $qb
+                    ->andWhere('t.status in (:status)')
+                    ->setParameter('status', $filters['status']);
+            } else {
+                $qb
+                    ->andWhere('t.status = :status')
+                    ->setParameter('status', $filters['status']);
+            }
+        }
+
+        if (isset($filters['priority'])) {
+            if (is_array($filters['priority'])) {
+                $qb
+                    ->andWhere('t.priority in (:priority)')
+                    ->setParameter('priority', $filters['priority']);
+            } else {
+                $qb
+                    ->andWhere('t.priority = :priority')
+                    ->setParameter('priority', $filters['priority']);
+            }
+        }
+
+        $this->paginate($qb, $page, $limit);
+
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findByUser(
         int $userId,
         int $page = 1,
