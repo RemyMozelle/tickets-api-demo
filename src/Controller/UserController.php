@@ -38,15 +38,18 @@ final class UserController extends AbstractController
         $users = $this->userRepository->getUsers(page: $page, limit: $limit);
         $total = $this->userRepository->count([]);
 
-        return $this->apiResponse->createApiResponse(data: $users, page: $page, total: $total, limit: $limit);
+        return $this->apiResponse->createApiResponse(data: $users, page: $page, total: $total, limit: $limit, context: [
+            'groups' => ['user:read'],
+        ]);
     }
 
     #[Route(path: '/{userId}', name: 'app_user_detail', methods: ['GET', 'POST'])]
     public function getUserDetail(
         User $userId
-    ): JsonResponse
-    {
-        return $this->apiResponse->createApiResponse(data: $userId);
+    ): JsonResponse {
+        return $this->apiResponse->createApiResponse(data: $userId, context: [
+            'groups' => ['user:read']
+        ]);
     }
 
     #[Route('/{userId}/comments', name: 'app_user_comments')]
@@ -58,7 +61,9 @@ final class UserController extends AbstractController
         $comments = $this->commentRepository->findByUser(userId: $userId, page: $page, limit: $limit);
         $total = $this->commentRepository->count(['user' => $userId]);
 
-        return $this->apiResponse->createApiResponse(data: $comments, page: $page, total: $total, limit: $limit);
+        return $this->apiResponse->createApiResponse(data: $comments, page: $page, total: $total, limit: $limit, context: [
+            'groups' => ['comment:read'],
+        ]);
     }
 
     #[Route('/{userId}/tickets', name: 'app_user_tickets')]
@@ -66,17 +71,23 @@ final class UserController extends AbstractController
     {
         $page = (int) $request->get('page') ?: $this->page;
         $limit = (int) $request->get('limit') ?: $this->maxLimit;
-        $status = $request->get(Ticket::FIELD_STATUS);
-        $priority = $request->get(Ticket::FIELD_PRIORITY);
 
-        $filters = array_filter([
-            Ticket::FIELD_STATUS => $status,
-            Ticket::FIELD_PRIORITY => $priority,
-        ]);
+        $filters = $this->handleParameters($request, [Ticket::FIELD_PRIORITY, Ticket::FIELD_STATUS]);
+
 
         $tickets = $this->ticketRepository->findByUser(userId: $userId, page: $page, limit: $limit, filters: $filters);
         $total = $this->ticketRepository->count(['user' => $userId, ...$filters]);
 
-        return $this->apiResponse->createApiResponse(data: $tickets, page: $page, total: $total, limit: $limit);
+        return $this->apiResponse->createApiResponse(data: $tickets, page: $page, total: $total, limit: $limit, context: [
+            'groups' => ['ticket:read']
+        ]);
+    }
+
+    public function handleParameters(Request $request, $queryParameters = [])
+    {
+
+        $allQueryParameters = $request->query->all();
+
+        return array_intersect_key($allQueryParameters, array_flip($queryParameters));
     }
 }
