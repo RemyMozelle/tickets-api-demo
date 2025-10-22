@@ -31,16 +31,20 @@ final class TicketController extends AbstractController
         $filters = array_filter([
             Ticket::FIELD_STATUS => $ticketFiltersDto->status,
             Ticket::FIELD_PRIORITY => $ticketFiltersDto->priority,
+            Ticket::FIELD_START_DATE => $ticketFiltersDto->startDate,
+            Ticket::FIELD_END_DATE => $ticketFiltersDto->endDate,
+            Ticket::FIELD_START_TIME => $ticketFiltersDto->startTime,
+            Ticket::FIELD_END_TIME => $ticketFiltersDto->endTime,
         ]);
 
-        $tickets = $this->ticketRepository->getTickets(paginationDto: $paginationDto, filters: $filters);
-        $total = $this->ticketRepository->count($filters);
+
+        [$tickets, $count] = $this->ticketRepository->getTickets(paginationDto: $paginationDto, filters: $filters);
 
 
         return $this->apiResponse->createApiResponseWithPagination(
             data: $tickets,
             paginationDto: $paginationDto,
-            total: $total,
+            total: $count,
             context: [
                 'groups' => [
                     'ticket:read',

@@ -16,6 +16,10 @@ class Ticket
 {
     public const FIELD_STATUS = 'status';
     public const FIELD_PRIORITY = 'priority';
+    public const FIELD_START_DATE = 'start_date';
+    public const FIELD_END_DATE = 'end_date';
+    public const FIELD_START_TIME = 'start_time';
+    public const FIELD_END_TIME = 'end_time';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

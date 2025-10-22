@@ -49,11 +49,79 @@ class TicketRepository extends ServiceEntityRepository
             }
         }
 
+        if (isset($filters['start_date']) && isset($filters['end_date'])) {
+            if (isset($filters['start_time'])) {
+                $date = new \DateTimeImmutable($filters['start_date'] . ' ' . $filters['start_time']);
+            } else {
+                $date = new \DateTimeImmutable($filters['start_date']);
+            }
+
+            $qb
+                ->andWhere('t.createdAt >= :startDate')
+                ->setParameter('startDate', $date);
+
+            if (isset($filters['end_time'])) {
+                $date = new \DateTimeImmutable($filters['end_date'] . ' ' . $filters['end_time']);
+            } else {
+                $date = new \DateTimeImmutable($filters['end_date']);
+            }
+
+            $qb
+                ->andWhere('t.createdAt <= :endDate')
+                ->setParameter('endDate', $date);
+        }
+
+        if (isset($filters['start_date']) && !isset($filters['end_date'])) {
+
+            if (!isset($filters['start_time']) && !isset($filters['end_time'])) {
+                $date = new \DateTimeImmutable($filters['start_date']);
+
+                $qb
+                    ->andWhere('t.createdAt >= :startDate')
+                    ->setParameter('startDate', $date);
+            } else if (isset($filters['start_time'])) {
+                if (isset($filters['start_time'])) {
+                    if ($filters['end_time']) {
+                        $dateStart = new \DateTimeImmutable($filters['start_date'] . ' ' . $filters['start_time']);
+                        $dateEnd = new \DateTimeImmutable($filters['start_date'] . ' ' . $filters['end_time']);
+
+
+                        $qb
+                            ->andWhere('t.createdAt BETWEEN :startDate AND :endDate')
+                            ->setParameter('startDate', $dateStart)
+                            ->setParameter('endDate', $dateEnd);
+                    } else {
+                        $date = new \DateTimeImmutable($filters['start_date'] . ' ' . $filters['start_time']);
+
+                        $qb
+                            ->andWhere('t.createdAt >= :startDate')
+                            ->setParameter('startDate', $date);
+                    }
+                } else {
+                    $date = new \DateTimeImmutable($filters['start_date']);
+
+                    $qb
+                        ->andWhere('t.createdAt >= :startDate')
+                        ->setParameter('startDate', $date);
+                }
+            } else if (isset($filters['end_time'])) {
+                $date = new \DateTimeImmutable($filters['start_date'] . ' ' . $filters['end_time']);
+
+                $qb
+                    ->andWhere('t.createdAt BETWEEN :startDate AND :endDate')
+                    ->setParameter('endDate', $date)
+                    ->setParameter('startDate', $filters['start_date']);
+            }
+        }
+
+        $countQb = clone $qb;
+        $count = (int) $countQb->select('count(t.id)')->getQuery()->getSingleScalarResult();
+
         $this->paginate($qb, $paginationDto);
 
-        return $qb
-            ->getQuery()
-            ->getResult();
+        $tickets = $qb->getQuery()->getResult();
+
+        return [$tickets, $count];
     }
 
     public function findByUser(
