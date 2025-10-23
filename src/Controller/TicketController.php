@@ -27,19 +27,7 @@ final class TicketController extends AbstractController
         #[MapQueryString()] PaginationDto $paginationDto,
         #[MapQueryString()] TicketFiltersDto $ticketFiltersDto
     ): JsonResponse {
-
-        $filters = array_filter([
-            Ticket::FIELD_STATUS => $ticketFiltersDto->status,
-            Ticket::FIELD_PRIORITY => $ticketFiltersDto->priority,
-            Ticket::FIELD_START_DATE => $ticketFiltersDto->startDate,
-            Ticket::FIELD_END_DATE => $ticketFiltersDto->endDate,
-            Ticket::FIELD_START_TIME => $ticketFiltersDto->startTime,
-            Ticket::FIELD_END_TIME => $ticketFiltersDto->endTime,
-        ]);
-
-
-        [$tickets, $count] = $this->ticketRepository->getTickets(paginationDto: $paginationDto, filters: $filters, ticketFiltersDto: $ticketFiltersDto);
-
+        [$tickets, $count] = $this->ticketRepository->getTickets(paginationDto: $paginationDto, ticketFiltersDto: $ticketFiltersDto);
 
         return $this->apiResponse->createApiResponseWithPagination(
             data: $tickets,

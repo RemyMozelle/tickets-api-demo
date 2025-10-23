@@ -22,31 +22,31 @@ class TicketRepository extends ServiceEntityRepository
         parent::__construct($registry, Ticket::class);
     }
 
-    public function getTickets(PaginationDto $paginationDto, array $filters = [], TicketFiltersDto $ticketFiltersDto): mixed
+    public function getTickets(PaginationDto $paginationDto, TicketFiltersDto $ticketFiltersDto): mixed
     {
         $qb = $this->createQueryBuilder('t');
 
-        if (isset($filters['status'])) {
-            if (is_array($filters['status'])) {
+        if ($ticketFiltersDto->status) {
+            if (is_array($ticketFiltersDto->status)) {
                 $qb
                     ->andWhere('t.status in (:status)')
-                    ->setParameter('status', $filters['status']);
+                    ->setParameter('status', $ticketFiltersDto->status);
             } else {
                 $qb
                     ->andWhere('t.status = :status')
-                    ->setParameter('status', $filters['status']);
+                    ->setParameter('status', $ticketFiltersDto->status);
             }
         }
 
-        if (isset($filters['priority'])) {
-            if (is_array($filters['priority'])) {
+        if ($ticketFiltersDto->priority) {
+            if (is_array($ticketFiltersDto->priority)) {
                 $qb
                     ->andWhere('t.priority in (:priority)')
-                    ->setParameter('priority', $filters['priority']);
+                    ->setParameter('priority', $ticketFiltersDto->priority);
             } else {
                 $qb
                     ->andWhere('t.priority = :priority')
-                    ->setParameter('priority', $filters['priority']);
+                    ->setParameter('priority', $ticketFiltersDto->priority);
             }
         }
 
@@ -76,43 +76,37 @@ class TicketRepository extends ServiceEntityRepository
         }
 
         if ($ticketFiltersDto->startDate && !$ticketFiltersDto->endDate) {
-            $startDate = new \DateTime($ticketFiltersDto->startDate);
 
-            if (!$ticketFiltersDto->startTime && !$ticketFiltersDto->endTime) {
-                $qb
-                    ->andWhere('t.createdAt >= :startDate')
-                    ->setParameter('startDate', $startDate);
-            } else if ($ticketFiltersDto->startTime) {
-                [$hour, $minutes, $second] = explode(':', $ticketFiltersDto->startTime);
-                $startDate->setTime($hour, $minutes, $second);
+            $date = new \DateTimeImmutable($ticketFiltersDto->startDate);
 
-                if ($ticketFiltersDto->startTime) {
-                    if ($ticketFiltersDto->endTime) {
-                        $dateEnd = new \DateTimeImmutable($ticketFiltersDto->startDate . ' ' . $ticketFiltersDto->endTime);
+            if ($ticketFiltersDto->startTime && $ticketFiltersDto->endTime) {
+                [$hourStartTime, $minutesStartTime, $secondStartTime] = explode(':', $ticketFiltersDto->startTime);
+                [$hourEndTime, $minutesEndTime, $secondEndTime] = explode(':', $ticketFiltersDto->endTime);
 
-                        $qb
-                            ->andWhere('t.createdAt BETWEEN :startDate AND :endDate')
-                            ->setParameter('startDate', $startDate)
-                            ->setParameter('endDate', $dateEnd);
-                    } else {
-
-                        $qb
-                            ->andWhere('t.createdAt >= :startDate')
-                            ->setParameter('startDate', $startDate);
-                    }
-                } else {
-
-                    $qb
-                        ->andWhere('t.createdAt >= :startDate')
-                        ->setParameter('startDate', $startDate);
-                }
-            } else if ($ticketFiltersDto->endTime) {
-                $date = new \DateTimeImmutable($ticketFiltersDto->startDate . ' ' . $ticketFiltersDto->endTime);
+                $startAt = $date->setTime($hourStartTime, $minutesStartTime, $secondStartTime);
+                $endAt = $date->setTime($hourEndTime, $minutesEndTime, $secondEndTime);
 
                 $qb
                     ->andWhere('t.createdAt BETWEEN :startDate AND :endDate')
-                    ->setParameter('endDate', $date)
-                    ->setParameter('startDate', $ticketFiltersDto->startDate);
+                    ->setParameter('startDate', $startAt)
+                    ->setParameter('endDate', $endAt);
+            } else if ($ticketFiltersDto->startTime && !$ticketFiltersDto->endTime) {
+                $qb
+                    ->andWhere('t.createdAt >= :startDate')
+                    ->setParameter('startDate', $date);
+            } else if (!$ticketFiltersDto->startTime && $ticketFiltersDto->endTime) {
+                [$hourEndTime, $minutesEndTime, $secondEndTime] = explode(':', $ticketFiltersDto->endTime);
+
+                $endDate = $date->setTime($hourEndTime, $minutesEndTime, $secondEndTime);
+
+                $qb
+                    ->andWhere('t.createdAt BETWEEN :startDate AND :endDate')
+                    ->setParameter('startDate', $date)
+                    ->setParameter('endDate', $endDate);
+            } else {
+                $qb
+                    ->andWhere('t.createdAt >= :startDate')
+                    ->setParameter('startDate', $date);
             }
         }
 
