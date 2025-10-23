@@ -38,7 +38,7 @@ final class TicketController extends AbstractController
         ]);
 
 
-        [$tickets, $count] = $this->ticketRepository->getTickets(paginationDto: $paginationDto, filters: $filters);
+        [$tickets, $count] = $this->ticketRepository->getTickets(paginationDto: $paginationDto, filters: $filters, ticketFiltersDto: $ticketFiltersDto);
 
 
         return $this->apiResponse->createApiResponseWithPagination(
