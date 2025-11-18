@@ -70,3 +70,21 @@ App\Entity\Ticket:
     createdAt: '<(new DateTimeImmutable("2025-05-01 10:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-05-03 08:00:00"))>'
     user: '@user_4_with_5_tickets'
+
+  ticket_9_user_4_with_5_tickets:
+    title: Issue 9
+    description: <text()>
+    status: <(App\Enum\Status::Open)>
+    priority: <(App\Enum\Priority::Medium)>
+    createdAt: '<(new DateTimeImmutable("2025-05-01 11:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-05-03 08:00:00"))>'
+    user: '@user_4_with_5_tickets'
+  
+  ticket_10_user_4_with_5_tickets:
+    title: Issue 10
+    description: <text()>
+    status: <(App\Enum\Status::Open)>
+    priority: <(App\Enum\Priority::Medium)>
+    createdAt: '<(new DateTimeImmutable("2025-05-02 15:00:00"))>'
+    updatedAt: '<(new DateTimeImmutable("2025-05-03 08:00:00"))>'
+    user: '@user_4_with_5_tickets'

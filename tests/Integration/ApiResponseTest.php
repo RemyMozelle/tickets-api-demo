@@ -24,6 +24,7 @@ class ApiResponseTest extends KernelTestCase
         $this->assertArrayHasKey('links', $data);
         $this->assertArrayHasKey('meta', $data);
         $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('status', $data);
     }
 
     public function testCorrectResponseWithOneResult()
@@ -40,5 +41,6 @@ class ApiResponseTest extends KernelTestCase
         $this->assertArrayNotHasKey('links', $data);
         $this->assertArrayNotHasKey('meta', $data);
         $this->assertArrayHasKey('data', $data);
+        $this->assertArrayHasKey('status', $data);
     }
 }

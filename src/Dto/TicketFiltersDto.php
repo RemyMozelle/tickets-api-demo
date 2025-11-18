@@ -5,10 +5,9 @@ namespace App\Dto;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Validator\AllowedValues;
-use phpDocumentor\Reflection\Types\Callable_;
+use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Webmozart\Assert\Assert as AssertAssert;
 
 class TicketFiltersDto
 {
@@ -33,7 +32,6 @@ class TicketFiltersDto
         public readonly ?string $endTime = null,
     ) {}
 
-
     #[Assert\Callback()]
     public function validate(ExecutionContextInterface $context, mixed $payload)
     {
@@ -41,6 +39,12 @@ class TicketFiltersDto
             $context
                 ->buildViolation('Start date est obligatoire si end date est défini')
                 ->atPath('startDate')
+                ->addViolation();
+        }
+
+        if (($this->startTime || $this->endTime) && $this->startDate === null) {
+            $context->buildViolation('Start date est obligatoire si vous voulez utiliser start time ou end time.')
+                ->atPath('startTime')
                 ->addViolation();
         }
     }

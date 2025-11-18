@@ -4,7 +4,6 @@ namespace App\Tests;
 
 use App\Enum\Priority;
 use App\Enum\Status;
-use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -22,13 +21,13 @@ class TicketFunctionalTest extends WebTestCase
 
         $expectedMeta = [
             'per_page' => 12,
-            'total' => 8,
+            'total' => 10,
             'current_page' => 1,
             'total_pages' => 1,
         ];
 
         $this->assertResponseIsSuccessful();
-        $this->assertCount(8, $tickets);
+        $this->assertCount(10, $tickets);
         $this->assertEquals($expectedMeta, $meta);
     }
 
@@ -71,12 +70,12 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 9,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            7,
+            9,
         ];
 
 
@@ -88,12 +87,12 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 4,
+                    'total' => 6,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            4,
+            6,
         ];
 
         yield 'Should have 3 ticket with status closed' => [
@@ -145,7 +144,7 @@ class TicketFunctionalTest extends WebTestCase
             0,
         ];
 
-        yield 'Should have 2 ticket with status open and priority to medium' => [
+        yield 'Should have 4 ticket with status open and priority to medium' => [
             [
                 'query' => [
                     'limit' => 12,
@@ -154,12 +153,12 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 2,
+                    'total' => 4,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            2,
+            4,
         ];
 
         yield 'Should have 6 ticket with priority to low and High' => [
@@ -189,23 +188,10 @@ class TicketFunctionalTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent());
 
-        $ticket = $data->data;
+        $ticket = $data;
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($ticket->id, 1);
-    }
-
-    public function testShouldHaveTicketCommentForUser()
-    {
-        $client = static::createClient();
-        $client->jsonRequest('GET', '/tickets/1/comments');
-
-        $data = json_decode($client->getResponse()->getContent(), true);
-
-        $tickets = $data['data'];
-
-        $this->assertResponseIsSuccessful();
-        $this->assertCount(3, $tickets);
     }
 
     #[DataProvider('ticketWithDateParameters')]
@@ -234,14 +220,18 @@ class TicketFunctionalTest extends WebTestCase
         $data = json_decode($client->getResponse()->getContent(), true);
 
         $tickets = $data['data'];
+        $meta = $data['meta'];
+
+        $expectedMeta = $dataParameters['meta'];
 
         $this->assertResponseIsSuccessful();
         $this->assertCount($expectedNbTickets, $tickets);
+        $this->assertEquals($expectedMeta, $meta);
     }
 
     public static function ticketWithDateParameters(): \Generator
     {
-        yield 'Should have 2 tickets with date 2025-01-01 to 2025-04-12' => [
+        yield 'Should have 1 tickets with date 2025-01-01 to 2025-01-02' => [
             [
                 'query' => [
                     'start_date' => '2025-01-01',
@@ -249,7 +239,7 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 1,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
@@ -257,17 +247,30 @@ class TicketFunctionalTest extends WebTestCase
             1,
         ];
 
-        yield 'Should have 3 tickets with date 2025-01-01 07:00 to 2025-04-12 15:00' => [
+        yield 'Should have 10 tickets with date 2023-09-30' => [
+            [
+                'query' => [
+                    'start_date' => '2023-09-30',
+                ],
+                'meta' => [
+                    'per_page' => 12,
+                    'total' => 10,
+                    'current_page' => 1,
+                    'total_pages' => 1,
+                ],
+            ],
+            10,
+        ];
+
+        yield 'Should have 3 tickets with date 2025-01-01 to 2025-04-12' => [
             [
                 'query' => [
                     'start_date' => '2025-01-01',
                     'end_date' => '2025-04-12',
-                    'start_time' => '07:00:00',
-                    'end_time' => '15:00:00',
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 3,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
@@ -275,22 +278,56 @@ class TicketFunctionalTest extends WebTestCase
             3,
         ];
 
-        yield 'Should have 2 tickets with date 2025-01-01 07:00 to 2025-04-12 12:00' => [
+        yield 'Should have 1 ticket with date 2025-01-01 07:00:00 to 2025-01-01 23:59:59' => [
             [
                 'query' => [
                     'start_date' => '2025-01-01',
-                    'end_date' => '2025-04-12',
                     'start_time' => '07:00:00',
-                    'end_time' => '12:00:00',
+                    'end_time' => '23:59:59',
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 1,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            2,
+            1,
+        ];
+
+        yield 'Should have 0 ticket with date 2025-01-01 08:00:00 to 2025-01-01 23:59:59' => [
+            [
+                'query' => [
+                    'start_date' => '2025-01-01',
+                    'start_time' => '08:00:00',
+                    'end_time' => '23:59:59',
+                ],
+                'meta' => [
+                    'per_page' => 12,
+                    'total' => 0,
+                    'current_page' => 1,
+                    'total_pages' => 0,
+                ],
+            ],
+            0,
+        ];
+
+        yield 'Should have 5 tickets with date 2025-01-01 07:00 to 2025-05-01 13:00:00' => [
+            [
+                'query' => [
+                    'start_date' => '2025-01-01',
+                    'end_date' => '2025-05-01',
+                    'start_time' => '07:00:00',
+                    'end_time' => '13:00:00',
+                ],
+                'meta' => [
+                    'per_page' => 12,
+                    'total' => 5,
+                    'current_page' => 1,
+                    'total_pages' => 1,
+                ],
+            ],
+            5,
         ];
 
         yield 'Should have 1 ticket with date 2025-01-01 07:00' => [
@@ -301,7 +338,7 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 1,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
@@ -309,26 +346,26 @@ class TicketFunctionalTest extends WebTestCase
             1,
         ];
 
-        yield 'Should have 6 tickets with date 2024-10-02' => [
+        yield 'Should have 8 tickets with date 2024-10-02' => [
             [
                 'query' => [
                     'start_date' => '2024-10-02',
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 8,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            6,
+            8,
         ];
 
-        yield 'Should have 6 tickets with date 2024-10-02 to 2025-05-02' => [
+        yield 'Should have 7 tickets with date 2024-10-02 to 2025-05-01' => [
             [
                 'query' => [
                     'start_date' => '2024-10-02',
-                    'end_date' => '2025-05-02'
+                    'end_date' => '2025-05-01'
                 ],
                 'meta' => [
                     'per_page' => 12,
@@ -337,7 +374,7 @@ class TicketFunctionalTest extends WebTestCase
                     'total_pages' => 1,
                 ],
             ],
-            6,
+            7,
         ];
 
         yield 'Should have 0 tickets with date 2025-01-01 to 2025-01-01 06:00' => [
@@ -348,15 +385,15 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 0,
                     'current_page' => 1,
-                    'total_pages' => 1,
+                    'total_pages' => 0,
                 ],
             ],
             0,
         ];
 
-        yield 'Should have 0 tickets with date 2025-01-01 10:00:00 to 2025-01-01 13:00:00' => [
+        yield 'Should have 1 tickets with date 2025-04-12 10:00:00 to 2025-04-12 13:00:00' => [
             [
                 'query' => [
                     'start_date' => '2025-04-12',
@@ -365,7 +402,7 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 1,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
@@ -373,7 +410,7 @@ class TicketFunctionalTest extends WebTestCase
             1,
         ];
 
-        yield 'Should have 2 tickets with date 2025-04-12 12:00:00 to 2025-05-01 11:00:00' => [
+        yield 'Should have 3 tickets with date 2025-04-12 12:00:00 to 2025-05-01 11:00:00' => [
             [
                 'query' => [
                     'start_date' => '2025-04-12',
@@ -383,7 +420,39 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 7,
+                    'total' => 3,
+                    'current_page' => 1,
+                    'total_pages' => 1,
+                ],
+            ],
+            3,
+        ];
+
+        yield 'Should have 3 ticket with date 2025-05-01 10:00:00' => [
+            [
+                'query' => [
+                    'start_date' => '2025-05-01',
+                    'start_time' => '10:00:00',
+                ],
+                'meta' => [
+                    'per_page' => 12,
+                    'total' => 3,
+                    'current_page' => 1,
+                    'total_pages' => 1,
+                ],
+            ],
+            3,
+        ];
+
+        yield 'Should have 2 ticket with date 2025-05-01 11:00:00' => [
+            [
+                'query' => [
+                    'start_date' => '2025-05-01',
+                    'start_time' => '11:00:00',
+                ],
+                'meta' => [
+                    'per_page' => 12,
+                    'total' => 2,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],

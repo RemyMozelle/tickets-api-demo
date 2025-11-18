@@ -19,6 +19,7 @@ class ApiResponse
 
         return new JsonResponse([
             'data' => json_decode($jsonData, true) ?: [],
+            'status' => $status,
         ], $status);
     }
 
@@ -45,6 +46,7 @@ class ApiResponse
                 'next'  => '',
                 'prev'  => '',
             ],
+            'status' => $status,
         ];
 
         return new JsonResponse($response, $status);

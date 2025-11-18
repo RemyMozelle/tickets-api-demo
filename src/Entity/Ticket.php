@@ -28,11 +28,11 @@ class Ticket
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['ticket:read'])]
+    #[Groups(['ticket:read', 'ticket:add'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['ticket:read'])]
+    #[Groups(['ticket:read', 'ticket:add'])]
     private ?string $description = null;
 
     #[ORM\Column(enumType: Status::class)]
@@ -41,7 +41,7 @@ class Ticket
 
     #[ORM\Column(enumType: Priority::class)]
     #[Groups(['ticket:read'])]
-    private Priority $priority = Priority::High;
+    private Priority $priority = Priority::Low;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -51,17 +51,20 @@ class Ticket
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['ticket:add', 'ticket:read'])]
     private ?User $user = null;
 
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'ticket')]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'ticket', cascade: ['remove'])]
     private Collection $comments;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

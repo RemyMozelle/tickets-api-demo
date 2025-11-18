@@ -8,6 +8,8 @@ use App\Entity\Ticket;
 use App\Trait\PaginateRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use App\Response\PaginateCollection;
 
 /**
  * @extends ServiceEntityRepository<Ticket>
@@ -17,9 +19,12 @@ class TicketRepository extends ServiceEntityRepository
 
     use PaginateRepositoryTrait;
 
-    public function __construct(ManagerRegistry $registry)
+    protected PaginationDto $paginationDto;
+
+    public function __construct(ManagerRegistry $registry, PaginationDto $paginationDto)
     {
         parent::__construct($registry, Ticket::class);
+        $this->paginationDto = $paginationDto;
     }
 
     public function getTickets(PaginationDto $paginationDto, TicketFiltersDto $ticketFiltersDto): mixed
@@ -50,23 +55,26 @@ class TicketRepository extends ServiceEntityRepository
             }
         }
 
-        if ($ticketFiltersDto->startDate && $ticketFiltersDto->endDate) {
+        if ($ticketFiltersDto->startDate) {
             $startDate = new \DateTime($ticketFiltersDto->startDate);
-            $endDate = new \DateTime($ticketFiltersDto->endDate);
+            $startDate->setTime(0, 0, 0);
 
             if ($ticketFiltersDto->startTime) {
                 [$hour, $minutes, $second] = explode(':', $ticketFiltersDto->startTime);
-
                 $startDate->setTime($hour, $minutes, $second);
             }
 
             $qb
                 ->andWhere('t.createdAt >= :startDate')
                 ->setParameter('startDate', $startDate);
+        }
+
+        if ($ticketFiltersDto->endDate) {
+            $endDate = new \DateTime($ticketFiltersDto->endDate);
+            $endDate->setTime(23, 59, 59);
 
             if ($ticketFiltersDto->endTime) {
                 [$hour, $minutes, $second] = explode(':', $ticketFiltersDto->endTime);
-
                 $endDate->setTime($hour, $minutes, $second);
             }
 
@@ -75,39 +83,14 @@ class TicketRepository extends ServiceEntityRepository
                 ->setParameter('endDate', $endDate);
         }
 
-        if ($ticketFiltersDto->startDate && !$ticketFiltersDto->endDate) {
+        if ($ticketFiltersDto->endTime && !$ticketFiltersDto->endDate) {
+            $endDate = new \DateTime($ticketFiltersDto->startDate);
+            [$hour, $minutes, $second] = explode(':', $ticketFiltersDto->endTime);
+            $endDate->setTime($hour, $minutes, $second);
 
-            $date = new \DateTimeImmutable($ticketFiltersDto->startDate);
-
-            if ($ticketFiltersDto->startTime && $ticketFiltersDto->endTime) {
-                [$hourStartTime, $minutesStartTime, $secondStartTime] = explode(':', $ticketFiltersDto->startTime);
-                [$hourEndTime, $minutesEndTime, $secondEndTime] = explode(':', $ticketFiltersDto->endTime);
-
-                $startAt = $date->setTime($hourStartTime, $minutesStartTime, $secondStartTime);
-                $endAt = $date->setTime($hourEndTime, $minutesEndTime, $secondEndTime);
-
-                $qb
-                    ->andWhere('t.createdAt BETWEEN :startDate AND :endDate')
-                    ->setParameter('startDate', $startAt)
-                    ->setParameter('endDate', $endAt);
-            } else if ($ticketFiltersDto->startTime && !$ticketFiltersDto->endTime) {
-                $qb
-                    ->andWhere('t.createdAt >= :startDate')
-                    ->setParameter('startDate', $date);
-            } else if (!$ticketFiltersDto->startTime && $ticketFiltersDto->endTime) {
-                [$hourEndTime, $minutesEndTime, $secondEndTime] = explode(':', $ticketFiltersDto->endTime);
-
-                $endDate = $date->setTime($hourEndTime, $minutesEndTime, $secondEndTime);
-
-                $qb
-                    ->andWhere('t.createdAt BETWEEN :startDate AND :endDate')
-                    ->setParameter('startDate', $date)
-                    ->setParameter('endDate', $endDate);
-            } else {
-                $qb
-                    ->andWhere('t.createdAt >= :startDate')
-                    ->setParameter('startDate', $date);
-            }
+            $qb
+                ->andWhere('t.createdAt <= :endDate')
+                ->setParameter('endDate', $endDate);
         }
 
         $countQb = clone $qb;
@@ -115,9 +98,7 @@ class TicketRepository extends ServiceEntityRepository
 
         $this->paginate($qb, $paginationDto);
 
-        $tickets = $qb->getQuery()->getResult();
-
-        return [$tickets, $count];
+        return (new PaginateCollection(new Paginator($qb), $paginationDto, $count));
     }
 
     public function findByUser(
@@ -151,29 +132,4 @@ class TicketRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    //    /**
-    //     * @return Ticket[] Returns an array of Ticket objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Ticket
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

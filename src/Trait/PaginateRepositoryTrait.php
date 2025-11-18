@@ -2,19 +2,17 @@
 
 namespace App\Trait;
 
-use App\Dto\PaginationDto;
+use App\Interface\PaginationInterface;
 use Doctrine\ORM\QueryBuilder;
 
 trait PaginateRepositoryTrait
 {
-    protected function paginate(QueryBuilder &$qb, PaginationDto $paginationDto): void
+    protected function paginate(QueryBuilder &$qb, PaginationInterface $pagination): void
     {
-        $page = $paginationDto->page;
-
-        $offset = ($page <= 1 ? $page = 0 : $paginationDto->page - 1) * $paginationDto->limit;
+        $offset = ($pagination->getPage() - 1) * $pagination->getLimit();
 
         $qb
             ->setFirstResult($offset)
-            ->setMaxResults($paginationDto->limit);
+            ->setMaxResults($pagination->getLimit());
     }
 }
