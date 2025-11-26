@@ -28,8 +28,8 @@ class CommentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('c');
 
         $qb
-            ->andWhere('c.user = :userId')
-            ->setParameter('userId', $ticketId);
+            ->andWhere('c.ticket = :ticketId')
+            ->setParameter('ticketId', $ticketId);
 
         $countQb = clone $qb;
         $count = (int) $countQb->select('count(c.id)')->getQuery()->getSingleScalarResult();
