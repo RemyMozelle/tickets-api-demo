@@ -19,7 +19,7 @@
         "symfony/console": "7.3.*",
         "symfony/dotenv": "7.3.*",
         "symfony/expression-language": "7.3.*",
-        "symfony/flex": "^2",
+        "symfony/flex": "^2.10",
         "symfony/framework-bundle": "7.3.*",
         "symfony/object-mapper": "7.3.*",
         "symfony/property-access": "7.3.*",
@@ -35,7 +35,7 @@
         "phpunit/phpunit": "^12.4",
         "symfony/browser-kit": "7.3.*",
         "symfony/css-selector": "7.3.*",
-        "symfony/maker-bundle": "^1.64"
+        "symfony/maker-bundle": "^1.65.1"
     },
     "config": {
         "allow-plugins": {
