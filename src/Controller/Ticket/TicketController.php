@@ -81,7 +81,7 @@ final class TicketController extends AbstractController
         #[MapRequestPayload()] TicketInputPatchDto $ticketDto,
         EntityManagerInterface $entityManager,
     ): JsonResponse {
-        $ticketDto->mergeInto($ticket);
+        $this->objectMapper->map($ticketDto, $ticket);
 
         $entityManager->flush();
 

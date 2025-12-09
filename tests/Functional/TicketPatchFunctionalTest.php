@@ -12,14 +12,17 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class TicketPatchFunctionalTest extends WebTestCase
 {
     #[DataProvider('provideTicketData')]
-    public function testShouldUpdateTicket($oldTicketValues, $updatedTicketValues, int $expectedStatusCode): void
+    public function testShouldUpdateTicket($ticketId, $ticketValues, $post, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
         $ticketRepositoty = static::getContainer()->get(TicketRepository::class);
 
-        $oldTicket = $ticketRepositoty->findOneBy($oldTicketValues['before_update']);
+        $oldTicket = $ticketRepositoty->find($ticketId);
+        // check BDD old value
+        $this->assertEquals($ticketValues['before_update']['status'], $oldTicket->getStatus());
+        $this->assertEquals($ticketValues['before_update']['priority'], $oldTicket->getPriority());
 
-        $client->jsonRequest(method: 'PATCH', uri: '/tickets/' . $oldTicket->getId(), parameters: $updatedTicketValues['after_update']);
+        $client->jsonRequest(method: 'PATCH', uri: '/tickets/' . $oldTicket->getId(), parameters: $post['send_to_api']);
 
         $response = $client->getResponse();
 
@@ -30,26 +33,51 @@ class TicketPatchFunctionalTest extends WebTestCase
 
         $this->assertEquals($expectedStatusCode, $response->getStatusCode());
         // check BDD
-        $this->assertEquals($updatedTicketValues['after_update']['status'], $oldTicket->getStatus());
-        $this->assertEquals($updatedTicketValues['after_update']['priority'], $oldTicket->getPriority());
+        $this->assertEquals($ticketValues['after_update']['status'], $oldTicket->getStatus());
+        $this->assertEquals($ticketValues['after_update']['priority'], $oldTicket->getPriority());
         // check Json
-        $this->assertEquals($updatedTicketValues['after_update']['status']->value, $ticketFromResponse->status);
-        $this->assertEquals($updatedTicketValues['after_update']['priority']->value, $ticketFromResponse->priority);
+        $this->assertEquals($ticketValues['after_update']['status']->value, $ticketFromResponse->status);
+        $this->assertEquals($ticketValues['after_update']['priority']->value, $ticketFromResponse->priority);
     }
 
     public static function provideTicketData(): \Generator
     {
-        yield 'Should correctly update ticket "status" : "open" to "closed", "priority" : "High" to "Low"' => [
+        yield 'Should correctly update ticket with id "1" with "status" : "open" to "closed", "priority" : "High" to "Low"' => [
+            1,
             [
                 'before_update' => [
                     'status' => Status::Open,
                     'priority' => Priority::High,
+                ],
+                'after_update' => [
+                   'status' => Status::Closed,
+                   'priority' => Priority::Low,
+               ]
+            ],
+            [
+                'send_to_api' => [
+                    'status' => Status::Closed,
+                    'priority' => Priority::Low,
+                ]
+            ],
+            200
+        ];
+
+        yield 'Should correctly update ticket with id "1" with "status" : "open" to "closed"' => [
+            1,
+            [
+                'before_update' => [
+                    'status' => Status::Open,
+                    'priority' => Priority::High,
+                ],
+                'after_update' => [
+                    'status' => Status::Closed,
+                    'priority' => Priority::High,
                 ]
             ],
             [
-                'after_update' => [
+                'send_to_api' => [
                     'status' => Status::Closed,
-                    'priority' => Priority::Low,
                 ]
             ],
             200

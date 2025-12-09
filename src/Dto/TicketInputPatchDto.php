@@ -5,39 +5,20 @@ namespace App\Dto;
 use App\Entity\Ticket;
 use App\Enum\Priority;
 use App\Enum\Status;
-use App\Validator\AllowedValues;
+use App\ObjectMapper\IsDefinedCondition;
 use Symfony\Component\ObjectMapper\Attribute\Map;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[Map(target: Ticket::class)]
 class TicketInputPatchDto
 {
     public function __construct(
+        #[Map(if: IsDefinedCondition::class)]
         public ?string $title = null,
+        #[Map(if: IsDefinedCondition::class)]
         public ?string $description = null,
+        #[Map(if: IsDefinedCondition::class)]
         public ?Status $status = null,
+        #[Map(if: IsDefinedCondition::class)]
         public ?Priority $priority = null,
     ) {}
-
-    public function mergeInto(Ticket $ticket): Ticket
-    {
-        if ($this->title !== null) {
-            $ticket->setTitle($this->title);
-        }
-
-        if ($this->description !== null) {
-            $ticket->setDescription($this->description);
-        }
-
-        if ($this->status !== null) {
-            $ticket->setStatus($this->status);
-        }
-
-        if ($this->priority !== null) {
-            $ticket->setPriority($this->priority);
-        }
-
-        return $ticket;
-    }
 }
-
