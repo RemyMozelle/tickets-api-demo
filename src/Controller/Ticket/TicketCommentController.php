@@ -94,7 +94,7 @@ final class TicketCommentController extends AbstractController
         #[MapRequestPayload(acceptFormat: 'json')] TicketCommentInputPatchDto $ticketCommentDto,
     ): JsonResponse {
 
-        $ticketCommentDto->mergeInto($comment);
+        $this->objectMapper->map(source: $ticketCommentDto, target: $comment);
 
         $entityManager->flush();
 

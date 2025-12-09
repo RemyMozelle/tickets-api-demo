@@ -32,10 +32,13 @@ class TicketCommentPatchTest extends WebTestCase
 
         $this->assertSerializedKeys(GroupContextKeys::COMMENT_READ, $comment);
 
+        // Check Json
+        $this->assertEquals($data['content'], $comment['content']);
+
         /** @var Comment $commentUpdated */
         $commentUpdated = $commentRepository->find($commentId);
         // Check Bdd
-        $this->assertEquals($comment['content'], $commentUpdated->getContent());
+        $this->assertEquals($data['content'], $commentUpdated->getContent());
     }
 
     public static function provideSuccessUpdateTicketCommentData(): \Generator
@@ -68,7 +71,7 @@ class TicketCommentPatchTest extends WebTestCase
 
     public static function provideFailUpdateTicketCommentData(): \Generator
     {
-        yield 'Should update ticket with "content" filled' => [
+        yield 'Should not update a comment with ticket who do not related to this ticket' => [
             [
                 'ticket_id' => 1,
                 'comment_id' => 5,
@@ -77,6 +80,28 @@ class TicketCommentPatchTest extends WebTestCase
                 'content' => 'content updated test 1',
             ],
             404
+        ];
+
+        yield 'Should not update ticket with "content" empty' => [
+            [
+                'ticket_id' => 1,
+                'comment_id' => 3,
+            ],
+            [
+                'content' => '',
+            ],
+            422
+        ];
+
+        yield 'Should not update ticket with "content" null' => [
+            [
+                'ticket_id' => 1,
+                'comment_id' => 3,
+            ],
+            [
+                'content' => null,
+            ],
+            422
         ];
     }
 }
