@@ -6,84 +6,62 @@ use App\Dto\PaginationDto;
 use App\Dto\TicketFiltersDto;
 use App\Entity\Ticket;
 use App\Entity\User;
-use App\Repository\CommentRepository;
 use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
-use App\Service\ApiResponse;
+use App\Constant\TicketGroups;
+use App\Constant\UserGroups;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
-
 
 #[Route('/users')]
 final class UserController extends AbstractController
 {
     public function __construct(
-        private readonly ApiResponse $apiResponse,
         private readonly UserRepository $userRepository,
-        private readonly CommentRepository $commentRepository,
         private readonly TicketRepository $ticketRepository,
-        #[Autowire(param: 'app.pagination.default.max_limit')]
-        private readonly int $maxLimit,
-        #[Autowire(param: 'app.pagination.default.page')]
-        private readonly int $page
     ) {}
 
-    #[Route(path: '', name: 'app_user', methods: ['GET'])]
-    public function getUsers(
+    #[Route(path: '', name: 'app_user_list', methods: ['GET'])]
+    public function list(
         #[MapQueryString()] PaginationDto $paginationDto,
+        Request $request,
     ): JsonResponse {
         $users = $this->userRepository->getUsers($paginationDto);
-        $total = $this->userRepository->count([]);
 
-        return $this->apiResponse->createApiResponseWithPagination(
+        return $this->json(
             data: $users,
-            paginationDto: $paginationDto,
-            total: $total,
+            status: 200,
             context: [
-                'groups' => ['user:read'],
-            ]
+                'groups' => UserGroups::READ,
+                'route_name' => $request->get('_route'),
+                'route_params' => $request->query->all(),
+                'current_url' => $request->getUri(),
+            ],
         );
     }
 
-    #[Route(path: '/{user}', name: 'app_user_detail', methods: ['GET', 'POST'])]
-    public function getUserDetail(
+    #[Route(path: '/{id}', name: 'app_user_show', methods: ['GET'])]
+    public function show(
         User $user
     ): JsonResponse {
-        return $this->apiResponse->createApiResponse(
+
+        return $this->json(
             data: $user,
             context: [
-                'groups' => ['user:read']
+                'groups' => UserGroups::READ
             ]
         );
     }
 
-    #[Route('/{user}/comments', name: 'app_user_comments')]
-    public function getUserComments(
-        User $user,
-        #[MapQueryString()] PaginationDto $paginationDto,
-    ): JsonResponse {
-
-        $comments = $this->commentRepository->findByUser(userId: $user->getId(), paginationDto: $paginationDto);
-        $total = $this->commentRepository->count(['user' => $user]);
-
-        return $this->apiResponse->createApiResponseWithPagination(
-            data: $comments,
-            paginationDto: $paginationDto,
-            total: $total,
-            context: [
-                'groups' => ['comment:read'],
-            ]
-        );
-    }
-
-    #[Route('/{user}/tickets', name: 'app_user_tickets')]
-    public function getUserTickets(
+    #[Route('/{id}/tickets', name: 'app_user_ticket_list', methods: ['GET'])]
+    public function listTicketByUser(
         User $user,
         #[MapQueryString()] PaginationDto $paginationDto,
         #[MapQueryString()] TicketFiltersDto $ticketFiltersDto,
+        Request $request
     ): JsonResponse {
 
         $filters = array_filter([
@@ -92,15 +70,19 @@ final class UserController extends AbstractController
         ]);
 
         $tickets = $this->ticketRepository->findByUser(userId: $user->getId(), paginationDto: $paginationDto, filters: $filters);
-        $total = $this->ticketRepository->count(['user' => $user, ...$filters]);
 
-        return $this->apiResponse->createApiResponseWithPagination(
+        return $this->json(
             data: $tickets,
-            paginationDto: $paginationDto,
-            total: $total,
+            status: 200,
             context: [
-                'groups' => ['ticket:read']
-            ]
+                'groups' => TicketGroups::READ,
+                'route_name' => $request->get('_route'),
+                'route_params' => [
+                    ...$request->query->all(),
+                    ...$request->attributes->get('_route_params'),
+                ],
+                'current_url' => $request->getUri(),
+            ],
         );
     }
 }

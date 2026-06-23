@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Repository\TicketRepository;
+use App\Constant\TicketGroups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -24,23 +25,23 @@ class Ticket
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['ticket:read'])]
+    #[Groups([TicketGroups::READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['ticket:read', 'ticket:add'])]
+    #[Groups([TicketGroups::READ])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['ticket:read', 'ticket:add'])]
+    #[Groups([TicketGroups::READ])]
     private ?string $description = null;
 
     #[ORM\Column(enumType: Status::class)]
-    #[Groups(['ticket:read'])]
+    #[Groups([TicketGroups::READ])]
     private Status $status = Status::Open;
 
     #[ORM\Column(enumType: Priority::class)]
-    #[Groups(['ticket:read'])]
+    #[Groups([TicketGroups::READ])]
     private Priority $priority = Priority::Low;
 
     #[ORM\Column]
@@ -51,7 +52,7 @@ class Ticket
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['ticket:add', 'ticket:read'])]
+    #[Groups([TicketGroups::READ])]
     private ?User $user = null;
 
     /**

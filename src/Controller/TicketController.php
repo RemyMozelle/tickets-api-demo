@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Ticket;
+namespace App\Controller;
 
 use App\Dto\PaginationDto;
 use App\Dto\TicketFiltersDto;
@@ -8,6 +8,7 @@ use App\Dto\TicketInputPatchDto;
 use App\Dto\TicketInputPostDto;
 use App\Entity\Ticket;
 use App\Repository\TicketRepository;
+use App\Constant\TicketGroups;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -27,8 +28,8 @@ final class TicketController extends AbstractController
         private readonly ObjectMapperInterface $objectMapper,
     ) {}
 
-    #[Route('', name: 'app_ticket_index', methods: ['GET'])]
-    public function index(
+    #[Route('', name: 'app_ticket_list', methods: ['GET'])]
+    public function list(
         #[MapQueryString()] PaginationDto $paginationDto,
         #[MapQueryString()] TicketFiltersDto $ticketFiltersDto,
         Request $request,
@@ -39,8 +40,8 @@ final class TicketController extends AbstractController
             data: $tickets,
             status: 200,
             context: [
-                'groups' => 'ticket:read',
-                'route_name' => 'app_ticket_index',
+                'groups' => TicketGroups::READ,
+                'route_name' => $request->get('_route'),
                 'route_params' => $request->query->all(),
                 'current_url' => $request->getUri(),
             ],
@@ -51,7 +52,7 @@ final class TicketController extends AbstractController
     public function show(
         Ticket $ticket
     ): JsonResponse {
-        return $this->json(data: $ticket, context: ['groups' => 'ticket:read'], status: 200);
+        return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 200);
     }
 
     #[Route('', name: 'app_ticket_create', methods: ['POST'])]
@@ -59,7 +60,7 @@ final class TicketController extends AbstractController
     public function create(
         Security $security,
         EntityManagerInterface $entityManager,
-        #[MapRequestPayload(acceptFormat: 'json')] TicketInputPostDto $ticketDto,
+        #[MapRequestPayload()] TicketInputPostDto $ticketDto,
     ): JsonResponse {
         $user = $security->getUser();
 
@@ -69,9 +70,9 @@ final class TicketController extends AbstractController
         $this->objectMapper->map(source: $ticketDto, target: $ticket);
 
         $entityManager->persist($ticket);
-        $entityManager->flush($ticket);
+        $entityManager->flush();
 
-        return $this->json(data: $ticket, context: ['groups' => 'ticket:read'], status: 201);
+        return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 201);
     }
 
     #[Route('/{id}', name: 'app_ticket_update', methods: ['PATCH'])]
@@ -85,7 +86,7 @@ final class TicketController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->json(data: $ticket, context: ['groups' => 'ticket:read'], status: 200);
+        return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 200);
     }
 
     #[Route('/{id}', name: 'app_ticket_delete', methods: ['DELETE'])]

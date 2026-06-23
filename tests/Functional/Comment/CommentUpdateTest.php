@@ -1,16 +1,17 @@
 <?php
 
-namespace app\Tests\Functional;
+namespace App\Tests\Functional\Comment;
 
+use App\Entity\Comment;
 use App\Repository\CommentRepository;
 use App\Tests\Helper\ApiHelper;
+use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
-use App\Tests\Helper\GroupContextKeys;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketCommentPatchTest extends WebTestCase
+class CommentUpdateTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -20,17 +21,16 @@ class TicketCommentPatchTest extends WebTestCase
         $client = AuthHelper::createAuthenticatedClient();
         $commentRepository = static::getContainer()->get(CommentRepository::class);
 
-        $ticketId = $parameters['ticket_id'];
         $commentId = $parameters['comment_id'];
 
-        $uri = sprintf('/tickets/%s/comments/%s', $ticketId, $commentId);
+        $uri = sprintf('/comments/%s', $commentId);
 
         $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $data);
         $this->assertResponseStatusCodeSame($expectedStatusCode);
 
         $comment = ApiHelper::getResponseDecoded($client);
 
-        $this->assertSerializedKeys(GroupContextKeys::COMMENT_READ, $comment);
+        $this->assertSerializedKeys(ApiResponseField::COMMENT_READ, $comment);
 
         // Check Json
         $this->assertEquals($data['content'], $comment['content']);
@@ -45,7 +45,6 @@ class TicketCommentPatchTest extends WebTestCase
     {
         yield 'Should update ticket with "content" filled' => [
             [
-                'ticket_id' => 1,
                 'comment_id' => 3,
             ],
             [
@@ -56,14 +55,13 @@ class TicketCommentPatchTest extends WebTestCase
     }
 
     #[DataProvider('provideFailUpdateTicketCommentData')]
-    public function testShouldNotUpdateACommentForATicket(array $parameters, $data, int $expectedStatusCode): void
+    public function testShouldNotUpdateAComment(array $parameters, $data, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $ticketId = $parameters['ticket_id'];
         $commentId = $parameters['comment_id'];
 
-        $uri = sprintf('/tickets/%s/comments/%s', $ticketId, $commentId);
+        $uri = sprintf('/comments/%s', $commentId);
 
         $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $data);
         $this->assertResponseStatusCodeSame($expectedStatusCode);
@@ -71,10 +69,9 @@ class TicketCommentPatchTest extends WebTestCase
 
     public static function provideFailUpdateTicketCommentData(): \Generator
     {
-        yield 'Should not update a comment with ticket who do not related to this ticket' => [
+        yield 'Should not update a "comment" who do not exist' => [
             [
-                'ticket_id' => 1,
-                'comment_id' => 5,
+                'comment_id' => 1000,
             ],
             [
                 'content' => 'content updated test 1',
@@ -84,7 +81,6 @@ class TicketCommentPatchTest extends WebTestCase
 
         yield 'Should not update ticket with "content" empty' => [
             [
-                'ticket_id' => 1,
                 'comment_id' => 3,
             ],
             [
@@ -95,7 +91,6 @@ class TicketCommentPatchTest extends WebTestCase
 
         yield 'Should not update ticket with "content" null' => [
             [
-                'ticket_id' => 1,
                 'comment_id' => 3,
             ],
             [

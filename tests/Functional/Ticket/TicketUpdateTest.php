@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Functional\Ticket;
 
 use App\Enum\Priority;
 use App\Enum\Status;
@@ -9,7 +9,7 @@ use App\Tests\Helper\AuthHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketPatchFunctionalTest extends WebTestCase
+class TicketUpdateTest extends WebTestCase
 {
     #[DataProvider('provideTicketData')]
     public function testShouldUpdateTicket($ticketId, $ticketValues, $post, int $expectedStatusCode): void

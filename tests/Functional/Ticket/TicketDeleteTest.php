@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Functional\Ticket;
 
 use App\Repository\CommentRepository;
 use App\Repository\TicketRepository;
 use App\Tests\Helper\AuthHelper;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketDeleteFunctionalTest extends WebTestCase
+class TicketDeleteTest extends WebTestCase
 {
     public function testShouldDeleteTicketWithCommentsLinked(): void
     {

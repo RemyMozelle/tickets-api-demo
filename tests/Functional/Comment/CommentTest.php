@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Functional\Comment;
 
 use App\Tests\Helper\ApiHelper;
-use App\Tests\Helper\GroupContextKeys;
+use App\Tests\Helper\ApiResponseField;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketCommentTest extends WebTestCase
+class CommentTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -18,7 +18,7 @@ class TicketCommentTest extends WebTestCase
 
         $comment = ApiHelper::getResponseDecoded($client)['data'][0];
 
-        $this->assertSerializedKeys(GroupContextKeys::COMMENT_READ, $comment);
+        $this->assertSerializedKeys(ApiResponseField::COMMENT_READ, $comment);
     }
 
     public function testShouldHaveCommentsForATicket(): void
@@ -32,13 +32,13 @@ class TicketCommentTest extends WebTestCase
         $this->assertCount(3, $comments);
     }
 
-    public function testShouldShowACommentFromATicket(): void
+    public function testShouldShowAComment(): void
     {
         $client = static::createClient();
-        $client->jsonRequest('GET', '/tickets/1/comments/1');
+        $client->jsonRequest('GET', '/comments/1');
         $this->assertResponseIsSuccessful();
 
         $comment = ApiHelper::getResponseDecoded($client);
-        $this->assertSerializedKeys(GroupContextKeys::COMMENT_READ, $comment);
+        $this->assertSerializedKeys(ApiResponseField::COMMENT_READ, $comment);
     }
 }

@@ -4,8 +4,10 @@ namespace App\Repository;
 
 use App\Dto\PaginationDto;
 use App\Entity\User;
+use App\Response\PaginateCollection;
 use App\Trait\PaginateRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -41,11 +43,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function getUsers(PaginationDto $paginationDto)
     {
         $qb = $this->createQueryBuilder('u');
+        $qb->orderBy('u.id', 'asc');
+
+        $countQb = clone $qb;
+        $count = (int) $countQb->select('count(u.id)')->getQuery()->getSingleScalarResult();
 
         $this->paginate($qb, $paginationDto);
 
-        return $qb
-            ->getQuery()
-            ->getResult();
+        return (new PaginateCollection(new Paginator($qb), $paginationDto, $count));
     }
 }

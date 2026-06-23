@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CommentRepository;
+use App\Constant\CommentGroups;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -13,19 +14,19 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['comment:read'])]
+    #[Groups([CommentGroups::READ])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['comment:read'])]
+    #[Groups([CommentGroups::READ])]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[Groups(['comment:read'])]
+    #[Groups([CommentGroups::READ])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    #[Groups(['comment:read'])]
+    #[Groups([CommentGroups::READ])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]

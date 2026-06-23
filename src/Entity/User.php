@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Constant\Roles;
 use App\Repository\UserRepository;
+use App\Constant\TicketGroups;
+use App\Constant\UserGroups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,11 +20,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read', 'ticket:read'])]
+    #[Groups([UserGroups::READ, TicketGroups::READ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['user:read'])]
+    #[Groups([UserGroups::READ])]
     private ?string $email = null;
 
     /**

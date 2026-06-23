@@ -19,15 +19,12 @@ class TicketRepository extends ServiceEntityRepository
 
     use PaginateRepositoryTrait;
 
-    protected PaginationDto $paginationDto;
-
-    public function __construct(ManagerRegistry $registry, PaginationDto $paginationDto)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Ticket::class);
-        $this->paginationDto = $paginationDto;
     }
 
-    public function getTickets(PaginationDto $paginationDto, TicketFiltersDto $ticketFiltersDto): mixed
+    public function getTickets(PaginationDto $paginationDto, TicketFiltersDto $ticketFiltersDto): PaginateCollection
     {
         $qb = $this->createQueryBuilder('t');
 
@@ -93,32 +90,43 @@ class TicketRepository extends ServiceEntityRepository
                 ->setParameter('endDate', $endDate);
         }
 
-        $countQb = clone $qb;
-        $count = (int) $countQb->select('count(t.id)')->getQuery()->getSingleScalarResult();
-
         $this->paginate($qb, $paginationDto);
 
-        return (new PaginateCollection(new Paginator($qb), $paginationDto, $count));
+        $paginator = new Paginator($qb, fetchJoinCollection: false);
+
+        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
     }
 
     public function findByUser(
         int $userId,
         PaginationDto $paginationDto,
         array $filters = [],
-    ): array {
+    ): PaginateCollection {
 
         $qb = $this->createQueryBuilder('t');
 
         if (isset($filters['status'])) {
-            $qb
-                ->andWhere('t.status = :status')
-                ->setParameter('status', $filters['status']);
+            if (is_array($filters['status'])) {
+                $qb
+                    ->andWhere('t.status in (:status)')
+                    ->setParameter('status', $filters['status']);
+            } else {
+                $qb
+                    ->andWhere('t.status = :status')
+                    ->setParameter('status', $filters['status']);
+            }
         }
 
         if (isset($filters['priority'])) {
-            $qb
-                ->andWhere('t.priority = :priority')
-                ->setParameter('priority', $filters['priority']);
+            if (is_array($filters['priority'])) {
+                $qb
+                    ->andWhere('t.priority in (:priority)')
+                    ->setParameter('priority', $filters['priority']);
+            } else {
+                $qb
+                    ->andWhere('t.priority = :priority')
+                    ->setParameter('priority', $filters['priority']);
+            }
         }
 
         $qb
@@ -128,8 +136,8 @@ class TicketRepository extends ServiceEntityRepository
 
         $this->paginate($qb, $paginationDto);
 
-        return $qb
-            ->getQuery()
-            ->getResult();
+        $paginator = new Paginator($qb, fetchJoinCollection: false);
+
+        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
     }
 }

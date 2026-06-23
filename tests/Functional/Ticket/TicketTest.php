@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Functional\Ticket;
 
 use App\Enum\Priority;
 use App\Enum\Status;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketFunctionalTest extends WebTestCase
+class TicketTest extends WebTestCase
 {
     public function testShouldHaveAllTickets(): void
     {
@@ -87,12 +87,12 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 6,
+                    'total' => 5,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            6,
+            5,
         ];
 
         yield 'Should have 3 ticket with status closed' => [
@@ -103,12 +103,12 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 3,
+                    'total' => 4,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            3,
+            4,
         ];
 
         yield 'Should have 1 ticket with status on_progress' => [
@@ -153,12 +153,12 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 4,
+                    'total' => 2,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            4,
+            2,
         ];
 
         yield 'Should have 6 ticket with priority to low and High' => [
@@ -172,12 +172,12 @@ class TicketFunctionalTest extends WebTestCase
                 ],
                 'meta' => [
                     'per_page' => 12,
-                    'total' => 6,
+                    'total' => 8,
                     'current_page' => 1,
                     'total_pages' => 1,
                 ],
             ],
-            6,
+            8,
         ];
     }
 
@@ -208,7 +208,6 @@ class TicketFunctionalTest extends WebTestCase
             'start_time' => $startTime,
             'end_time' => $endTime,
         ]);
-
 
         $client = static::createClient();
         $client->request(

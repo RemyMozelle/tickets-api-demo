@@ -6,10 +6,10 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
 final class ApiHelper 
 {
-    public static function getResponseDecoded(HttpKernelBrowser $client)
+    public static function getResponseDecoded(HttpKernelBrowser $client, bool $associative = true)
     {
         $response = $client->getResponse();
 
-        return json_decode($response->getContent(), true);
+        return json_decode($response->getContent(), $associative);
     }
 }

@@ -26,65 +26,65 @@ App\Entity\Ticket:
     updatedAt: '<(new DateTimeImmutable("2024-10-04 14:00:00"))>'
     user: '@user_3_with_1_ticket'
 
-  ticket_4_user_4_with_5_tickets:
+  ticket_4_user_4_with_7_tickets:
     title: Issue 4
     description: <text()>
     status: <(App\Enum\Status::Closed)>
     priority: <(App\Enum\Priority::High)>
     createdAt: '<(new DateTimeImmutable("2024-10-05 12:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2024-10-06 15:00:00"))>'
-    user: '@user_4_with_5_tickets'
+    user: '@user_4_with_7_tickets'
 
-  ticket_5_user_4_with_5_tickets:
+  ticket_5_user_4_with_7_tickets:
     title: Issue 5
     description: <text()>
     status: <(App\Enum\Status::Open)>
     priority: <(App\Enum\Priority::Low)>
     createdAt: '<(new DateTimeImmutable("2025-01-01 07:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-02-11 18:00:00"))>'
-    user: '@user_4_with_5_tickets'
+    user: '@user_4_with_7_tickets'
 
-  ticket_6_user_4_with_5_tickets:
+  ticket_6_user_4_with_7_tickets:
     title: Issue 6
     description: <text()>
     status: <(App\Enum\Status::Open)>
     priority: <(App\Enum\Priority::Medium)>
     createdAt: '<(new DateTimeImmutable("2025-02-17 20:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-03-10 19:00:00"))>'
-    user: '@user_4_with_5_tickets'
+    user: '@user_4_with_7_tickets'
   
-  ticket_7_user_4_with_5_tickets:
+  ticket_7_user_4_with_7_tickets:
     title: Issue 7
     description: <text()>
     status: <(App\Enum\Status::InProgress)>
     priority: <(App\Enum\Priority::Low)>
     createdAt: '<(new DateTimeImmutable("2025-04-12 13:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-04-18 11:00:00"))>'
-    user: '@user_4_with_5_tickets'
+    user: '@user_4_with_7_tickets'
 
-  ticket_8_user_4_with_5_tickets:
+  ticket_8_user_4_with_7_tickets:
     title: Issue 8
     description: <text()>
     status: <(App\Enum\Status::Open)>
     priority: <(App\Enum\Priority::Medium)>
     createdAt: '<(new DateTimeImmutable("2025-05-01 10:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-05-03 08:00:00"))>'
-    user: '@user_4_with_5_tickets'
+    user: '@user_4_with_7_tickets'
 
-  ticket_9_user_4_with_5_tickets:
+  ticket_9_user_4_with_7_tickets:
     title: Issue 9
     description: <text()>
     status: <(App\Enum\Status::Open)>
-    priority: <(App\Enum\Priority::Medium)>
+    priority: <(App\Enum\Priority::Low)>
     createdAt: '<(new DateTimeImmutable("2025-05-01 11:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-05-03 08:00:00"))>'
-    user: '@user_4_with_5_tickets'
+    user: '@user_4_with_7_tickets'
   
-  ticket_10_user_4_with_5_tickets:
+  ticket_10_user_4_with_7_tickets:
     title: Issue 10
     description: <text()>
-    status: <(App\Enum\Status::Open)>
-    priority: <(App\Enum\Priority::Medium)>
+    status: <(App\Enum\Status::Closed)>
+    priority: <(App\Enum\Priority::Low)>
     createdAt: '<(new DateTimeImmutable("2025-05-02 15:00:00"))>'
     updatedAt: '<(new DateTimeImmutable("2025-05-03 08:00:00"))>'
-    user: '@user_4_with_5_tickets'
+    user: '@user_4_with_7_tickets'

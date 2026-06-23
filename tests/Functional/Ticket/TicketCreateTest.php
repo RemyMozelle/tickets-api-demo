@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Functional\Ticket;
 
 use App\Enum\Priority;
 use App\Enum\Status;
@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Tests\Helper\AuthHelper;
 
-class TicketPostFunctionalTest extends WebTestCase
+class TicketCreateTest extends WebTestCase
 {
     #[DataProvider('provideFailTicketData')]
     public function testShouldFailToAddTicket($data, int $expectedStatusCode): void
