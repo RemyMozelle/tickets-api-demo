@@ -114,7 +114,7 @@ final class CommentController extends AbstractController
         return $this->json(data: $comment, context: ['groups' => CommentGroups::READ], status: 201);
     }
 
-    #[Route('/users/{user_id}/comments', name: 'app_user_comments_list')]
+    #[Route('/users/{user_id}/comments', name: 'app_user_comments_list', methods: 'GET')]
     public function listCommentByUser(
         #[MapEntity(id: 'user_id')]
         User $user,

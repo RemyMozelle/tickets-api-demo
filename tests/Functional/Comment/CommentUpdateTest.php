@@ -30,7 +30,7 @@ class CommentUpdateTest extends WebTestCase
 
         $comment = ApiHelper::getResponseDecoded($client);
 
-        $this->assertSerializedKeys(ApiResponseField::COMMENT_READ, $comment);
+        $this->assertResponseApiField(ApiResponseField::COMMENT_READ, $comment);
 
         // Check Json
         $this->assertEquals($data['content'], $comment['content']);

@@ -18,7 +18,7 @@ class CommentTest extends WebTestCase
 
         $comment = ApiHelper::getResponseDecoded($client)['data'][0];
 
-        $this->assertSerializedKeys(ApiResponseField::COMMENT_READ, $comment);
+        $this->assertResponseApiField(ApiResponseField::COMMENT_READ, $comment);
     }
 
     public function testShouldHaveCommentsForATicket(): void
@@ -39,6 +39,6 @@ class CommentTest extends WebTestCase
         $this->assertResponseIsSuccessful();
 
         $comment = ApiHelper::getResponseDecoded($client);
-        $this->assertSerializedKeys(ApiResponseField::COMMENT_READ, $comment);
+        $this->assertResponseApiField(ApiResponseField::COMMENT_READ, $comment);
     }
 }

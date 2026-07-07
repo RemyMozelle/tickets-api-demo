@@ -10,6 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use App\Response\PaginateCollection;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Ticket>
@@ -28,6 +29,39 @@ class TicketRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('t');
 
+        $this->applyTicketFilter($qb, $ticketFiltersDto);
+
+        $this->paginate($qb, $paginationDto);
+
+        $paginator = new Paginator($qb, fetchJoinCollection: false);
+
+        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
+    }
+
+    public function findByUser(
+        int $userId,
+        PaginationDto $paginationDto,
+        TicketFiltersDto $ticketFiltersDto,
+    ): PaginateCollection 
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        $this->applyTicketFilter($qb, $ticketFiltersDto);
+
+        $qb
+            ->andWhere('t.user = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('t.createdAt', 'DESC');
+
+        $this->paginate($qb, $paginationDto);
+
+        $paginator = new Paginator($qb, fetchJoinCollection: false);
+
+        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
+    }
+
+    private function applyTicketFilter(QueryBuilder &$qb, TicketFiltersDto $ticketFiltersDto): void 
+    {
         if ($ticketFiltersDto->status) {
             if (is_array($ticketFiltersDto->status)) {
                 $qb
@@ -89,55 +123,5 @@ class TicketRepository extends ServiceEntityRepository
                 ->andWhere('t.createdAt <= :endDate')
                 ->setParameter('endDate', $endDate);
         }
-
-        $this->paginate($qb, $paginationDto);
-
-        $paginator = new Paginator($qb, fetchJoinCollection: false);
-
-        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
-    }
-
-    public function findByUser(
-        int $userId,
-        PaginationDto $paginationDto,
-        array $filters = [],
-    ): PaginateCollection {
-
-        $qb = $this->createQueryBuilder('t');
-
-        if (isset($filters['status'])) {
-            if (is_array($filters['status'])) {
-                $qb
-                    ->andWhere('t.status in (:status)')
-                    ->setParameter('status', $filters['status']);
-            } else {
-                $qb
-                    ->andWhere('t.status = :status')
-                    ->setParameter('status', $filters['status']);
-            }
-        }
-
-        if (isset($filters['priority'])) {
-            if (is_array($filters['priority'])) {
-                $qb
-                    ->andWhere('t.priority in (:priority)')
-                    ->setParameter('priority', $filters['priority']);
-            } else {
-                $qb
-                    ->andWhere('t.priority = :priority')
-                    ->setParameter('priority', $filters['priority']);
-            }
-        }
-
-        $qb
-            ->andWhere('t.user = :userId')
-            ->setParameter('userId', $userId)
-            ->orderBy('t.createdAt', 'DESC');
-
-        $this->paginate($qb, $paginationDto);
-
-        $paginator = new Paginator($qb, fetchJoinCollection: false);
-
-        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
     }
 }

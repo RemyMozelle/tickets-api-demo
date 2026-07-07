@@ -2,85 +2,190 @@
 
 namespace App\Tests\Functional\Ticket;
 
+use App\Entity\Ticket;
+use App\Entity\User;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Repository\TicketRepository;
+use App\Repository\UserRepository;
+use App\Tests\Factory\TicketFactory;
+use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\AuthHelper;
+use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TicketUpdateTest extends WebTestCase
 {
+    // #[DataProvider('provideTicketData')]
+    // public function testShouldUpdateTicket(int $ticketId, array $ticketValues, $post, int $expectedStatusCode): void
+    // {
+    //     $client = AuthHelper::createAuthenticatedClient();
+    //     $ticketRepositoty = static::getContainer()->get(TicketRepository::class);
+
+    //     $oldTicket = $ticketRepositoty->find($ticketId);
+    //     // check BDD old value
+    //     $this->assertEquals($ticketValues['before_update']['status'], $oldTicket->getStatus());
+    //     $this->assertEquals($ticketValues['before_update']['priority'], $oldTicket->getPriority());
+
+    //     $client->jsonRequest(method: 'PATCH', uri: '/tickets/' . $oldTicket->getId(), parameters: $post['send_to_api']);
+
+    //     $response = $client->getResponse();
+
+    //     $responseData = json_decode($response->getContent(), false);
+    //     $ticketFromResponse = $responseData;
+
+    //     $oldTicket = $ticketRepositoty->findOneBy(['id' => $oldTicket->getId()]);
+
+    //     $this->assertEquals($expectedStatusCode, $response->getStatusCode());
+    //     // check BDD
+    //     $this->assertEquals($ticketValues['after_update']['status'], $oldTicket->getStatus());
+    //     $this->assertEquals($ticketValues['after_update']['priority'], $oldTicket->getPriority());
+    //     // check Json
+    //     $this->assertEquals($ticketValues['after_update']['status']->value, $ticketFromResponse->status);
+    //     $this->assertEquals($ticketValues['after_update']['priority']->value, $ticketFromResponse->priority);
+    // }
+
+    // public static function provideTicketData(): \Generator
+    // {
+    //     yield 'Should correctly update ticket with id "1" with "status" : "open" to "closed", "priority" : "High" to "Low"' => [
+    //         1,
+    //         [
+    //             'before_update' => [
+    //                 'status' => Status::Open,
+    //                 'priority' => Priority::High,
+    //             ],
+    //             'after_update' => [
+    //                'status' => Status::Closed,
+    //                'priority' => Priority::Low,
+    //            ]
+    //         ],
+    //         [
+    //             'send_to_api' => [
+    //                 'status' => Status::Closed,
+    //                 'priority' => Priority::Low,
+    //             ]
+    //         ],
+    //         200
+    //     ];
+
+    //     yield 'Should correctly update ticket with id "1" with "status" : "open" to "closed"' => [
+    //         1,
+    //         [
+    //             'before_update' => [
+    //                 'status' => Status::Open,
+    //                 'priority' => Priority::High,
+    //             ],
+    //             'after_update' => [
+    //                 'status' => Status::Closed,
+    //                 'priority' => Priority::High,
+    //             ]
+    //         ],
+    //         [
+    //             'send_to_api' => [
+    //                 'status' => Status::Closed,
+    //             ]
+    //         ],
+    //         200
+    //     ];
+    // }
+
     #[DataProvider('provideTicketData')]
-    public function testShouldUpdateTicket($ticketId, $ticketValues, $post, int $expectedStatusCode): void
+    public function testShouldUpdateTicket(Ticket $ticketBeforeExist, array $expected, array $body): void
     {
         $client = AuthHelper::createAuthenticatedClient();
         $ticketRepositoty = static::getContainer()->get(TicketRepository::class);
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $manager = static::getContainer()->get(EntityManagerInterface::class);
 
-        $oldTicket = $ticketRepositoty->find($ticketId);
-        // check BDD old value
-        $this->assertEquals($ticketValues['before_update']['status'], $oldTicket->getStatus());
-        $this->assertEquals($ticketValues['before_update']['priority'], $oldTicket->getPriority());
+        $ticketBeforeExist->setUser($userRepository->findOneBy(['email' => 'admin_1@gmail.com']));
 
-        $client->jsonRequest(method: 'PATCH', uri: '/tickets/' . $oldTicket->getId(), parameters: $post['send_to_api']);
+        $manager->persist($ticketBeforeExist);
+        $manager->flush();
 
-        $response = $client->getResponse();
+        $ticket = $ticketRepositoty->findOneBy(['title' => $ticketBeforeExist->getTitle()]);
+        $expected = $expected['expected'];
 
-        $responseData = json_decode($response->getContent(), false);
-        $ticketFromResponse = $responseData;
+        $client->jsonRequest(method: 'PATCH', uri: '/tickets/' . $ticket->getId(), parameters: $body);
 
-        $oldTicket = $ticketRepositoty->findOneBy(['id' => $oldTicket->getId()]);
+        $this->assertResponseStatusCodeSame(200);
 
-        $this->assertEquals($expectedStatusCode, $response->getStatusCode());
-        // check BDD
-        $this->assertEquals($ticketValues['after_update']['status'], $oldTicket->getStatus());
-        $this->assertEquals($ticketValues['after_update']['priority'], $oldTicket->getPriority());
-        // check Json
-        $this->assertEquals($ticketValues['after_update']['status']->value, $ticketFromResponse->status);
-        $this->assertEquals($ticketValues['after_update']['priority']->value, $ticketFromResponse->priority);
+
+        // Check BDD
+        $ticketAfterUpdate = $ticketRepositoty->findOneBy(['title' => $ticket->getTitle()]);
+        $this->assertSame(expected: $expected['title'], actual: $ticketAfterUpdate->getTitle());
+        $this->assertSame(expected: $expected['description'], actual: $ticketAfterUpdate->getDescription());
+        $this->assertEquals(expected: $expected['status'], actual: $ticketAfterUpdate->getStatus());
+        $this->assertEquals(expected: $expected['priority'], actual: $ticketAfterUpdate->getPriority());
+        $this->assertEquals(expected: $expected['created_at'], actual: $ticketAfterUpdate->getCreatedAt());
+        $this->assertEquals(expected: $expected['updated_at'], actual: $ticketAfterUpdate->getUpdatedAt());
+
+        // Check JSON
+        $ticketFromResponse = ApiHelper::getResponseDecoded($client, false);
+        $this->assertSame(expected: $expected['title'], actual: $ticketFromResponse->title);
+        $this->assertSame(expected: $expected['description'], actual: $ticketFromResponse->description);
+        $this->assertEquals(expected: $expected['status']->value, actual: $ticketFromResponse->status);
+        $this->assertEquals(expected: $expected['priority']->value, actual: $ticketFromResponse->priority);
+        $this->assertEquals(expected: $expected['created_at'], actual: new DateTimeImmutable($ticketFromResponse->created_at));
+        $this->assertEquals(expected: $expected['updated_at'], actual: new DateTimeImmutable($ticketFromResponse->updated_at));
     }
 
     public static function provideTicketData(): \Generator
     {
+        $ticket = TicketFactory::make([
+            'title' => 'issue de test',
+            'description' => 'issue de test description',
+            'status' => Status::Open,
+            'priority' => Priority::High,
+            'created_at' => new DateTimeImmutable("2024-09-30 12:00:00"),
+            'updated_at' => new DateTimeImmutable("2025-01-01 11:00:00")
+        ]);
+
         yield 'Should correctly update ticket with id "1" with "status" : "open" to "closed", "priority" : "High" to "Low"' => [
-            1,
+            $ticket,
             [
-                'before_update' => [
-                    'status' => Status::Open,
-                    'priority' => Priority::High,
-                ],
-                'after_update' => [
-                   'status' => Status::Closed,
-                   'priority' => Priority::Low,
-               ]
-            ],
-            [
-                'send_to_api' => [
+                'expected' => [
+                    'title' => $ticket->getTitle(),
+                    'description' => $ticket->getDescription(),
                     'status' => Status::Closed,
                     'priority' => Priority::Low,
-                ]
+                    'created_at' => $ticket->getCreatedAt(),
+                    'updated_at' => $ticket->getUpdatedAt(),
+                ],
             ],
-            200
+            [
+                'status' => Status::Closed,
+                'priority' => Priority::Low,
+            ],
         ];
 
-        yield 'Should correctly update ticket with id "1" with "status" : "open" to "closed"' => [
-            1,
+        /* TODO: Add test for updated_at field
+        $ticket = TicketFactory::make([
+            'title' => 'issue de test',
+            'description' => 'issue de test description',
+            'status' => Status::Open,
+            'priority' => Priority::High,
+            'created_at' => new DateTimeImmutable("2024-09-30 12:00:00"),
+            'updated_at' => new DateTimeImmutable("2025-01-01 11:00:00")
+        ]);
+
+        yield 'Should only update field "updated_at"' => [
+            $ticket,
             [
-                'before_update' => [
+                'expected' => [
+                    'title' => $ticket->getTitle(),
+                    'description' => $ticket->getDescription(),
                     'status' => Status::Open,
                     'priority' => Priority::High,
+                    'created_at' => $ticket->getCreatedAt(),
+                    'updated_at' => new DateTimeImmutable("2026-01-01 14:00:00"),
                 ],
-                'after_update' => [
-                    'status' => Status::Closed,
-                    'priority' => Priority::High,
-                ]
             ],
             [
-                'send_to_api' => [
-                    'status' => Status::Closed,
-                ]
+                'updated_at' => "2026-01-01 14:00:00"
             ],
-            200
-        ];
+         ];
+         */
     }
 }

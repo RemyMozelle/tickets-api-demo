@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
+// TODO: Modifier "AllowedValues pour qu'il accepte aussi les enum"
 class TicketFiltersDto
 {
     public function __construct(

@@ -27,9 +27,9 @@ class CommentCreateTest extends WebTestCase
 
         $comment = ApiHelper::getResponseDecoded($client);
 
-        $this->assertSerializedKeys(ApiResponseField::COMMENT_READ, $comment);
+        $this->assertResponseApiField(ApiResponseField::COMMENT_READ, $comment);
 
-        // Check BDD
+        //Check BDD
         $ticket = $ticketRepositoty->findOneBy(['id' => $ticketId]);
         $ticketComments = $ticket->getComments()->toArray();
 

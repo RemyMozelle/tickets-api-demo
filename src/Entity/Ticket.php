@@ -45,9 +45,11 @@ class Ticket
     private Priority $priority = Priority::Low;
 
     #[ORM\Column]
+    #[Groups([TicketGroups::READ])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups([TicketGroups::READ])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'tickets')]

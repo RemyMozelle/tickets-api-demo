@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Ticket;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Repository\TicketRepository;
+use App\Tests\Helper\ApiHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Tests\Helper\AuthHelper;
@@ -12,13 +13,22 @@ use App\Tests\Helper\AuthHelper;
 class TicketCreateTest extends WebTestCase
 {
     #[DataProvider('provideFailTicketData')]
-    public function testShouldFailToAddTicket($data, int $expectedStatusCode): void
+    public function testShouldFailToAddTicket(array $data, int $expectedStatusCode, array $expectedFields): void
     {
         $client = AuthHelper::createAuthenticatedClient();
 
         $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: $data);
+        $response = ApiHelper::getResponseDecoded($client);
 
-        $this->assertEquals($expectedStatusCode, $client->getResponse()->getStatusCode());
+        $violations = $response['violations'];
+
+        $actualFields = array_column(
+            $violations,
+            'propertyPath'
+        );
+
+        $this->assertEqualsCanonicalizing($actualFields, $expectedFields);
+        $this->assertResponseStatusCodeSame($expectedStatusCode);
     }
 
     public static function provideFailTicketData(): \Generator
@@ -26,63 +36,86 @@ class TicketCreateTest extends WebTestCase
         yield 'Should fail without field "title"' => [
             [
                 'description' => 'Ticket without "Title"',
-                'status' => Status::InProgress,
-                'priority' => Priority::Medium,
+                'status' => Status::InProgress->value,
+                'priority' => Priority::Medium->value,
             ],
-            422
+            422,
+            [
+                'title',
+            ]
         ];
 
         yield 'Should fail without field "description"' => [
             [
                 'title' => 'Ticket without "Description"',
-                'status' => Status::Closed,
-                'priority' => Priority::High,
+                'status' => Status::Closed->value,
+                'priority' => Priority::High->value,
             ],
-            422
+            422,
+            [
+                'description',
+            ]
         ];
 
         yield 'Should fail with invalid "priority" value' => [
             [
-                'title' => 'Ticket without good "priority" value',
-                'description' => 'Ticket without good "priority" value',
-                'status' => Status::InProgress,
-                'priority' => 'invalid_priority', // valeur non autorisée
+                'title' => 'Ticket with invalid "priority" value',
+                'description' => 'Ticket with invalid "priority" value',
+                'status' => Status::InProgress->value,
+                'priority' => 'invalid_priority',
             ],
-            422
+            422,
+            [
+                'priority',
+            ]
         ];
 
         yield 'Should fail with invalid "status" value' => [
             [
-                'title' => 'Ticket without good "status" value',
-                'description' => 'Ticket without good "status" value',
+                'title' => 'Ticket with invalid "status" value',
+                'description' => 'Ticket with invalid "status" value',
                 'status' => 'invalid_status',
-                'priority' => Priority::High,
+                'priority' => Priority::High->value,
             ],
-            422
+            422,
+            [
+                'status',
+            ]
+        ];
+
+        yield 'Should fail with invalid "status" and "priority" value' => [
+            [
+                'title' => 'Ticket with invalid "status" and "priority" value',
+                'description' => 'Ticket with invalid "status" and "priority" value',
+                'status' => 'invalid_status',
+                'priority' => 'invalid_priority',
+            ],
+            422,
+            [
+                'status',
+                'priority',
+            ]
         ];
     }
 
     #[DataProvider('provideSuccessTicketData')]
-    public function testShouldSuccessAddTicket($data, int $expectedStatusCode): void
+    public function testShouldSuccessAddTicket(array $data, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
         $ticketRepositoty  = static::getContainer()->get(TicketRepository::class);
 
         $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: $data);
 
-        $response = $client->getResponse();
-
-        $responseData = json_decode($response->getContent(), false);
-
-        $ticket = $responseData;
+        $ticket = ApiHelper::getResponseDecoded($client, false);
 
         $defaultValues = [
             'status' => Status::Open->value, 
             'priority' => Priority::Low->value,
         ];
 
+        $this->assertResponseStatusCodeSame($expectedStatusCode);
+
         // Check Ticket Json
-        $this->assertEquals($expectedStatusCode, $response->getStatusCode());
         $this->assertEquals($data['title'], $ticket->title);
         $this->assertEquals($data['description'], $ticket->description);
         foreach ($defaultValues as $field => $default) {

@@ -9,7 +9,9 @@ use App\Dto\TicketInputPostDto;
 use App\Entity\Ticket;
 use App\Repository\TicketRepository;
 use App\Constant\TicketGroups;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,7 +22,6 @@ use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/tickets')]
 final class TicketController extends AbstractController
 {
     public function __construct(
@@ -28,7 +29,7 @@ final class TicketController extends AbstractController
         private readonly ObjectMapperInterface $objectMapper,
     ) {}
 
-    #[Route('', name: 'app_ticket_list', methods: ['GET'])]
+    #[Route('/tickets', name: 'app_ticket_list', methods: ['GET'])]
     public function list(
         #[MapQueryString()] PaginationDto $paginationDto,
         #[MapQueryString()] TicketFiltersDto $ticketFiltersDto,
@@ -48,14 +49,14 @@ final class TicketController extends AbstractController
         );
     }
 
-    #[Route('/{id}', name: 'app_ticket_show', methods: ['GET'])]
+    #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET'])]
     public function show(
         Ticket $ticket
     ): JsonResponse {
         return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 200);
     }
 
-    #[Route('', name: 'app_ticket_create', methods: ['POST'])]
+    #[Route('/tickets', name: 'app_ticket_create', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
     public function create(
         Security $security,
@@ -75,7 +76,7 @@ final class TicketController extends AbstractController
         return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 201);
     }
 
-    #[Route('/{id}', name: 'app_ticket_update', methods: ['PATCH'])]
+    #[Route('/tickets/{id}', name: 'app_ticket_update', methods: ['PATCH'])]
     #[IsGranted('ROLE_USER')]
     public function update(
         Ticket $ticket,
@@ -89,7 +90,7 @@ final class TicketController extends AbstractController
         return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 200);
     }
 
-    #[Route('/{id}', name: 'app_ticket_delete', methods: ['DELETE'])]
+    #[Route('/tickets/{id}', name: 'app_ticket_delete', methods: ['DELETE'])]
     public function delete(
         Ticket $ticket,
         EntityManagerInterface $entityManager,
@@ -99,5 +100,29 @@ final class TicketController extends AbstractController
         $entityManager->flush();
 
         return $this->json(data: null, status: 204);
+    }
+
+    #[Route('/users/{user_id}/tickets', name: 'app_user_ticket_list', methods: ['GET'])]
+    public function listTicketByUser(
+        #[MapEntity(id: 'user_id')] User $user,
+        #[MapQueryString()] PaginationDto $paginationDto,
+        #[MapQueryString()] TicketFiltersDto $ticketFiltersDto,
+        Request $request
+    ): JsonResponse {
+        $tickets = $this->ticketRepository->findByUser(userId: $user->getId(), paginationDto: $paginationDto, ticketFiltersDto: $ticketFiltersDto);
+
+        return $this->json(
+            data: $tickets,
+            status: 200,
+            context: [
+                'groups' => TicketGroups::READ,
+                'route_name' => $request->get('_route'),
+                'route_params' => [
+                    ...$request->query->all(),
+                    ...$request->attributes->get('_route_params'),
+                ],
+                'current_url' => $request->getUri(),
+            ],
+        );
     }
 }
