@@ -2,62 +2,71 @@
 
 namespace App\Tests\Functional\Comment;
 
+use App\Tests\Helper\ApiHelper;
+use App\Tests\Helper\ApiResponseField;
+use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CommentListByUserTest extends WebTestCase
 {
-    #[DataProvider('commentsShouldHaveALimit')]
-    public function testUserCommentsByLimit($dataParameters, $expectedNbComments): void
+    use ApiTestAssertionsTrait;
+    
+    #[DataProvider('provideFilterUserData')]
+    public function testShouldReturnCommentsForGivenUser(int $userId, array $expectedCommentContent): void
     {
-        $limit = $dataParameters['query']['limit'];
-
         $client = static::createClient();
-        $client->jsonRequest('GET', '/users/2/comments?limit=' . $limit);
+        $client->request(method: 'GET', uri: sprintf('/users/%d/comments', $userId));
 
-        $data = json_decode($client->getResponse()->getContent(), true);
-
-        $comments = $data['data'];
-        $meta = $data['meta'];
-
-        $expectedMeta = $dataParameters['meta'];
-
+        $response = ApiHelper::getResponseDecoded($client);
         $this->assertResponseIsSuccessful();
 
-        $this->assertCount($expectedNbComments, $comments);
-        $this->assertEquals($expectedMeta, $meta);
+        $commentsFromResponse = $response['data'];
+        $nbComments = count($expectedCommentContent);
+
+        $this->assertResponseApiField(expectedKeys: ApiResponseField::COMMENT_READ, actual: current($commentsFromResponse));
+        $this->assertEqualsCanonicalizing($expectedCommentContent, array_column($commentsFromResponse, 'content'));
+        $this->assertCount($nbComments, $commentsFromResponse);
     }
 
-    public static function commentsShouldHaveALimit(): \Generator
+    public static function provideFilterUserData(): \Generator
     {
-        yield 'User 2 Should have 2 comments with limit 2' => [
+        $cases = [
             [
-                'query' => [
-                    'limit' => 2,
-                ],
-                'meta' => [
-                    'per_page' => 2,
-                    'total' => 4,
-                    'current_page' => 1,
-                    'total_pages' => 2,
-                ],
+                'user_id' => 1,
+                'comment_content' => [
+                    'comment 3 from ticket 1',
+                    'comment 3 from ticket 2',
+                    'comment 2 from ticket 3',
+                ]
             ],
-            2
+            [
+                'user_id' => 2,
+                'comment_content' => [
+                    'comment 1 from ticket 1',
+                    'comment 2 from ticket 1',
+                    'comment 1 from ticket 2',
+                    'comment 2 from ticket 2',
+                ]
+            ],
+            [
+                'user_id' => 3,
+                'comment_content' => [
+                    'comment 1 from ticket 3',
+                ]
+            ]
         ];
 
-        yield 'User 2 Should have 1 comment with limit 1' => [
-            [
-                'query' => [
-                    'limit' => 1,
-                ],
-                'meta' => [
-                    'per_page' => 1,
-                    'total' => 4,
-                    'current_page' => 1,
-                    'total_pages' => 4,
-                ],
-            ],
-            1
-        ];
+        foreach ($cases as $key => $case) {
+            yield sprintf(
+                'case n°%d should return %d comments with user [%s]',
+                $key + 1,
+                count($case['comment_content']),
+                $case['user_id'],
+            ) => [
+                $case['user_id'],
+                $case['comment_content'],
+            ];
+        }
     }
 }

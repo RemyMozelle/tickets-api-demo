@@ -15,47 +15,92 @@ class CommentCreateTest extends WebTestCase
     use ApiTestAssertionsTrait;
 
     #[DataProvider('provideValideCommentData')]
-    public function testShouldCreateACommentForATicket(array $data, int $ticketId, int $expectedStatusCode): void
+    public function testShouldCreateACommentForATicket(array $body, array $data, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
         $ticketRepositoty  = static::getContainer()->get(TicketRepository::class);
+        $ticketId = $data['ticket_id'];
 
         $uri = sprintf('/tickets/%s/comments', $ticketId);
-        $client->jsonRequest(method: 'POST', uri: $uri, parameters: $data);
+        $client->jsonRequest(method: 'POST', uri: $uri, parameters: $body);
 
         $this->assertResponseStatusCodeSame($expectedStatusCode);
 
-        $comment = ApiHelper::getResponseDecoded($client);
+        $commentFromResponse = ApiHelper::getResponseDecoded($client);
 
-        $this->assertResponseApiField(ApiResponseField::COMMENT_READ, $comment);
+        $this->assertResponseApiField(ApiResponseField::COMMENT_READ, $commentFromResponse);
 
         //Check BDD
         $ticket = $ticketRepositoty->findOneBy(['id' => $ticketId]);
-        $ticketComments = $ticket->getComments()->toArray();
+        $ticketComments = $ticket->getComments();
+        $this->assertCount($data['expected_nb_comments'], $ticketComments);
 
-        $this->assertCount(4, $ticketComments);
+        //Check JSON
+        $this->assertSame(expected: $body['content'], actual: $commentFromResponse['content']);
     }
 
     public static function provideValideCommentData(): \Generator
     {
-        yield 'Should add comment with all field filled' => [
-            [
-                'content' => 'content test 1'
+        $cases = [
+            'ticket 1' => [
+                'body' => [
+                    'content' => 'content test 2',
+                ],
+                'data' => [
+                    'ticket_id' => 1,
+                    'expected_nb_comments' => 4
+                ],
+                'status_code' => 201,
             ],
-            1,
-            201
+            'ticket 2' => [
+                'body' => [
+                    'content' => 'content test 2',
+                ],
+                'data' => [
+                    'ticket_id' => 3,
+                    'expected_nb_comments' => 3
+                ],
+                'status_code' => 201,
+            ],
         ];
+
+        $casesNumber = 0;
+        foreach ($cases as $label => $case) {
+            $nbComments = $case['data']['expected_nb_comments'];
+            ++$casesNumber;
+
+            yield sprintf(
+                'Case n°%d Should have %d comments for %s',
+                $casesNumber,
+                $nbComments,
+                $label
+            ) => [
+                $case['body'],
+                $case['data'],
+                $case['status_code'],
+            ];
+        }
     }
 
     #[DataProvider('provideInvalidCommentData')]
-    public function testShouldNotCreateACommentForATicket(array $data, int $ticketId, int $expectedStatusCode): void
+    public function testShouldNotCreateACommentForATicket(array $body, int $ticketId, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
 
         $uri = sprintf('/tickets/%s/comments', $ticketId);
 
-        $client->jsonRequest(method: 'POST', uri: $uri, parameters: $data);
+        $client->jsonRequest(method: 'POST', uri: $uri, parameters: $body);
 
+        $response = ApiHelper::getResponseDecoded($client);
+
+        $violations = $response['violations'];
+
+        $actualFields = array_column(
+            $violations,
+            'propertyPath'
+        );
+
+        $this->assertEqualsCanonicalizing($actualFields, ['content']);
         $this->assertResponseStatusCodeSame($expectedStatusCode);
     }
 
@@ -66,7 +111,15 @@ class CommentCreateTest extends WebTestCase
                 'content' => '',
             ],
             1,
-            422
+            422,
+        ];
+
+        yield 'Should not add a "comment" with content to null' => [
+            [
+                'content' => null,
+            ],
+            1,
+            422,
         ];
     }
 }

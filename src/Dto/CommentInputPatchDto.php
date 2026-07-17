@@ -2,12 +2,12 @@
 
 namespace App\Dto;
 
-use Dom\Comment;
-use Symfony\Component\ObjectMapper\Attribute\Map;
+use App\Entity\Comment;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\ObjectMapper\Attribute\Map;
 
 #[Map(target: Comment::class)]
-class TicketCommentInputPostDto
+class CommentInputPatchDto
 {
     public function __construct(
         #[Assert\NotBlank()]

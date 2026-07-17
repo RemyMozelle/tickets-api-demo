@@ -16,16 +16,17 @@ class CommentUpdateTest extends WebTestCase
     use ApiTestAssertionsTrait;
 
     #[DataProvider('provideSuccessUpdateTicketCommentData')]
-    public function testShouldUpdateACommentForATicket(array $parameters, $data, int $expectedStatusCode): void
+    public function testShouldUpdateComment(int $commentId, array $body, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
 
-        $commentId = $parameters['comment_id'];
+        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $oldContent = $commentRepository->find($commentId)->getContent();
+        $this->assertNotSame($oldContent, $body['content']);
 
         $uri = sprintf('/comments/%s', $commentId);
 
-        $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $data);
+        $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $body);
         $this->assertResponseStatusCodeSame($expectedStatusCode);
 
         $comment = ApiHelper::getResponseDecoded($client);
@@ -33,20 +34,18 @@ class CommentUpdateTest extends WebTestCase
         $this->assertResponseApiField(ApiResponseField::COMMENT_READ, $comment);
 
         // Check Json
-        $this->assertEquals($data['content'], $comment['content']);
+        $this->assertEquals($body['content'], $comment['content']);
 
         /** @var Comment $commentUpdated */
         $commentUpdated = $commentRepository->find($commentId);
         // Check Bdd
-        $this->assertEquals($data['content'], $commentUpdated->getContent());
+        $this->assertEquals($body['content'], $commentUpdated->getContent());
     }
 
     public static function provideSuccessUpdateTicketCommentData(): \Generator
     {
         yield 'Should update ticket with "content" filled' => [
-            [
-                'comment_id' => 3,
-            ],
+            3,
             [
                 'content' => 'content updated test 1',
             ],
@@ -55,34 +54,29 @@ class CommentUpdateTest extends WebTestCase
     }
 
     #[DataProvider('provideFailUpdateTicketCommentData')]
-    public function testShouldNotUpdateAComment(array $parameters, $data, int $expectedStatusCode): void
+    public function testShouldFailToUpdateComment(int $commentId, array $body, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $commentId = $parameters['comment_id'];
+        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $contentBefore = $commentRepository->find($commentId)->getContent();
 
         $uri = sprintf('/comments/%s', $commentId);
 
-        $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $data);
+        $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $body);
+
+        $contentAfter = $commentRepository
+            ->find($commentId)
+            ->getContent();
+
         $this->assertResponseStatusCodeSame($expectedStatusCode);
+        $this->assertSame($contentBefore, $contentAfter);
     }
 
     public static function provideFailUpdateTicketCommentData(): \Generator
     {
-        yield 'Should not update a "comment" who do not exist' => [
-            [
-                'comment_id' => 1000,
-            ],
-            [
-                'content' => 'content updated test 1',
-            ],
-            404
-        ];
-
         yield 'Should not update ticket with "content" empty' => [
-            [
-                'comment_id' => 3,
-            ],
+            3,
             [
                 'content' => '',
             ],
@@ -90,13 +84,22 @@ class CommentUpdateTest extends WebTestCase
         ];
 
         yield 'Should not update ticket with "content" null' => [
-            [
-                'comment_id' => 3,
-            ],
+            3,
             [
                 'content' => null,
             ],
             422
         ];
+    }
+
+    public function testShouldReturnNotFoundWhenUpdatingUnknownComment(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient();
+
+        $client->jsonRequest(method: 'PATCH', uri: '/comments/10000', parameters: [
+            'content' => '',
+        ]);
+
+        $this->assertResponseStatusCodeSame(404);
     }
 }

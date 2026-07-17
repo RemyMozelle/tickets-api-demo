@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Dto\PaginationDto;
-use App\Dto\TicketCommentInputPatchDto;
-use App\Dto\TicketCommentInputPostDto;
+use App\Dto\CommentInputPatchDto;
+use App\Dto\CommentInputPostDto;
 use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Entity\User;
@@ -31,10 +31,7 @@ final class CommentController extends AbstractController
     #[Route('/comments/{id}', name: 'app_comment_show', methods: ['GET'])]
     public function show(
         Comment $comment,
-        CommentRepository $commentRepository,
     ): JsonResponse {
-        $comment = $commentRepository->find($comment->getId());
-
         return $this->json(data: $comment, context: ['groups' => CommentGroups::READ], status: 200);
     }
 
@@ -43,7 +40,7 @@ final class CommentController extends AbstractController
     public function patch(
         EntityManagerInterface $entityManager,
         Comment $comment,
-        #[MapRequestPayload(acceptFormat: 'json')] TicketCommentInputPatchDto $ticketCommentDto,
+        #[MapRequestPayload(acceptFormat: 'json')] CommentInputPatchDto $ticketCommentDto,
     ): JsonResponse {
 
         $this->objectMapper->map(source: $ticketCommentDto, target: $comment);
@@ -96,7 +93,7 @@ final class CommentController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity(id: 'ticket_id')]
         Ticket $ticket,
-        #[MapRequestPayload(acceptFormat: 'json')] TicketCommentInputPostDto $ticketCommentDto,
+        #[MapRequestPayload(acceptFormat: 'json')] CommentInputPostDto $ticketCommentDto,
     ): JsonResponse {
 
         $user = $security->getUser();
