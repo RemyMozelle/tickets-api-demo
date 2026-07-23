@@ -15,6 +15,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class TicketUpdateTest extends WebTestCase
 {
@@ -187,5 +188,74 @@ class TicketUpdateTest extends WebTestCase
             ],
          ];
          */
+    }
+
+    public function testShouldDenyTicketUpdateWhenUserIsNotOwner(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient(
+            'user_3_with_1_ticket@gmail.com',
+            'user'
+        );
+
+        $ticketRepository = static::getContainer()->get(TicketRepository::class);
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $otherUser = $userRepository->findOneBy([
+            'email' => 'user_2_with_2_tickets@gmail.com'
+        ]);
+
+        $otherUserTicket = $ticketRepository->findOneBy([
+            'user' => $otherUser,
+            'title' => 'issue 1',
+        ]);
+
+        $this->assertNotNull($otherUserTicket);
+
+        $client->jsonRequest(
+            method: 'PATCH',
+            uri: '/tickets/' . $otherUserTicket->getId(),
+            parameters: [
+                'title' => 'test'
+            ]
+        );
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testShouldUpdateTicketWhenUserIsOwner(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient(
+            'user_2_with_2_tickets@gmail.com',
+            'user'
+        );
+
+        $ticketRepository = static::getContainer()->get(TicketRepository::class);
+        $security = static::getContainer()->get(Security::class);
+
+        $currentUser = $security->getUser();
+
+        $ticket = $ticketRepository->findOneBy([
+            'user' => $currentUser,
+            'title' => 'issue 1',
+        ]);
+
+        $this->assertNotNull($ticket);
+
+        $body = [
+            'title' => 'issue 1 tested',
+        ];
+
+        $client->jsonRequest(
+            method: 'PATCH',
+            uri: '/tickets/' . $ticket->getId(),
+            parameters: $body
+        );
+
+        $this->assertResponseStatusCodeSame(200);
+
+        // Check BDD
+        $ticketAfterUpdate = $ticketRepository->findOneBy($body);
+
+        $this->assertSame($body['title'], $ticketAfterUpdate->getTitle());
     }
 }

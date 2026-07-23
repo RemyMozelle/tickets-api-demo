@@ -109,7 +109,7 @@ class TicketCreateTest extends WebTestCase
         $ticket = ApiHelper::getResponseDecoded($client, false);
 
         $defaultValues = [
-            'status' => Status::Open->value, 
+            'status' => Status::Open->value,
             'priority' => Priority::Low->value,
         ];
 
@@ -164,5 +164,37 @@ class TicketCreateTest extends WebTestCase
             ],
             201
         ];
+    }
+
+    public function testShouldDenyTicketCreateWhenUserIsNotAuthenticated()
+    {
+        $client = static::createClient();
+        
+        $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: [
+            'title' => 'Title',
+            'description' => 'Ticket without "Title"',
+            'status' => Status::InProgress->value,
+            'priority' => Priority::Medium->value,
+        ]);
+
+        $this->assertResponseStatusCodeSame(401);
+    }
+
+    public function testShouldAllowTicketCreateWhenUserIsNotAdmin(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
+        $ticketRepositoty  = static::getContainer()->get(TicketRepository::class);
+
+        $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: [
+            'title' => 'Title',
+            'description' => 'Ticket without "Title"',
+            'status' => Status::InProgress->value,
+            'priority' => Priority::Medium->value,
+        ]);
+
+        $ticket = ApiHelper::getResponseDecoded($client, false);
+
+        // Check BDD
+        $this->assertNotNull($ticketRepositoty->findOneBy(['id' => $ticket->id]));
     }
 }
