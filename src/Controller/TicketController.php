@@ -10,6 +10,7 @@ use App\Entity\Ticket;
 use App\Repository\TicketRepository;
 use App\Constant\TicketGroups;
 use App\Entity\User;
+use App\Security\Voter\TicketVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,6 +50,7 @@ final class TicketController extends AbstractController
         );
     }
 
+    #[IsGranted(TicketVoter::SHOW, 'ticket')]
     #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET'])]
     public function show(
         Ticket $ticket
@@ -57,7 +59,7 @@ final class TicketController extends AbstractController
     }
 
     #[Route('/tickets', name: 'app_ticket_create', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted(TicketVoter::CREATE)]
     public function create(
         Security $security,
         EntityManagerInterface $entityManager,
@@ -77,12 +79,13 @@ final class TicketController extends AbstractController
     }
 
     #[Route('/tickets/{id}', name: 'app_ticket_update', methods: ['PATCH'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted(TicketVoter::EDIT, 'ticket')]
     public function update(
         Ticket $ticket,
         #[MapRequestPayload()] TicketInputPatchDto $ticketDto,
         EntityManagerInterface $entityManager,
     ): JsonResponse {
+
         $this->objectMapper->map($ticketDto, $ticket);
 
         $entityManager->flush();
@@ -90,6 +93,7 @@ final class TicketController extends AbstractController
         return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 200);
     }
 
+    #[IsGranted(TicketVoter::DELETE, 'ticket')]
     #[Route('/tickets/{id}', name: 'app_ticket_delete', methods: ['DELETE'])]
     public function delete(
         Ticket $ticket,

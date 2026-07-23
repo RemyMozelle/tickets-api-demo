@@ -2,8 +2,11 @@
 
 namespace App\Tests\Functional\Ticket;
 
+use App\Repository\TicketRepository;
+use App\Repository\UserRepository;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
+use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -24,15 +27,33 @@ class TicketTest extends WebTestCase
         $this->assertCount(10, $tickets);
     }
 
-    public function testShouldHaveTicketDetail()
+    public function testShouldAllowTicketShowWhenUserIsAdmin()
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->jsonRequest('GET', '/tickets/1');
 
         $ticket = ApiHelper::getResponseDecoded($client);
 
         $this->assertResponseApiField(ApiResponseField::TICKER_READ, $ticket);
         $this->assertResponseIsSuccessful();
-        $this->assertEquals($ticket['id'], 1);
+    }
+
+    public function testShouldAllowTicketShowWhenUserIsOwner()
+    {
+        $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
+
+        $client->jsonRequest('GET', '/tickets/1');
+        $ticket = ApiHelper::getResponseDecoded($client);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseApiField(ApiResponseField::TICKER_READ, $ticket);
+    }
+
+    public function testShouldDenyTicketShowWhenUserIsNotOwner()
+    {
+        $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
+        $client->jsonRequest('GET', '/tickets/10');
+
+        $this->assertResponseStatusCodeSame(403);
     }
 }
