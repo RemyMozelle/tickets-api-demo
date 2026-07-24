@@ -2,13 +2,18 @@
 
 namespace App\Tests\Functional\Comment;
 
+use App\Entity\Ticket;
+use App\Entity\User;
+use App\Repository\CommentRepository;
 use App\Repository\TicketRepository;
+use App\Repository\UserRepository;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class CommentCreateTest extends WebTestCase
 {
@@ -121,5 +126,136 @@ class CommentCreateTest extends WebTestCase
             1,
             422,
         ];
+    }
+
+    public function testShouldAllowUserToCreateCommentWhenOwnerOfTicket(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
+        $ticketRepository  = static::getContainer()->get(TicketRepository::class);
+        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $security = static::getContainer()->get(Security::class);
+
+        /** @var User $authenticatedUser */
+        $authenticatedUser = $security->getUser();
+
+        $ticket = $ticketRepository->findOneBy([
+            'user' => $authenticatedUser,
+            'title' => 'Issue 1',
+        ]);
+
+        $this->assertNotNull($ticket);
+
+        $this->assertSame(
+            $authenticatedUser->getId(),
+            $ticket->getUser()->getId()
+        );
+
+        $uri = sprintf('/tickets/%s/comments', $ticket->getId());
+
+        $client->jsonRequest(method: 'POST', uri: $uri, parameters: [
+            'content' => 'Comment test'
+        ]);
+
+        $this->assertResponseStatusCodeSame(201);
+
+        // Check BDD
+        $commentAfterRequest = $commentRepository->findOneBy([
+            'user' => $authenticatedUser,
+            'ticket' => $ticket,
+            'content' => 'Comment test',
+        ]);
+
+        $this->assertNotNull($commentAfterRequest);
+    }
+
+
+    public function testShouldAllowUserToCreateCommentWhenTicketIsNotOwnedByUser(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient('user_3_with_1_ticket@gmail.com', 'user');
+
+        $ticketRepository = static::getContainer()->get(TicketRepository::class);
+        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $security = static::getContainer()->get(Security::class);
+
+        /** @var User $authenticatedUser */
+        $authenticatedUser = $security->getUser();
+
+        $ticketOwner = $userRepository->findOneBy([
+            'email' => 'user_2_with_2_tickets@gmail.com',
+        ]);
+
+        $this->assertNotNull($ticketOwner);
+
+        $ticket = $ticketRepository->findOneBy([
+            'user' => $ticketOwner,
+            'title' => 'Issue 1',
+        ]);
+
+        $this->assertNotNull($ticket);
+
+        $this->assertNotSame(
+            expected: $authenticatedUser->getId(),
+            actual: $ticket->getUser()->getId()
+        );
+
+        $client->jsonRequest(
+            method: 'POST',
+            uri: sprintf('/tickets/%s/comments', $ticket->getId()),
+            parameters: [
+                'content' => 'Comment test'
+            ]
+        );
+
+        $this->assertResponseStatusCodeSame(201);
+
+        $commentAfterRequest = $commentRepository->findOneBy([
+            'user' => $authenticatedUser,
+            'ticket' => $ticket,
+            'content' => 'Comment test',
+        ]);
+
+        $this->assertNotNull($commentAfterRequest);
+    }
+
+    public function testShouldDenyUserToCreateCommentWhenIsNotAuthenticated(): void
+    {
+        $client = static::createClient();
+
+        $ticketRepository = static::getContainer()->get(TicketRepository::class);
+        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $ownerUser = $userRepository->findOneBy([
+            'email' => 'user_2_with_2_tickets@gmail.com',
+        ]);
+
+        $this->assertNotNull($ownerUser);
+
+        $ticket = $ticketRepository->findOneBy([
+            'user' => $ownerUser,
+            'title' => 'Issue 1',
+        ]);
+
+        $this->assertNotNull($ticket);
+
+        $body = [
+            'content' => 'Comment test',
+        ];
+
+        $client->jsonRequest(
+            method: 'POST',
+            uri: sprintf('/tickets/%s/comments', $ticket->getId()),
+            parameters: $body
+        );
+
+        $this->assertResponseStatusCodeSame(401);
+
+        $commentAfterRequest = $commentRepository->findOneBy([
+            'ticket' => $ticket,
+            'content' => $body['content'],
+        ]);
+
+        $this->assertNull($commentAfterRequest);
     }
 }

@@ -10,6 +10,7 @@ use App\Entity\Ticket;
 use App\Entity\User;
 use App\Repository\CommentRepository;
 use App\Constant\CommentGroups;
+use App\Security\Voter\CommentVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,6 +30,7 @@ final class CommentController extends AbstractController
     ) {}
 
     #[Route('/comments/{id}', name: 'app_comment_show', methods: ['GET'])]
+    #[IsGranted(CommentVoter::SHOW)]
     public function show(
         Comment $comment,
     ): JsonResponse {
@@ -36,7 +38,7 @@ final class CommentController extends AbstractController
     }
 
     #[Route('/comments/{id}', name: 'app_comment_update', methods: ['PATCH'])]
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted(CommentVoter::EDIT, 'comment')]
     public function patch(
         EntityManagerInterface $entityManager,
         Comment $comment,
@@ -51,6 +53,7 @@ final class CommentController extends AbstractController
     }
 
     #[Route('/comments/{id}', name: 'app_comment_delete', methods: ['DELETE'])]
+    #[IsGranted(CommentVoter::DELETE, 'comment')]
     public function delete(
         Comment $comment,
         EntityManagerInterface $entityManager,
@@ -88,6 +91,7 @@ final class CommentController extends AbstractController
     }
 
     #[Route('/tickets/{ticket_id}/comments', name: 'app_ticket_comment_create', methods: ['POST'])]
+    #[IsGranted(CommentVoter::CREATE)]
     public function createCommentForTicket(
         Security $security,
         EntityManagerInterface $entityManager,

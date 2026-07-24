@@ -3,13 +3,17 @@
 namespace App\Tests\Functional\Comment;
 
 use App\Entity\Comment;
+use App\Entity\User;
 use App\Repository\CommentRepository;
+use App\Repository\TicketRepository;
+use App\Repository\UserRepository;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class CommentUpdateTest extends WebTestCase
 {
@@ -101,5 +105,118 @@ class CommentUpdateTest extends WebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testShouldAllowUserToUpdateCommentWhenIsOwner(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient('user_3_with_1_ticket@gmail.com', 'user');
+
+        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $security = static::getContainer()->get(Security::class);
+
+        $authenticatedUser = $security->getUser();
+
+        $commentToUpdate = $commentRepository->findOneBy([
+            'user' => $authenticatedUser,
+        ]);
+
+        $this->assertNotNull($commentToUpdate);
+
+        $body = [
+            'content' => 'currentUser try to comment',
+        ];
+
+        $client->jsonRequest(
+            method: 'PATCH',
+            uri: sprintf('/comments/%d', $commentToUpdate->getId()),
+            parameters: $body
+        );
+
+        $this->assertResponseStatusCodeSame(200);
+
+        $commentAfterRequest = $commentRepository->find($commentToUpdate->getId());
+
+        $this->assertSame(
+            expected: $body['content'],
+            actual: $commentAfterRequest->getContent()
+        );
+    }
+
+    public function testShouldDenyUserToUpdateCommentWhenNotOwner(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient('user_3_with_1_ticket@gmail.com', 'user');
+
+        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $commentOwner = $userRepository->findOneBy([
+            'email' => 'user_2_with_2_tickets@gmail.com',
+        ]);
+
+        $this->assertNotNull($commentOwner);
+
+        $commentToUpdate = $commentRepository->findOneBy([
+            'user' => $commentOwner,
+        ]);
+
+        $this->assertNotNull($commentToUpdate);
+
+        $originalContent = $commentToUpdate->getContent();
+
+        $client->jsonRequest(
+            method: 'PATCH',
+            uri: sprintf('/comments/%d', $commentToUpdate->getId()),
+            parameters: [
+                'content' => 'currentUser try to comment',
+            ]
+        );
+
+        $this->assertResponseStatusCodeSame(403);
+
+        $commentAfterRequest = $commentRepository->find($commentToUpdate->getId());
+
+        $this->assertSame(
+            expected: $originalContent,
+            actual: $commentAfterRequest->getContent()
+        );
+    }
+
+    public function testShouldDenyUserToUpdateCommentWhenIsNotAuthenticated(): void
+    {
+        $client = static::createClient();
+
+        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        $commentOwner = $userRepository->findOneBy([
+            'email' => 'user_2_with_2_tickets@gmail.com',
+        ]);
+
+        $this->assertNotNull($commentOwner);
+
+        $commentToUpdate = $commentRepository->findOneBy([
+            'user' => $commentOwner,
+        ]);
+
+        $this->assertNotNull($commentToUpdate);
+
+        $originalContent = $commentToUpdate->getContent();
+
+        $client->jsonRequest(
+            method: 'PATCH',
+            uri: sprintf('/comments/%d', $commentToUpdate->getId()),
+            parameters: [
+                'content' => 'currentUser try to comment',
+            ]
+        );
+
+        $this->assertResponseStatusCodeSame(401);
+
+        $commentAfterRequest = $commentRepository->find($commentToUpdate->getId());
+
+        $this->assertSame(
+            expected: $originalContent,
+            actual: $commentAfterRequest->getContent()
+        );
     }
 }
