@@ -2,8 +2,6 @@
 
 namespace App\Tests\Functional\Ticket;
 
-use App\Repository\TicketRepository;
-use App\Repository\UserRepository;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
@@ -49,11 +47,14 @@ class TicketTest extends WebTestCase
         $this->assertResponseApiField(ApiResponseField::TICKER_READ, $ticket);
     }
 
-    public function testShouldDenyTicketShowWhenUserIsNotOwner()
+    public function testShouldAllowTicketShowWhenUserIsNotOwner()
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
         $client->jsonRequest('GET', '/tickets/10');
+        
+        $ticket = ApiHelper::getResponseDecoded($client);
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseApiField(ApiResponseField::TICKER_READ, $ticket);
     }
 }

@@ -45,8 +45,8 @@ final class TicketVoter extends Voter
         }
 
         return match ($attribute) {
-            self::CREATE => true,
-            self::SHOW,
+            self::CREATE,
+            self::SHOW => true,
             self::EDIT,
             self::DELETE => $subject instanceof Ticket && $this->isAllowedForTicket($subject, $user, $attribute),
             default => false
