@@ -1,0 +1,56 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - "main"
+
+  pull_request:
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: test
+          MARIADB_USER: db
+          MARIADB_PASSWORD: db
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+
+    env:
+      APP_ENV: test
+      DATABASE_URL: mysql://db:db@127.0.0.1:3306/test?charset=utf8&serverVersion=10.11.0-MariaDB
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          tools: composer:v2.10.2
+          coverage: none
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Generate lexik jwt token
+        run: php bin/console lexik:jwt:generate-keypair --env=test
+
+      - name: Migrate Database
+        run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
+
+      - name: Create fixtures
+        run: php bin/console hautelook:fixtures:load --quiet --env=test
+
+      - name: Execute tests
+        run: php bin/phpunit --testdox

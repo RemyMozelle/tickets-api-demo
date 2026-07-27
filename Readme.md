@@ -183,5 +183,5 @@ Le projet est accompagné de tests fonctionnels couvrant notamment :
 * [ ] Permissions via Voters
 * [ ] Migration de Symfony 7 vers Symfony 8
 * [ ] Coding Standards
-* [ ] GitHub Actions (CI)
+* [x] GitHub Actions (CI)
 * [ ] Documentation OpenAPI
