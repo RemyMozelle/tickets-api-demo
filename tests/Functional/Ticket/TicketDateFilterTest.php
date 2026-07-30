@@ -11,8 +11,12 @@ class TicketDateFilterTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
+    /**
+     * @param array<string, string> $queryParameters
+     * @param array<string, list<string>> $expected
+     */
     #[DataProvider('ticketWithDateParameters')]
-    public function testShouldHaveTicketWithSpecificsDates(array $queryParameters, array $expectedTicketIds)
+    public function testShouldHaveTicketWithSpecificsDates(array $queryParameters, array $expected): void
     {
         $client = static::createClient();
         $client->request(
@@ -25,7 +29,7 @@ class TicketDateFilterTest extends WebTestCase
         $tickets = $response['data'];
 
         $this->assertResponseIsSuccessful();
-        $this->assertEqualsCanonicalizing($expectedTicketIds['ticket_titles'], array_column($tickets, 'title'));
+        $this->assertEqualsCanonicalizing($expected['ticket_titles'], array_column($tickets, 'title'));
     }
 
     public static function ticketWithDateParameters(): \Generator

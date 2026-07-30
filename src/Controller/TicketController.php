@@ -11,6 +11,7 @@ use App\Repository\TicketRepository;
 use App\Constant\TicketGroups;
 use App\Entity\User;
 use App\Security\Voter\TicketVoter;
+use App\Service\CurrentUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -61,14 +62,13 @@ final class TicketController extends AbstractController
     #[Route('/tickets', name: 'app_ticket_create', methods: ['POST'])]
     #[IsGranted(TicketVoter::CREATE)]
     public function create(
-        Security $security,
+        CurrentUserProvider $currentUserProvider,
         EntityManagerInterface $entityManager,
         #[MapRequestPayload()] TicketInputPostDto $ticketDto,
     ): JsonResponse {
-        $user = $security->getUser();
 
         $ticket = new Ticket();
-        $ticket->setUser($user);
+        $ticket->setUser($currentUserProvider());
 
         $this->objectMapper->map(source: $ticketDto, target: $ticket);
 

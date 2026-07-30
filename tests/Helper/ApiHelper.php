@@ -6,7 +6,7 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
 final class ApiHelper 
 {
-    public static function getResponseDecoded(HttpKernelBrowser $client, bool $associative = true)
+    public static function getResponseDecoded(HttpKernelBrowser $client, bool $associative = true): mixed
     {
         $response = $client->getResponse();
 

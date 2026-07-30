@@ -11,10 +11,10 @@ use App\Entity\User;
 use App\Repository\CommentRepository;
 use App\Constant\CommentGroups;
 use App\Security\Voter\CommentVoter;
+use App\Service\CurrentUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -93,18 +93,16 @@ final class CommentController extends AbstractController
     #[Route('/tickets/{ticket_id}/comments', name: 'app_ticket_comment_create', methods: ['POST'])]
     #[IsGranted(CommentVoter::CREATE)]
     public function createCommentForTicket(
-        Security $security,
+        CurrentUserProvider $currentUserProvider,
         EntityManagerInterface $entityManager,
         #[MapEntity(id: 'ticket_id')]
         Ticket $ticket,
         #[MapRequestPayload(acceptFormat: 'json')] CommentInputPostDto $ticketCommentDto,
     ): JsonResponse {
 
-        $user = $security->getUser();
-
         $comment = new Comment();
         $comment
-            ->setUser($user)
+            ->setUser($currentUserProvider())
             ->setTicket($ticket);
 
         $this->objectMapper->map(source: $ticketCommentDto, target: $comment);

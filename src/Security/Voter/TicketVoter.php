@@ -8,8 +8,10 @@ use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @extends Voter<string, Ticket>
+ */
 final class TicketVoter extends Voter
 {
     public const CREATE = 'TICKET_CREATE';
@@ -40,7 +42,7 @@ final class TicketVoter extends Voter
 
         $user = $token->getUser();
 
-        if (!$user instanceof UserInterface) {
+        if (!$user instanceof User) {
             return false;
         }
 
@@ -48,7 +50,7 @@ final class TicketVoter extends Voter
             self::CREATE,
             self::SHOW => true,
             self::EDIT,
-            self::DELETE => $subject instanceof Ticket && $this->isAllowedForTicket($subject, $user, $attribute),
+            self::DELETE => $this->isAllowedForTicket($subject, $user, $attribute),
             default => false
         };
     }
@@ -80,7 +82,7 @@ final class TicketVoter extends Voter
         return false;
     }
 
-    private function isAllowedForTicket(Ticket $ticket, User $user, string $attribute)
+    private function isAllowedForTicket(Ticket $ticket, User $user, string $attribute): bool
     {
         return match ($attribute) {
             self::SHOW => $this->canShow($ticket, $user),

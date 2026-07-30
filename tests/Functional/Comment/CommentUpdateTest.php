@@ -3,9 +3,7 @@
 namespace App\Tests\Functional\Comment;
 
 use App\Entity\Comment;
-use App\Entity\User;
 use App\Repository\CommentRepository;
-use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
@@ -19,6 +17,9 @@ class CommentUpdateTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
+    /**
+     * @param array<string, mixed> $body
+     */
     #[DataProvider('provideSuccessUpdateTicketCommentData')]
     public function testShouldUpdateComment(int $commentId, array $body, int $expectedStatusCode): void
     {
@@ -57,6 +58,9 @@ class CommentUpdateTest extends WebTestCase
         ];
     }
 
+    /**
+     * @param array<string, mixed> $body
+     */
     #[DataProvider('provideFailUpdateTicketCommentData')]
     public function testShouldFailToUpdateComment(int $commentId, array $body, int $expectedStatusCode): void
     {
@@ -137,8 +141,8 @@ class CommentUpdateTest extends WebTestCase
         $commentAfterRequest = $commentRepository->find($commentToUpdate->getId());
 
         $this->assertSame(
-            expected: $body['content'],
-            actual: $commentAfterRequest->getContent()
+            $body['content'],
+            $commentAfterRequest->getContent()
         );
     }
 
@@ -176,8 +180,8 @@ class CommentUpdateTest extends WebTestCase
         $commentAfterRequest = $commentRepository->find($commentToUpdate->getId());
 
         $this->assertSame(
-            expected: $originalContent,
-            actual: $commentAfterRequest->getContent()
+            $originalContent,
+            $commentAfterRequest->getContent()
         );
     }
 
@@ -215,8 +219,8 @@ class CommentUpdateTest extends WebTestCase
         $commentAfterRequest = $commentRepository->find($commentToUpdate->getId());
 
         $this->assertSame(
-            expected: $originalContent,
-            actual: $commentAfterRequest->getContent()
+            $originalContent,
+            $commentAfterRequest->getContent()
         );
     }
 }

@@ -20,7 +20,7 @@ class PaginateCollectionNormalizer implements NormalizerInterface
     {
         $this->assertContextHasKeys(['route_name', 'current_url', 'route_params'], $context);
 
-        /** @var PaginateCollection $object */
+        /** @var PaginateCollection<object> $object */
         $page = $object->getPage();
         $limit = $object->getLimit();
         $totalPages = $object->getTotalPages();
@@ -59,6 +59,10 @@ class PaginateCollectionNormalizer implements NormalizerInterface
         ];
     }
 
+    /**
+     * @param list<string> $keys
+     * @param array<string, mixed> $context
+     */
     private function assertContextHasKeys(array $keys, array $context): void
     {
         foreach ($keys as $key) {

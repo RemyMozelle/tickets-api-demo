@@ -44,8 +44,8 @@ class CommentTest extends WebTestCase
 
         $this->assertNotNull($commentAuthenticatedUser);
         $this->assertSame(
-            expected: $authenticatedUser->getId(),
-            actual: $commentAuthenticatedUser->getUser()->getId()
+            $authenticatedUser->getId(),
+            $commentAuthenticatedUser->getUser()->getId()
         );
 
         $client->jsonRequest('GET', sprintf('/comments/%s', $commentAuthenticatedUser->getId()));
@@ -76,8 +76,8 @@ class CommentTest extends WebTestCase
 
         $this->assertNotNull($commentOwner);
         $this->assertNotSame(
-            expected: $authenticatedUser->getId(),
-            actual: $commentToShow->getUser()->getId()
+            $authenticatedUser->getId(),
+            $commentToShow->getUser()->getId()
         );
 
         $client->jsonRequest('GET', sprintf('/comments/%s', $commentToShow->getId()));

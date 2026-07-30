@@ -13,6 +13,12 @@ class TicketPaginationFilterTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
+    /**
+     * @param array<string, mixed> $queryParameters
+     * @param array<string, int> $expectedMeta
+     * @param array<string, string|null> $expectedLinks
+     * @param list<string> $expectedTicketTitles
+     */
     #[DataProvider('provideMultipleFilterData')]
     public function testShouldFilterTicketsByMultipleQueryParameters(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedTicketTitles): void
     {
@@ -33,8 +39,14 @@ class TicketPaginationFilterTest extends WebTestCase
         $this->assertEqualsCanonicalizing($expectedMeta, $meta);
     }
 
+    /**
+     * @param array<string, mixed> $queryParameters
+     * @param array<string, int> $expectedMeta
+     * @param array<string, string|null> $expectedLinks
+     * @param list<string> $expectedTicketTitles
+     */
     #[DataProvider('provideMultipleFilterData')]
-    public function testShouldGeneratePaginationLinks(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedTicketIds): void
+    public function testShouldGeneratePaginationLinks(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedTicketTitles): void
     {
         $client = static::createClient();
 

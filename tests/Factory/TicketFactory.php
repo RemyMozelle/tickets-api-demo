@@ -8,6 +8,9 @@ use App\Enum\Status;
 
 class TicketFactory
 {
+    /**
+     * @param array<mixed> $attributes
+     */
     public static function make(array $attributes = []): Ticket
     {
         return (new Ticket())

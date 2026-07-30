@@ -23,7 +23,10 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    public function getCommentsTicketId($ticketId, PaginationDto $paginationDto): PaginateCollection
+    /**
+     * @return PaginateCollection<Comment>
+     */
+    public function getCommentsTicketId(int $ticketId, PaginationDto $paginationDto): PaginateCollection
     {
         $qb = $this->createQueryBuilder('c');
 
@@ -39,6 +42,9 @@ class CommentRepository extends ServiceEntityRepository
         return (new PaginateCollection(new Paginator($qb), $paginationDto, $count));
     }
 
+    /**
+     * @return PaginateCollection<Comment>
+     */
     public function findByUser(
         int $userId,
         PaginationDto $paginationDto,

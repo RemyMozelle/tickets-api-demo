@@ -8,8 +8,10 @@ use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @extends Voter<string, Comment>
+ */
 final class CommentVoter extends Voter
 {
     public const CREATE = 'COMMENT_CREATE';
@@ -40,7 +42,7 @@ final class CommentVoter extends Voter
 
         $user = $token->getUser();
 
-        if (!$user instanceof UserInterface) {
+        if (!$user instanceof User) {
             return false;
         }
 
@@ -48,7 +50,7 @@ final class CommentVoter extends Voter
             self::CREATE,
             self::SHOW => true,
             self::EDIT,
-            self::DELETE => $subject instanceof Comment && $this->isAllowedForComment($subject, $user, $attribute),
+            self::DELETE => $this->isAllowedForComment($subject, $user, $attribute),
             default => false
         };
     }
@@ -71,7 +73,7 @@ final class CommentVoter extends Voter
         return false;
     }
 
-    private function isAllowedForComment(Comment $Comment, User $user, string $attribute)
+    private function isAllowedForComment(Comment $Comment, User $user, string $attribute): bool
     {
         return match ($attribute) {
             self::EDIT => $this->canEdit($Comment, $user),

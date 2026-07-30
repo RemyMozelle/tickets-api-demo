@@ -11,6 +11,12 @@ class CommentPaginationFilterTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
+    /**
+     * @param array<string, int> $queryParameters
+     * @param array<string, int> $expectedMeta
+     * @param array<string, string|null> $expectedLinks
+     * @param list<string> $expectedCommentContent
+     */
     #[DataProvider('provideMultipleFilterData')]
     public function testShouldFilterCommentsByMultipleQueryParameters(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedCommentContent): void
     {
@@ -25,10 +31,16 @@ class CommentPaginationFilterTest extends WebTestCase
 
         $commentsContent = array_column($commentsFromResponse, 'content');
 
-        $this->assertEqualsCanonicalizing(expected: $expectedCommentContent, actual: $commentsContent);
-        $this->assertEqualsCanonicalizing(expected: $expectedMeta, actual: $metaFromResponse);
+        $this->assertEqualsCanonicalizing($expectedCommentContent, $commentsContent);
+        $this->assertEqualsCanonicalizing($expectedMeta, $metaFromResponse);
     }
 
+    /**
+     * @param array<string, int> $queryParameters
+     * @param array<string, int> $expectedMeta
+     * @param array<string, string|null> $expectedLinks
+     * @param list<string> $expectedCommentContent
+     */
     #[DataProvider('provideMultipleFilterData')]
     public function testShouldGeneratePaginationLinks(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedCommentContent): void
     {

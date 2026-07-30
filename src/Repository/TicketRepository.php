@@ -25,6 +25,9 @@ class TicketRepository extends ServiceEntityRepository
         parent::__construct($registry, Ticket::class);
     }
 
+    /**
+     * @return PaginateCollection<Ticket>
+     */
     public function getTickets(PaginationDto $paginationDto, TicketFiltersDto $ticketFiltersDto): PaginateCollection
     {
         $qb = $this->createQueryBuilder('t');
@@ -38,12 +41,14 @@ class TicketRepository extends ServiceEntityRepository
         return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
     }
 
+    /**
+     * @return PaginateCollection<Ticket>
+     */
     public function findByUser(
         int $userId,
         PaginationDto $paginationDto,
         TicketFiltersDto $ticketFiltersDto,
-    ): PaginateCollection 
-    {
+    ): PaginateCollection {
         $qb = $this->createQueryBuilder('t');
 
         $this->applyTicketFilter($qb, $ticketFiltersDto);
@@ -60,7 +65,7 @@ class TicketRepository extends ServiceEntityRepository
         return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
     }
 
-    private function applyTicketFilter(QueryBuilder &$qb, TicketFiltersDto $ticketFiltersDto): void 
+    private function applyTicketFilter(QueryBuilder &$qb, TicketFiltersDto $ticketFiltersDto): void
     {
         if ($ticketFiltersDto->status) {
             if (is_array($ticketFiltersDto->status)) {
@@ -91,7 +96,7 @@ class TicketRepository extends ServiceEntityRepository
             $startDate->setTime(0, 0, 0);
 
             if ($ticketFiltersDto->startTime) {
-                [$hour, $minutes, $second] = explode(':', $ticketFiltersDto->startTime);
+                [$hour, $minutes, $second] = array_map('intval', explode(':', $ticketFiltersDto->startTime));
                 $startDate->setTime($hour, $minutes, $second);
             }
 
@@ -105,7 +110,7 @@ class TicketRepository extends ServiceEntityRepository
             $endDate->setTime(23, 59, 59);
 
             if ($ticketFiltersDto->endTime) {
-                [$hour, $minutes, $second] = explode(':', $ticketFiltersDto->endTime);
+                [$hour, $minutes, $second] = array_map('intval', explode(':', $ticketFiltersDto->endTime));
                 $endDate->setTime($hour, $minutes, $second);
             }
 
@@ -116,7 +121,7 @@ class TicketRepository extends ServiceEntityRepository
 
         if ($ticketFiltersDto->endTime && !$ticketFiltersDto->endDate) {
             $endDate = new \DateTime($ticketFiltersDto->startDate);
-            [$hour, $minutes, $second] = explode(':', $ticketFiltersDto->endTime);
+            [$hour, $minutes, $second] = array_map('intval', explode(':', $ticketFiltersDto->endTime));
             $endDate->setTime($hour, $minutes, $second);
 
             $qb

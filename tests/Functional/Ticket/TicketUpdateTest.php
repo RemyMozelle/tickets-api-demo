@@ -92,6 +92,10 @@ class TicketUpdateTest extends WebTestCase
     //     ];
     // }
 
+    /**
+     * @param array<string, array<string, mixed>> $expected
+     * @param array<string, mixed> $body
+     */
     #[DataProvider('provideTicketData')]
     public function testShouldUpdateTicket(Ticket $ticketBeforeExist, array $expected, array $body): void
     {
@@ -115,21 +119,21 @@ class TicketUpdateTest extends WebTestCase
 
         // Check BDD
         $ticketAfterUpdate = $ticketRepositoty->findOneBy(['title' => $ticket->getTitle()]);
-        $this->assertSame(expected: $expected['title'], actual: $ticketAfterUpdate->getTitle());
-        $this->assertSame(expected: $expected['description'], actual: $ticketAfterUpdate->getDescription());
-        $this->assertEquals(expected: $expected['status'], actual: $ticketAfterUpdate->getStatus());
-        $this->assertEquals(expected: $expected['priority'], actual: $ticketAfterUpdate->getPriority());
-        $this->assertEquals(expected: $expected['created_at'], actual: $ticketAfterUpdate->getCreatedAt());
-        $this->assertEquals(expected: $expected['updated_at'], actual: $ticketAfterUpdate->getUpdatedAt());
+        $this->assertSame($expected['title'], $ticketAfterUpdate->getTitle());
+        $this->assertSame($expected['description'], $ticketAfterUpdate->getDescription());
+        $this->assertEquals($expected['status'], $ticketAfterUpdate->getStatus());
+        $this->assertEquals($expected['priority'], $ticketAfterUpdate->getPriority());
+        $this->assertEquals($expected['created_at'], $ticketAfterUpdate->getCreatedAt());
+        $this->assertEquals($expected['updated_at'], $ticketAfterUpdate->getUpdatedAt());
 
         // Check JSON
         $ticketFromResponse = ApiHelper::getResponseDecoded($client, false);
-        $this->assertSame(expected: $expected['title'], actual: $ticketFromResponse->title);
-        $this->assertSame(expected: $expected['description'], actual: $ticketFromResponse->description);
-        $this->assertEquals(expected: $expected['status']->value, actual: $ticketFromResponse->status);
-        $this->assertEquals(expected: $expected['priority']->value, actual: $ticketFromResponse->priority);
-        $this->assertEquals(expected: $expected['created_at'], actual: new DateTimeImmutable($ticketFromResponse->created_at));
-        $this->assertEquals(expected: $expected['updated_at'], actual: new DateTimeImmutable($ticketFromResponse->updated_at));
+        $this->assertSame($expected['title'], $ticketFromResponse->title);
+        $this->assertSame($expected['description'], $ticketFromResponse->description);
+        $this->assertEquals($expected['status']->value, $ticketFromResponse->status);
+        $this->assertEquals($expected['priority']->value, $ticketFromResponse->priority);
+        $this->assertEquals($expected['created_at'], new DateTimeImmutable($ticketFromResponse->created_at));
+        $this->assertEquals($expected['updated_at'], new DateTimeImmutable($ticketFromResponse->updated_at));
     }
 
     public static function provideTicketData(): \Generator

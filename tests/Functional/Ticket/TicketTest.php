@@ -25,7 +25,7 @@ class TicketTest extends WebTestCase
         $this->assertCount(10, $tickets);
     }
 
-    public function testShouldAllowTicketShowWhenUserIsAdmin()
+    public function testShouldAllowTicketShowWhenUserIsAdmin(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
         $client->jsonRequest('GET', '/tickets/1');
@@ -36,7 +36,7 @@ class TicketTest extends WebTestCase
         $this->assertResponseIsSuccessful();
     }
 
-    public function testShouldAllowTicketShowWhenUserIsOwner()
+    public function testShouldAllowTicketShowWhenUserIsOwner(): void
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
 
@@ -47,7 +47,7 @@ class TicketTest extends WebTestCase
         $this->assertResponseApiField(ApiResponseField::TICKER_READ, $ticket);
     }
 
-    public function testShouldAllowTicketShowWhenUserIsNotOwner()
+    public function testShouldAllowTicketShowWhenUserIsNotOwner(): void
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
         $client->jsonRequest('GET', '/tickets/10');

@@ -19,6 +19,10 @@ class CommentCreateTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
+    /**
+     * @param array<string, string> $body
+     * @param array<string, int> $data
+     */
     #[DataProvider('provideValideCommentData')]
     public function testShouldCreateACommentForATicket(array $body, array $data, int $expectedStatusCode): void
     {
@@ -41,7 +45,7 @@ class CommentCreateTest extends WebTestCase
         $this->assertCount($data['expected_nb_comments'], $ticketComments);
 
         //Check JSON
-        $this->assertSame(expected: $body['content'], actual: $commentFromResponse['content']);
+        $this->assertSame($body['content'], $commentFromResponse['content']);
     }
 
     public static function provideValideCommentData(): \Generator
@@ -87,6 +91,9 @@ class CommentCreateTest extends WebTestCase
         }
     }
 
+    /**
+     * @param array<string, mixed> $body
+     */
     #[DataProvider('provideInvalidCommentData')]
     public function testShouldNotCreateACommentForATicket(array $body, int $ticketId, int $expectedStatusCode): void
     {
@@ -195,8 +202,8 @@ class CommentCreateTest extends WebTestCase
         $this->assertNotNull($ticket);
 
         $this->assertNotSame(
-            expected: $authenticatedUser->getId(),
-            actual: $ticket->getUser()->getId()
+            $authenticatedUser->getId(),
+            $ticket->getUser()->getId()
         );
 
         $client->jsonRequest(
