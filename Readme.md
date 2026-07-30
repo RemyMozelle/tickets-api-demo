@@ -172,6 +172,22 @@ Le projet est accompagné de tests fonctionnels couvrant notamment :
 * Gestion des erreurs
 ---
 
+# 🧹 Lancer PHPStan
+
+Analyser l'ensemble du projet :
+
+```bash
+ddev phpstan analyse
+```
+
+Analyser un répertoire spécifique :
+
+```bash
+ddev phpstan analyse src/
+ddev phpstan analyse tests/
+```
+
+
 # 📌 Roadmap
 
 * [x] Authentification JWT
@@ -183,5 +199,8 @@ Le projet est accompagné de tests fonctionnels couvrant notamment :
 * [ ] Permissions via Voters
 * [ ] Migration de Symfony 7 vers Symfony 8
 * [ ] Coding Standards
+    * [x] Phpstan
+    * [ ] Ecs
 * [x] GitHub Actions (CI)
+    * [ ] Ajouter une action pour la qualité sur la CI
 * [ ] Documentation OpenAPI
