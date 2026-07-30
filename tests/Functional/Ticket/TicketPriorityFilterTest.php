@@ -12,6 +12,9 @@ class TicketPriorityFilterTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
+    /**
+     * @param array<string, string> $queryParameters
+     */
     #[DataProvider('providePriorityFilterData')]
     public function testShouldFilterTicketsByPriority(array $queryParameters, int $expectedNbTickets): void
     {
@@ -44,6 +47,9 @@ class TicketPriorityFilterTest extends WebTestCase
         }
     }
 
+    /**
+     * @param array<string, array<int, string>> $queryParameters
+     */
     #[DataProvider('provideMultiplePriorityFilterData')]
     public function testShouldFilterTicketsByMultiplePriorities(array $queryParameters, int $expectedNbTickets): void
     {

@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserTest extends WebTestCase
 {
-    public function testShouldReturnUsers()
+    public function testShouldReturnUsers(): void
     {
         $client = static::createClient();
         $client->jsonRequest('GET', '/users');
@@ -22,7 +22,7 @@ class UserTest extends WebTestCase
         $this->assertEqualsCanonicalizing(ApiResponseField::USER_READ, array_keys($user));
     }
 
-    public function testUserDetail()
+    public function testUserDetail(): void
     {
         $client = static::createClient();
         $client->jsonRequest('GET', '/users/1');

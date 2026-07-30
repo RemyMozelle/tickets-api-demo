@@ -21,3 +21,7 @@
 ###> Test Coverage ###
 /coverage/*
 ####< Test Coverage ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

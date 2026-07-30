@@ -12,9 +12,15 @@ use App\Tests\Helper\AuthHelper;
 
 class TicketCreateTest extends WebTestCase
 {
+    /**
+     * @param array<string, string> $data
+     * @param list<string> $expectedFields
+     */
     #[DataProvider('provideFailTicketData')]
     public function testShouldFailToAddTicket(array $data, int $expectedStatusCode, array $expectedFields): void
     {
+
+
         $client = AuthHelper::createAuthenticatedClient();
 
         $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: $data);
@@ -98,6 +104,9 @@ class TicketCreateTest extends WebTestCase
         ];
     }
 
+    /**
+     * @param array<string, string> $data
+     */
     #[DataProvider('provideSuccessTicketData')]
     public function testShouldSuccessAddTicket(array $data, int $expectedStatusCode): void
     {
@@ -166,10 +175,10 @@ class TicketCreateTest extends WebTestCase
         ];
     }
 
-    public function testShouldDenyTicketCreateWhenUserIsNotAuthenticated()
+    public function testShouldDenyTicketCreateWhenUserIsNotAuthenticated(): void
     {
         $client = static::createClient();
-        
+
         $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: [
             'title' => 'Title',
             'description' => 'Ticket without "Title"',

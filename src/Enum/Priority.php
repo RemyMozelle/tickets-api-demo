@@ -14,7 +14,7 @@ enum Priority: string
         self::High->value,
     ];
 
-    public function label()
+    public function label(): string
     {
         return 'priority.' . $this->value;
     }

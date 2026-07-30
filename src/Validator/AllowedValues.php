@@ -12,6 +12,7 @@ final class AllowedValues extends Constraint
 
     #[HasNamedArguments]
     public function __construct(
+        /** @var list<string> */
         public array $choices = [],
         ?array $groups = null,
         mixed $payload = null

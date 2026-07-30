@@ -9,6 +9,9 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TicketListByUserTest extends WebTestCase
 {
+    /**
+     * @param list<string> $expectedTicketTitles
+     */
     #[DataProvider('provideFilterUserData')]
     public function testShouldReturnAllTicketsForGivenUser(int $userId, array $expectedTicketTitles): void
     {

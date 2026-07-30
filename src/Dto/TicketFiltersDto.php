@@ -13,9 +13,12 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class TicketFiltersDto
 {
     public function __construct(
+
+        /** @var string|list<string> $status */
         #[AllowedValues(choices: Status::ALL)]
         public readonly string|array $status = "",
 
+        /** @var string|list<string> $priority */
         #[AllowedValues(choices: Priority::ALL)]
         public readonly string|array $priority = "",
 
@@ -34,7 +37,7 @@ class TicketFiltersDto
     ) {}
 
     #[Assert\Callback()]
-    public function validate(ExecutionContextInterface $context, mixed $payload)
+    public function validate(ExecutionContextInterface $context, mixed $payload): void
     {
         if ($this->endDate && $this->startDate === null) {
             $context

@@ -12,6 +12,9 @@ class CommentListByUserTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
     
+    /**
+     * @param list<string> $expectedCommentContent
+     */
     #[DataProvider('provideFilterUserData')]
     public function testShouldReturnCommentsForGivenUser(int $userId, array $expectedCommentContent): void
     {

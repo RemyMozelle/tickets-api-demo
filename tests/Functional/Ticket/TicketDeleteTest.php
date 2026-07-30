@@ -93,6 +93,6 @@ class TicketDeleteTest extends WebTestCase
         // Check BDD
         $ticketAfterDelete = $ticketRepository->findOneBy($criteria);
 
-        $this->assertNull(actual: $ticketAfterDelete);
+        $this->assertNull($ticketAfterDelete);
     }
 }

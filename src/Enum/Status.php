@@ -14,7 +14,7 @@ enum Status: string
         self::Closed->value,
     ];
 
-    public function label()
+    public function label(): string
     {
         return 'status.' . $this->value;
     }

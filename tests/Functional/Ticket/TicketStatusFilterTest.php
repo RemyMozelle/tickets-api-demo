@@ -12,6 +12,9 @@ class TicketStatusFilterTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
 
+    /**
+     * @param array<string, string> $queryParameters
+     */
     #[DataProvider('provideStatusFilterData')]
     public function testShouldFilterTicketsByStatus(array $queryParameters, int $expectedNbTickets): void
     {
@@ -44,6 +47,9 @@ class TicketStatusFilterTest extends WebTestCase
         }
     }
 
+    /**
+     * @param array<string, array<int, string>> $queryParameters
+     */
     #[DataProvider('provideMultipleStatusFilterData')]
     public function testShouldFilterTicketsByMultipleStatuses(array $queryParameters, int $expectedNbTickets): void
     {
@@ -70,24 +76,24 @@ class TicketStatusFilterTest extends WebTestCase
                 ],
                 'expectedNbTickets' => 9
             ],
-            // 'closed - in progress' => [
-            //     'query' => [
-            //         'status' => [
-            //             Status::Closed->value,
-            //             Status::InProgress->value
-            //         ]
-            //     ],
-            //     'expectedNbTickets' => 5
-            // ],
-            // 'in_progress - open' => [
-            //     'query' => [
-            //         'status' => [
-            //             Status::InProgress->value,
-            //             Status::Open->value
-            //         ]
-            //     ],
-            //     'expectedNbTickets' => 6
-            // ]
+            'closed - in progress' => [
+                'query' => [
+                    'status' => [
+                        Status::Closed->value,
+                        Status::InProgress->value
+                    ]
+                ],
+                'expectedNbTickets' => 5
+            ],
+            'in_progress - open' => [
+                'query' => [
+                    'status' => [
+                        Status::InProgress->value,
+                        Status::Open->value
+                    ]
+                ],
+                'expectedNbTickets' => 6
+            ]
         ];
 
         foreach ($cases as $case) {

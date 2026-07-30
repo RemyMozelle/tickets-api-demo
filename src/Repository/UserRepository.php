@@ -40,7 +40,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    public function getUsers(PaginationDto $paginationDto)
+    /**
+     * @return PaginateCollection<User>
+     */
+    public function getUsers(PaginationDto $paginationDto): PaginateCollection
     {
         $qb = $this->createQueryBuilder('u');
         $qb->orderBy('u.id', 'asc');
