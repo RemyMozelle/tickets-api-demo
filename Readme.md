@@ -172,19 +172,39 @@ Le projet est accompagné de tests fonctionnels couvrant notamment :
 * Gestion des erreurs
 ---
 
-# 🧹 Lancer PHPStan
+# 🧹 Qualité du code
 
-Analyser l'ensemble du projet :
+Le projet utilise plusieurs outils afin de garantir la qualité et la cohérence du code.
+
+## PHPStan
+
+**Analyser l'ensemble du projet :**
 
 ```bash
 ddev phpstan analyse
 ```
 
-Analyser un répertoire spécifique :
+**Analyser un répertoire spécifique :**
 
 ```bash
 ddev phpstan analyse src/
 ddev phpstan analyse tests/
+```
+
+## ECS (Easy Coding Standard)
+
+Vérifie le respect des conventions de codage.
+
+**Vérifier le style du code :**
+
+```bash
+ddev ecs
+```
+
+**Corriger automatiquement les problèmes détectés :**
+
+```bash
+ddev ecs --fix
 ```
 
 
@@ -196,11 +216,14 @@ ddev phpstan analyse tests/
 * [x] Pagination
 * [x] Filtres
 * [x] Tests fonctionnels
-* [ ] Permissions via Voters
+* [x] Permissions via Voters
 * [ ] Migration de Symfony 7 vers Symfony 8
-* [ ] Coding Standards
+* [ ] Qualités
     * [x] Phpstan
-    * [ ] Ecs
+    * [X] Ecs
+    * [ ] Rector
 * [x] GitHub Actions (CI)
-    * [ ] Ajouter une action pour la qualité sur la CI
+    - [x] Exécuter les tests dans la CI
+    - [ ] Exécuter PHPStan dans la CI
+    - [ ] Exécuter ECS dans la CI
 * [ ] Documentation OpenAPI
