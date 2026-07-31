@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+bin/console doctrine:database:drop --if-exists --force --env=dev
+bin/console doctrine:database:drop --if-exists --force --env=test
+bin/console doctrine:database:create --env=dev
+bin/console doctrine:database:create --env=test
+bin/console doctrine:migrations:migrate --no-interaction --env=dev
+bin/console doctrine:migrations:migrate --no-interaction --env=test
+
+bin/console hautelook:fixtures:load --quiet --env=dev
+bin/console hautelook:fixtures:load --quiet --env=test
+
+bin/phpunit --testdox
+
+vendor/bin/phpstan analyse
