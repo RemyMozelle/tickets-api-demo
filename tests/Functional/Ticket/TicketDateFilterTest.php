@@ -73,7 +73,7 @@ class TicketDateFilterTest extends WebTestCase
                 'ticket_titles' => [
                     'Issue 5',
                     'Issue 6',
-                    'Issue 7'
+                    'Issue 7',
                 ],
             ],
         ];
@@ -115,7 +115,7 @@ class TicketDateFilterTest extends WebTestCase
                     'Issue 6',
                     'Issue 7',
                     'Issue 8',
-                    'Issue 9'
+                    'Issue 9',
                 ],
             ],
         ];
@@ -143,7 +143,7 @@ class TicketDateFilterTest extends WebTestCase
                     'Issue 7',
                     'Issue 8',
                     'Issue 9',
-                    'Issue 10'
+                    'Issue 10',
                 ],
             ],
         ];
@@ -151,7 +151,7 @@ class TicketDateFilterTest extends WebTestCase
         yield 'Should have 7 tickets with date 2024-10-02 to 2025-05-01' => [
             [
                 'start_date' => '2024-10-02',
-                'end_date' => '2025-05-01'
+                'end_date' => '2025-05-01',
             ],
             [
                 'ticket_titles' => [
@@ -161,7 +161,7 @@ class TicketDateFilterTest extends WebTestCase
                     'Issue 6',
                     'Issue 7',
                     'Issue 8',
-                    'Issue 9'
+                    'Issue 9',
                 ],
             ],
         ];
@@ -184,7 +184,7 @@ class TicketDateFilterTest extends WebTestCase
             ],
             [
                 'ticket_titles' => [
-                    'Issue 7'
+                    'Issue 7',
                 ],
             ],
         ];
@@ -200,7 +200,7 @@ class TicketDateFilterTest extends WebTestCase
                 'ticket_titles' => [
                     'Issue 7',
                     'Issue 8',
-                    'Issue 9'
+                    'Issue 9',
                 ],
             ],
         ];
@@ -214,7 +214,7 @@ class TicketDateFilterTest extends WebTestCase
                 'ticket_titles' => [
                     'Issue 8',
                     'Issue 9',
-                    'Issue 10'
+                    'Issue 10',
                 ],
             ],
         ];
@@ -227,7 +227,7 @@ class TicketDateFilterTest extends WebTestCase
             [
                 'ticket_titles' => [
                     'Issue 9',
-                    'Issue 10'
+                    'Issue 10',
                 ],
             ],
         ];

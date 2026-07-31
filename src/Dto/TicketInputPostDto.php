@@ -5,7 +5,6 @@ namespace App\Dto;
 use App\Entity\Ticket;
 use App\Enum\Priority;
 use App\Enum\Status;
-use DateTimeImmutable;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -15,12 +14,11 @@ class TicketInputPostDto
     public function __construct(
         #[Assert\NotBlank()]
         public ?string $title,
-
         #[Assert\NotBlank()]
         public ?string $description,
         #[Assert\NotBlank()]
-
         public Status $status = Status::Open,
         public Priority $priority = Priority::Low,
-    ) {}
+    ) {
+    }
 }

@@ -8,7 +8,8 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 class BackedEnumDenormalizer implements DenormalizerInterface
 {
     public function __construct(
-    ) {}
+    ) {
+    }
 
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {

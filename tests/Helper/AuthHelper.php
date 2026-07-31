@@ -12,20 +12,18 @@ class AuthHelper extends WebTestCase
      *
      * @param string $username
      * @param string $password
-     *
-     * @return \Symfony\Bundle\FrameworkBundle\KernelBrowser
      */
     public static function createAuthenticatedClient($username = 'admin_1@gmail.com', $password = 'admin'): KernelBrowser
     {
         $client = static::createClient();
-        
+
         $client->jsonRequest('POST', '/api/login_check', [
             'username' => $username,
             'password' => $password,
         ]);
-        
+
         $response = $client->getResponse();
-        $status   = $response->getStatusCode();
+        $status = $response->getStatusCode();
 
         if ($status !== 200) {
             throw new \RuntimeException(sprintf(
@@ -43,7 +41,7 @@ class AuthHelper extends WebTestCase
 
         $data = json_decode($content, true);
 
-        if (!isset($data['token'])) {
+        if (! isset($data['token'])) {
             throw new \RuntimeException('Authentication failed: token not found in response.');
         }
 

@@ -102,20 +102,20 @@ class TicketPaginationFilterTest extends WebTestCase
                     'end_time' => '07:00:00',
                 ],
                 'meta' => [
-                    "total" => 1,
-                    "per_page" => 12,
-                    "current_page" => 1,
-                    "total_pages" => 1,
+                    'total' => 1,
+                    'per_page' => 12,
+                    'current_page' => 1,
+                    'total_pages' => 1,
                 ],
                 'links' => [
-                    "first" => "/tickets?status=open&priority=high&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=12",
-                    "last" => "/tickets?status=open&priority=high&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=12",
-                    "prev" => null,
-                    "next" => null,
-                    "current" => "/tickets?status=open&priority=high&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00",
+                    'first' => '/tickets?status=open&priority=high&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=12',
+                    'last' => '/tickets?status=open&priority=high&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=12',
+                    'prev' => null,
+                    'next' => null,
+                    'current' => '/tickets?status=open&priority=high&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00',
                 ],
                 'ticket_titles' => [
-                    'Issue 1'
+                    'Issue 1',
                 ],
             ],
             [
@@ -133,21 +133,21 @@ class TicketPaginationFilterTest extends WebTestCase
                     'end_time' => '07:00:00',
                 ],
                 'meta' => [
-                    "total" => 2,
-                    "per_page" => 1,
-                    "current_page" => 1,
-                    "total_pages" => 2
+                    'total' => 2,
+                    'per_page' => 1,
+                    'current_page' => 1,
+                    'total_pages' => 2,
                 ],
                 'links' => [
-                    "first" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=1",
-                    "last" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=2&limit=1",
-                    "prev" => null,
-                    "next" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=2&limit=1",
-                    "current" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=1",
+                    'first' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=1',
+                    'last' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=2&limit=1',
+                    'prev' => null,
+                    'next' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=2&limit=1',
+                    'current' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=1',
                 ],
                 'ticket_titles' => [
                     'Issue 1',
-                    'Issue 5'
+                    'Issue 5',
                 ],
             ],
             [
@@ -165,21 +165,21 @@ class TicketPaginationFilterTest extends WebTestCase
                     'end_time' => '07:00:00',
                 ],
                 'meta' => [
-                    "total" => 2,
-                    "per_page" => 1,
-                    "current_page" => 2,
-                    "total_pages" => 2
+                    'total' => 2,
+                    'per_page' => 1,
+                    'current_page' => 2,
+                    'total_pages' => 2,
                 ],
                 'links' => [
-                    "first" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=1",
-                    "last" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=2&limit=1",
-                    "prev" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=1",
-                    "next" => null,
-                    "current" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=2&limit=1",
+                    'first' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=1',
+                    'last' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=2&limit=1',
+                    'prev' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=1',
+                    'next' => null,
+                    'current' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=2&limit=1',
                 ],
                 'ticket_titles' => [
                     'Issue 1',
-                    'Issue 5'
+                    'Issue 5',
                 ],
             ],
             [
@@ -197,21 +197,21 @@ class TicketPaginationFilterTest extends WebTestCase
                     'end_time' => '07:00:00',
                 ],
                 'meta' => [
-                    "total" => 2,
-                    "per_page" => 2,
-                    "current_page" => 1,
-                    "total_pages" => 1
+                    'total' => 2,
+                    'per_page' => 2,
+                    'current_page' => 1,
+                    'total_pages' => 1,
                 ],
                 'links' => [
-                    "first" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=2",
-                    "last" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=2",
-                    "prev" => null,
-                    "next" => null,
-                    "current" => "/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=2",
+                    'first' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=2',
+                    'last' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=2',
+                    'prev' => null,
+                    'next' => null,
+                    'current' => '/tickets?status=open&priority[]=high&priority[]=low&start_date=2023-09-30&end_date=2025-01-01&start_time=12:00:00&end_time=07:00:00&page=1&limit=2',
                 ],
                 'ticket_titles' => [
                     'Issue 1',
-                    'Issue 5'
+                    'Issue 5',
                 ],
             ],
         ];
@@ -226,7 +226,7 @@ class TicketPaginationFilterTest extends WebTestCase
                 $case['query'],
                 $case['meta'],
                 $case['links'],
-                $case['ticket_titles']
+                $case['ticket_titles'],
             ];
         }
     }

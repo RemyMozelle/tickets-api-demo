@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Constant\Roles;
-use App\Repository\UserRepository;
 use App\Constant\TicketGroups;
 use App\Constant\UserGroups;
+use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -81,7 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        if (!$this->email) {
+        if (! $this->email) {
             throw new \LogicException('Email must be defined.');
         }
 
@@ -152,7 +152,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addTicket(Ticket $ticket): static
     {
-        if (!$this->tickets->contains($ticket)) {
+        if (! $this->tickets->contains($ticket)) {
             $this->tickets->add($ticket);
             $ticket->setUser($this);
         }
@@ -182,7 +182,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addComment(Comment $comment): static
     {
-        if (!$this->comments->contains($comment)) {
+        if (! $this->comments->contains($comment)) {
             $this->comments->add($comment);
             $comment->setUser($this);
         }

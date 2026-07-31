@@ -40,7 +40,7 @@ class TicketStatusFilterTest extends WebTestCase
         foreach ($cases as $status => $expectedNbTickets) {
             yield sprintf('should return %d tickets with status "%s"', $expectedNbTickets, $status) => [
                 [
-                    'status' => $status
+                    'status' => $status,
                 ],
                 $expectedNbTickets,
             ];
@@ -71,29 +71,29 @@ class TicketStatusFilterTest extends WebTestCase
                 'query' => [
                     'status' => [
                         Status::Open->value,
-                        Status::Closed->value
-                    ]
+                        Status::Closed->value,
+                    ],
                 ],
-                'expectedNbTickets' => 9
+                'expectedNbTickets' => 9,
             ],
             'closed - in progress' => [
                 'query' => [
                     'status' => [
                         Status::Closed->value,
-                        Status::InProgress->value
-                    ]
+                        Status::InProgress->value,
+                    ],
                 ],
-                'expectedNbTickets' => 5
+                'expectedNbTickets' => 5,
             ],
             'in_progress - open' => [
                 'query' => [
                     'status' => [
                         Status::InProgress->value,
-                        Status::Open->value
-                    ]
+                        Status::Open->value,
+                    ],
                 ],
-                'expectedNbTickets' => 6
-            ]
+                'expectedNbTickets' => 6,
+            ],
         ];
 
         foreach ($cases as $case) {

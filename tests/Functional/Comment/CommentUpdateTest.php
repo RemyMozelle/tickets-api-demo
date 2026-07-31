@@ -26,7 +26,8 @@ class CommentUpdateTest extends ApiTestCase
         $client = AuthHelper::createAuthenticatedClient();
 
         $commentRepository = $this->getService(CommentRepository::class);
-        $oldContent = $commentRepository->find($commentId)->getContent();
+        $oldContent = $commentRepository->find($commentId)
+            ->getContent();
         $this->assertNotSame($oldContent, $body['content']);
 
         $uri = sprintf('/comments/%s', $commentId);
@@ -54,7 +55,7 @@ class CommentUpdateTest extends ApiTestCase
             [
                 'content' => 'content updated test 1',
             ],
-            200
+            200,
         ];
     }
 
@@ -67,7 +68,8 @@ class CommentUpdateTest extends ApiTestCase
         $client = AuthHelper::createAuthenticatedClient();
 
         $commentRepository = $this->getService(CommentRepository::class);
-        $contentBefore = $commentRepository->find($commentId)->getContent();
+        $contentBefore = $commentRepository->find($commentId)
+            ->getContent();
 
         $uri = sprintf('/comments/%s', $commentId);
 
@@ -88,7 +90,7 @@ class CommentUpdateTest extends ApiTestCase
             [
                 'content' => '',
             ],
-            422
+            422,
         ];
 
         yield 'Should not update ticket with "content" null' => [
@@ -96,7 +98,7 @@ class CommentUpdateTest extends ApiTestCase
             [
                 'content' => null,
             ],
-            422
+            422,
         ];
     }
 

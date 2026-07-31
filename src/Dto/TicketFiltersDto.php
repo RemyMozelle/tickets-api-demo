@@ -5,7 +5,6 @@ namespace App\Dto;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Validator\AllowedValues;
-use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -13,28 +12,28 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class TicketFiltersDto
 {
     public function __construct(
-
-        /** @var string|list<string> $status */
+        /**
+         * @var string|list<string>
+         */
         #[AllowedValues(choices: Status::ALL)]
-        public readonly string|array $status = "",
+        public readonly string|array $status = '',
 
-        /** @var string|list<string> $priority */
+        /**
+         * @var string|list<string>
+         */
         #[AllowedValues(choices: Priority::ALL)]
-        public readonly string|array $priority = "",
-
+        public readonly string|array $priority = '',
         #[Assert\Date()]
         public readonly ?string $startDate = null,
-
         #[Assert\Date()]
         #[Assert\GreaterThanOrEqual(propertyPath: 'startDate')]
         public readonly ?string $endDate = null,
-
         #[Assert\Time()]
         public readonly ?string $startTime = null,
-
         #[Assert\Time()]
         public readonly ?string $endTime = null,
-    ) {}
+    ) {
+    }
 
     #[Assert\Callback()]
     public function validate(ExecutionContextInterface $context, mixed $payload): void

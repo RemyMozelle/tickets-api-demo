@@ -7,8 +7,8 @@ use App\Enum\Status;
 use App\Repository\TicketRepository;
 use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
-use PHPUnit\Framework\Attributes\DataProvider;
 use App\Tests\Helper\AuthHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TicketCreateTest extends ApiTestCase
 {
@@ -19,7 +19,6 @@ class TicketCreateTest extends ApiTestCase
     #[DataProvider('provideFailTicketData')]
     public function testShouldFailToAddTicket(array $data, int $expectedStatusCode, array $expectedFields): void
     {
-
 
         $client = AuthHelper::createAuthenticatedClient();
 
@@ -48,7 +47,7 @@ class TicketCreateTest extends ApiTestCase
             422,
             [
                 'title',
-            ]
+            ],
         ];
 
         yield 'Should fail without field "description"' => [
@@ -60,7 +59,7 @@ class TicketCreateTest extends ApiTestCase
             422,
             [
                 'description',
-            ]
+            ],
         ];
 
         yield 'Should fail with invalid "priority" value' => [
@@ -73,7 +72,7 @@ class TicketCreateTest extends ApiTestCase
             422,
             [
                 'priority',
-            ]
+            ],
         ];
 
         yield 'Should fail with invalid "status" value' => [
@@ -86,7 +85,7 @@ class TicketCreateTest extends ApiTestCase
             422,
             [
                 'status',
-            ]
+            ],
         ];
 
         yield 'Should fail with invalid "status" and "priority" value' => [
@@ -100,7 +99,7 @@ class TicketCreateTest extends ApiTestCase
             [
                 'status',
                 'priority',
-            ]
+            ],
         ];
     }
 
@@ -129,11 +128,13 @@ class TicketCreateTest extends ApiTestCase
         $this->assertEquals($data['description'], $ticket->description);
         foreach ($defaultValues as $field => $default) {
             $expected = $data[$field] ?? $default;
-            $this->assertEquals($expected, $ticket->$field);
+            $this->assertEquals($expected, $ticket->{$field});
         }
 
         // Check BDD
-        $this->assertNotNull($ticketRepositoty->findOneBy(['id' => $ticket->id]));
+        $this->assertNotNull($ticketRepositoty->findOneBy([
+            'id' => $ticket->id,
+        ]));
     }
 
     public static function provideSuccessTicketData(): \Generator
@@ -145,7 +146,7 @@ class TicketCreateTest extends ApiTestCase
                 'status' => Status::InProgress->value,
                 'priority' => Priority::Medium->value,
             ],
-            201
+            201,
         ];
 
         yield 'Should Add Ticket without field "status"' => [
@@ -154,7 +155,7 @@ class TicketCreateTest extends ApiTestCase
                 'description' => 'Ticket without "Title"',
                 'priority' => Priority::Medium->value,
             ],
-            201
+            201,
         ];
 
         yield 'Should Add Ticket without field "priority"' => [
@@ -163,7 +164,7 @@ class TicketCreateTest extends ApiTestCase
                 'description' => 'Ticket without "Title"',
                 'status' => Status::InProgress->value,
             ],
-            201
+            201,
         ];
 
         yield 'Should Add Ticket without fields "priority" and "status"' => [
@@ -171,7 +172,7 @@ class TicketCreateTest extends ApiTestCase
                 'title' => 'Title',
                 'description' => 'Ticket without "Title"',
             ],
-            201
+            201,
         ];
     }
 
@@ -204,6 +205,8 @@ class TicketCreateTest extends ApiTestCase
         $ticket = ApiHelper::getResponseDecoded($client, false);
 
         // Check BDD
-        $this->assertNotNull($ticketRepositoty->findOneBy(['id' => $ticket->id]));
+        $this->assertNotNull($ticketRepositoty->findOneBy([
+            'id' => $ticket->id,
+        ]));
     }
 }

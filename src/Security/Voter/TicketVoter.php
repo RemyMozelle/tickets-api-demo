@@ -15,20 +15,24 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 final class TicketVoter extends Voter
 {
     public const CREATE = 'TICKET_CREATE';
+
     public const EDIT = 'TICKET_EDIT';
+
     public const SHOW = 'TICKET_VIEW';
+
     public const DELETE = 'TICKET_DELETE';
 
     public function __construct(
         private readonly AccessDecisionManagerInterface $accessDecisionManager
-    ) {}
+    ) {
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         return match ($attribute) {
             self::CREATE => true,
-            self::EDIT, 
-            self::SHOW, 
+            self::EDIT,
+            self::SHOW,
             self::DELETE => $subject instanceof Ticket,
             default => false,
         };
@@ -42,7 +46,7 @@ final class TicketVoter extends Voter
 
         $user = $token->getUser();
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return false;
         }
 

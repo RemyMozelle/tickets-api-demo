@@ -37,4 +37,4 @@ class ApiPaginateTest extends WebTestCase
         yield 'user comments endpoint' => ['/users/2/comments'];
         yield 'ticket comments endpoint' => ['/tickets/1/comments'];
     }
-}            
+}

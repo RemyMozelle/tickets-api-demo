@@ -37,14 +37,13 @@ class CommentDeleteTest extends ApiTestCase
     {
         yield 'Should delete a comment' => [
             3,
-            204
+            204,
         ];
     }
 
     public function testShouldReturnNotFoundWhenDeletingUnknownComment(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-
 
         $client->jsonRequest(method: 'DELETE', uri: sprintf('/comments/%d', 10000));
         $this->assertResponseStatusCodeSame(404);

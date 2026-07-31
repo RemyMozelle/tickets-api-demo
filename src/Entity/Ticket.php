@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
+use App\Constant\TicketGroups;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Repository\TicketRepository;
-use App\Constant\TicketGroups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -16,10 +16,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
 class Ticket
 {
     public const FIELD_STATUS = 'status';
+
     public const FIELD_PRIORITY = 'priority';
+
     public const FIELD_START_DATE = 'start_date';
+
     public const FIELD_END_DATE = 'end_date';
+
     public const FIELD_START_TIME = 'start_time';
+
     public const FIELD_END_TIME = 'end_time';
 
     #[ORM\Id]
@@ -99,9 +104,6 @@ class Ticket
         return $this;
     }
 
-    /**
-     * @return Status
-     */
     public function getStatus(): Status
     {
         return $this->status;
@@ -172,7 +174,7 @@ class Ticket
 
     public function addComment(Comment $comment): static
     {
-        if (!$this->comments->contains($comment)) {
+        if (! $this->comments->contains($comment)) {
             $this->comments->add($comment);
             $comment->setTicket($this);
         }

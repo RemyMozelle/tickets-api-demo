@@ -2,20 +2,19 @@
 
 namespace App\Controller;
 
+use App\Constant\TicketGroups;
 use App\Dto\PaginationDto;
 use App\Dto\TicketFiltersDto;
 use App\Dto\TicketInputPatchDto;
 use App\Dto\TicketInputPostDto;
 use App\Entity\Ticket;
-use App\Repository\TicketRepository;
-use App\Constant\TicketGroups;
 use App\Entity\User;
+use App\Repository\TicketRepository;
 use App\Security\Voter\TicketVoter;
 use App\Service\CurrentUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -29,12 +28,15 @@ final class TicketController extends AbstractController
     public function __construct(
         private TicketRepository $ticketRepository,
         private readonly ObjectMapperInterface $objectMapper,
-    ) {}
+    ) {
+    }
 
     #[Route('/tickets', name: 'app_ticket_list', methods: ['GET'])]
     public function list(
-        #[MapQueryString()] PaginationDto $paginationDto,
-        #[MapQueryString()] TicketFiltersDto $ticketFiltersDto,
+        #[MapQueryString()]
+        PaginationDto $paginationDto,
+        #[MapQueryString()]
+        TicketFiltersDto $ticketFiltersDto,
         Request $request,
     ): JsonResponse {
         $tickets = $this->ticketRepository->getTickets(paginationDto: $paginationDto, ticketFiltersDto: $ticketFiltersDto);
@@ -56,7 +58,9 @@ final class TicketController extends AbstractController
     public function show(
         Ticket $ticket
     ): JsonResponse {
-        return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 200);
+        return $this->json(data: $ticket, context: [
+            'groups' => TicketGroups::READ,
+        ], status: 200);
     }
 
     #[Route('/tickets', name: 'app_ticket_create', methods: ['POST'])]
@@ -64,7 +68,8 @@ final class TicketController extends AbstractController
     public function create(
         CurrentUserProvider $currentUserProvider,
         EntityManagerInterface $entityManager,
-        #[MapRequestPayload()] TicketInputPostDto $ticketDto,
+        #[MapRequestPayload()]
+        TicketInputPostDto $ticketDto,
     ): JsonResponse {
 
         $ticket = new Ticket();
@@ -75,14 +80,17 @@ final class TicketController extends AbstractController
         $entityManager->persist($ticket);
         $entityManager->flush();
 
-        return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 201);
+        return $this->json(data: $ticket, context: [
+            'groups' => TicketGroups::READ,
+        ], status: 201);
     }
 
     #[Route('/tickets/{id}', name: 'app_ticket_update', methods: ['PATCH'])]
     #[IsGranted(TicketVoter::EDIT, 'ticket')]
     public function update(
         Ticket $ticket,
-        #[MapRequestPayload()] TicketInputPatchDto $ticketDto,
+        #[MapRequestPayload()]
+        TicketInputPatchDto $ticketDto,
         EntityManagerInterface $entityManager,
     ): JsonResponse {
 
@@ -90,7 +98,9 @@ final class TicketController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->json(data: $ticket, context: ['groups' => TicketGroups::READ], status: 200);
+        return $this->json(data: $ticket, context: [
+            'groups' => TicketGroups::READ,
+        ], status: 200);
     }
 
     #[IsGranted(TicketVoter::DELETE, 'ticket')]
@@ -108,9 +118,12 @@ final class TicketController extends AbstractController
 
     #[Route('/users/{user_id}/tickets', name: 'app_user_ticket_list', methods: ['GET'])]
     public function listTicketByUser(
-        #[MapEntity(id: 'user_id')] User $user,
-        #[MapQueryString()] PaginationDto $paginationDto,
-        #[MapQueryString()] TicketFiltersDto $ticketFiltersDto,
+        #[MapEntity(id: 'user_id')]
+        User $user,
+        #[MapQueryString()]
+        PaginationDto $paginationDto,
+        #[MapQueryString()]
+        TicketFiltersDto $ticketFiltersDto,
         Request $request
     ): JsonResponse {
         $tickets = $this->ticketRepository->findByUser(userId: $user->getId(), paginationDto: $paginationDto, ticketFiltersDto: $ticketFiltersDto);

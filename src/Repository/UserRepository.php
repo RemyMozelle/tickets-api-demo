@@ -18,7 +18,6 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-
     use PaginateRepositoryTrait;
 
     public function __construct(ManagerRegistry $registry)
@@ -31,13 +30,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
         $user->setPassword($newHashedPassword);
-        $this->getEntityManager()->persist($user);
-        $this->getEntityManager()->flush();
+        $this->getEntityManager()
+            ->persist($user);
+        $this->getEntityManager()
+            ->flush();
     }
 
     /**
@@ -49,13 +50,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $qb->orderBy('u.id', 'asc');
 
         $countQb = clone $qb;
-        $count = (int) $countQb->select('count(u.id)')->getQuery()->getSingleScalarResult();
+        $count = (int) $countQb->select('count(u.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
 
         $this->paginate($qb, $paginationDto);
 
         /** @var Paginator<User> */
         $paginator = new Paginator($qb);
 
-        return (new PaginateCollection($paginator, $paginationDto, $count));
+        return new PaginateCollection($paginator, $paginationDto, $count);
     }
 }

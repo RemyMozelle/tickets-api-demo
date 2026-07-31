@@ -40,7 +40,7 @@ class TicketPriorityFilterTest extends WebTestCase
         foreach ($cases as $priority => $expectedNbTickets) {
             yield sprintf('should return %d tickets with property "%s"', $expectedNbTickets, $priority) => [
                 [
-                    'priority' => $priority
+                    'priority' => $priority,
                 ],
                 $expectedNbTickets,
             ];
@@ -72,28 +72,28 @@ class TicketPriorityFilterTest extends WebTestCase
                     'priority' => [
                         Priority::High->value,
                         Priority::Medium->value,
-                    ]
+                    ],
                 ],
-                'expectedNbTickets' => 6
+                'expectedNbTickets' => 6,
             ],
             'medium - low' => [
                 'query' => [
                     'priority' => [
                         Priority::Medium->value,
-                        Priority::Low->value
-                    ]
+                        Priority::Low->value,
+                    ],
                 ],
-                'expectedNbTickets' => 6
+                'expectedNbTickets' => 6,
             ],
             'low - high' => [
                 'query' => [
                     'priority' => [
                         Priority::Low->value,
-                        Priority::High->value
-                    ]
+                        Priority::High->value,
+                    ],
                 ],
-                'expectedNbTickets' => 8
-            ]
+                'expectedNbTickets' => 8,
+            ],
         ];
 
         foreach ($cases as $case) {

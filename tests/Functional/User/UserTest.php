@@ -34,4 +34,3 @@ class UserTest extends WebTestCase
         $this->assertEquals($user->id, 1);
     }
 }
-
