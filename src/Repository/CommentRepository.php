@@ -15,7 +15,6 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CommentRepository extends ServiceEntityRepository
 {
-
     use PaginateRepositoryTrait;
 
     public function __construct(ManagerRegistry $registry)
@@ -35,14 +34,16 @@ class CommentRepository extends ServiceEntityRepository
             ->setParameter('ticketId', $ticketId);
 
         $countQb = clone $qb;
-        $count = (int) $countQb->select('count(c.id)')->getQuery()->getSingleScalarResult();
+        $count = (int) $countQb->select('count(c.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
 
         $this->paginate($qb, $paginationDto);
 
         /** @var Paginator<Comment> */
         $paginator = new Paginator($qb);
-        
-        return (new PaginateCollection($paginator, $paginationDto, $count));
+
+        return new PaginateCollection($paginator, $paginationDto, $count);
     }
 
     /**
@@ -64,7 +65,7 @@ class CommentRepository extends ServiceEntityRepository
 
         /** @var Paginator<Comment> */
         $paginator = new Paginator($qb);
-        
-        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
+
+        return new PaginateCollection($paginator, $paginationDto, $paginator->count());
     }
 }

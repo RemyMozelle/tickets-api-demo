@@ -10,16 +10,16 @@ final class AllowedValuesValidator extends ConstraintValidator
 {
     public function validate(mixed $choice, Constraint $constraint): void
     {
-        if (!$constraint instanceof AllowedValues) {
+        if (! $constraint instanceof AllowedValues) {
             throw new UnexpectedTypeException($constraint, AllowedValues::class);
         }
 
-        if (null === $choice || '' === $choice) {
+        if ($choice === null || $choice === '') {
             return;
         }
 
         foreach ((array) $choice as $value) {
-            if (!in_array($value, $constraint->choices, true)) {
+            if (! in_array($value, $constraint->choices, true)) {
                 $this->context->buildViolation($constraint->message)
                     ->setParameters([
                         '{{ property_name }}' => $this->context->getPropertyName(),

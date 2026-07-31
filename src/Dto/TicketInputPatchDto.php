@@ -6,7 +6,6 @@ use App\Entity\Ticket;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\ObjectMapper\IsDefinedCondition;
-use DateTimeImmutable;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 
 // TODO: add updated_at field
@@ -22,5 +21,6 @@ class TicketInputPatchDto
         public ?Status $status = null,
         #[Map(if: IsDefinedCondition::class)]
         public ?Priority $priority = null,
-    ) {}
+    ) {
+    }
 }

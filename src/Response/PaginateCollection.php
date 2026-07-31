@@ -10,21 +10,20 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
  */
 class PaginateCollection
 {
-   /**
-    * @param Paginator<T> $paginator
-    * @param PaginationInterface $paginatorInterface
-    * @param int $total
-    */
-   public function __construct(
+    /**
+     * @param Paginator<T> $paginator
+     */
+    public function __construct(
         private Paginator $paginator,
         private PaginationInterface $paginatorInterface,
         public int $total,
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<int, T>
      */
-    public function getResults():array
+    public function getResults(): array
     {
         return iterator_to_array($this->paginator->getIterator());
     }
@@ -56,5 +55,4 @@ class PaginateCollection
             'total_pages' => $this->getTotalPages(),
         ];
     }
-
 }

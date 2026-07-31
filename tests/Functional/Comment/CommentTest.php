@@ -40,12 +40,15 @@ class CommentTest extends ApiTestCase
         /** @var User $authenticatedUser */
         $authenticatedUser = $security->getUser();
 
-        $commentAuthenticatedUser = $commentRepository->findOneBy(['user' => $authenticatedUser]);
+        $commentAuthenticatedUser = $commentRepository->findOneBy([
+            'user' => $authenticatedUser,
+        ]);
 
         $this->assertNotNull($commentAuthenticatedUser);
         $this->assertSame(
             $authenticatedUser->getId(),
-            $commentAuthenticatedUser->getUser()->getId()
+            $commentAuthenticatedUser->getUser()
+                ->getId()
         );
 
         $client->jsonRequest('GET', sprintf('/comments/%s', $commentAuthenticatedUser->getId()));
@@ -77,7 +80,8 @@ class CommentTest extends ApiTestCase
         $this->assertNotNull($commentOwner);
         $this->assertNotSame(
             $authenticatedUser->getId(),
-            $commentToShow->getUser()->getId()
+            $commentToShow->getUser()
+                ->getId()
         );
 
         $client->jsonRequest('GET', sprintf('/comments/%s', $commentToShow->getId()));

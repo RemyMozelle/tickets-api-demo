@@ -12,5 +12,6 @@ class CommentInputPostDto
     public function __construct(
         #[Assert\NotBlank()]
         public ?string $content,
-    ) {}
+    ) {
+    }
 }

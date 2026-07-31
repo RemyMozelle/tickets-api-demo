@@ -4,7 +4,7 @@ namespace App\Tests\Helper;
 
 use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
-final class ApiHelper 
+final class ApiHelper
 {
     public static function getResponseDecoded(HttpKernelBrowser $client, bool $associative = true): mixed
     {

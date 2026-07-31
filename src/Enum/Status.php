@@ -18,5 +18,4 @@ enum Status: string
     {
         return 'status.' . $this->value;
     }
-
 }

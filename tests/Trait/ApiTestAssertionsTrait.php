@@ -16,7 +16,9 @@ trait ApiTestAssertionsTrait
         Assert::assertEqualsCanonicalizing($expectedKeys, array_keys($actual));
     }
 
-    /** @param array<string, mixed> $data */
+    /**
+     * @param array<string, mixed> $data
+     */
     public function assertPaginationStructure(array $data): void
     {
         $this->assertResponseApiField(ApiResponseField::PAGINATION_KEYS, $data);

@@ -51,7 +51,7 @@ class TicketTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
         $client->jsonRequest('GET', '/tickets/10');
-        
+
         $ticket = ApiHelper::getResponseDecoded($client);
 
         $this->assertResponseIsSuccessful();

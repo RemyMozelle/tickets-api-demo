@@ -2,7 +2,9 @@
 
 namespace App\Constant;
 
-final class CommentGroups {
+final class CommentGroups
+{
     public const READ = 'comment:read';
+
     public const WRITE = 'comment:write';
 }

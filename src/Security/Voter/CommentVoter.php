@@ -15,20 +15,24 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 final class CommentVoter extends Voter
 {
     public const CREATE = 'COMMENT_CREATE';
+
     public const EDIT = 'COMMENT_EDIT';
+
     public const SHOW = 'COMMENT_VIEW';
+
     public const DELETE = 'COMMENT_DELETE';
 
     public function __construct(
         private readonly AccessDecisionManagerInterface $accessDecisionManager
-    ) {}
+    ) {
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         return match ($attribute) {
             self::CREATE,
             self::SHOW => true,
-            self::EDIT, 
+            self::EDIT,
             self::DELETE => $subject instanceof Comment,
             default => false,
         };
@@ -42,7 +46,7 @@ final class CommentVoter extends Voter
 
         $user = $token->getUser();
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return false;
         }
 

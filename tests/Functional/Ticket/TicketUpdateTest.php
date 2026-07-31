@@ -3,7 +3,6 @@
 namespace App\Tests\Functional\Ticket;
 
 use App\Entity\Ticket;
-use App\Entity\User;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Repository\TicketRepository;
@@ -105,21 +104,26 @@ class TicketUpdateTest extends ApiTestCase
         $userRepository = $this->getService(UserRepository::class);
         $manager = $this->getService(EntityManagerInterface::class);
 
-        $ticketBeforeExist->setUser($userRepository->findOneBy(['email' => 'admin_1@gmail.com']));
+        $ticketBeforeExist->setUser($userRepository->findOneBy([
+            'email' => 'admin_1@gmail.com',
+        ]));
 
         $manager->persist($ticketBeforeExist);
         $manager->flush();
 
-        $ticket = $ticketRepository->findOneBy(['title' => $ticketBeforeExist->getTitle()]);
+        $ticket = $ticketRepository->findOneBy([
+            'title' => $ticketBeforeExist->getTitle(),
+        ]);
         $expected = $expected['expected'];
 
         $client->jsonRequest(method: 'PATCH', uri: '/tickets/' . $ticket->getId(), parameters: $body);
 
         $this->assertResponseStatusCodeSame(200);
 
-
         // Check BDD
-        $ticketAfterUpdate = $ticketRepository->findOneBy(['title' => $ticket->getTitle()]);
+        $ticketAfterUpdate = $ticketRepository->findOneBy([
+            'title' => $ticket->getTitle(),
+        ]);
         $this->assertSame($expected['title'], $ticketAfterUpdate->getTitle());
         $this->assertSame($expected['description'], $ticketAfterUpdate->getDescription());
         $this->assertEquals($expected['status'], $ticketAfterUpdate->getStatus());
@@ -144,8 +148,8 @@ class TicketUpdateTest extends ApiTestCase
             'description' => 'issue de test description',
             'status' => Status::Open,
             'priority' => Priority::High,
-            'created_at' => new DateTimeImmutable("2024-09-30 12:00:00"),
-            'updated_at' => new DateTimeImmutable("2025-01-01 11:00:00")
+            'created_at' => new DateTimeImmutable('2024-09-30 12:00:00'),
+            'updated_at' => new DateTimeImmutable('2025-01-01 11:00:00'),
         ]);
 
         yield 'Should correctly update ticket with id "1" with "status" : "open" to "closed", "priority" : "High" to "Low"' => [
@@ -167,31 +171,30 @@ class TicketUpdateTest extends ApiTestCase
         ];
 
         /* TODO: Add test for updated_at field
-        $ticket = TicketFactory::make([
-            'title' => 'issue de test',
-            'description' => 'issue de test description',
-            'status' => Status::Open,
-            'priority' => Priority::High,
-            'created_at' => new DateTimeImmutable("2024-09-30 12:00:00"),
-            'updated_at' => new DateTimeImmutable("2025-01-01 11:00:00")
-        ]);
-
-        yield 'Should only update field "updated_at"' => [
-            $ticket,
-            [
-                'expected' => [
-                    'title' => $ticket->getTitle(),
-                    'description' => $ticket->getDescription(),
-                    'status' => Status::Open,
-                    'priority' => Priority::High,
-                    'created_at' => $ticket->getCreatedAt(),
-                    'updated_at' => new DateTimeImmutable("2026-01-01 14:00:00"),
-                ],
-            ],
-            [
-                'updated_at' => "2026-01-01 14:00:00"
-            ],
-         ];
+         * $ticket = TicketFactory::make([
+         * 'title' => 'issue de test',
+         * 'description' => 'issue de test description',
+         * 'status' => Status::Open,
+         * 'priority' => Priority::High,
+         * 'created_at' => new DateTimeImmutable("2024-09-30 12:00:00"),
+         * 'updated_at' => new DateTimeImmutable("2025-01-01 11:00:00")
+         * ]);
+         * yield 'Should only update field "updated_at"' => [
+         * $ticket,
+         * [
+         * 'expected' => [
+         * 'title' => $ticket->getTitle(),
+         * 'description' => $ticket->getDescription(),
+         * 'status' => Status::Open,
+         * 'priority' => Priority::High,
+         * 'created_at' => $ticket->getCreatedAt(),
+         * 'updated_at' => new DateTimeImmutable("2026-01-01 14:00:00"),
+         * ],
+         * ],
+         * [
+         * 'updated_at' => "2026-01-01 14:00:00"
+         * ],
+         * ];
          */
     }
 
@@ -206,7 +209,7 @@ class TicketUpdateTest extends ApiTestCase
         $userRepository = $this->getService(UserRepository::class);
 
         $otherUser = $userRepository->findOneBy([
-            'email' => 'user_2_with_2_tickets@gmail.com'
+            'email' => 'user_2_with_2_tickets@gmail.com',
         ]);
 
         $otherUserTicket = $ticketRepository->findOneBy([
@@ -220,7 +223,7 @@ class TicketUpdateTest extends ApiTestCase
             method: 'PATCH',
             uri: '/tickets/' . $otherUserTicket->getId(),
             parameters: [
-                'title' => 'test'
+                'title' => 'test',
             ]
         );
 

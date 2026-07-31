@@ -5,19 +5,18 @@ namespace App\Repository;
 use App\Dto\PaginationDto;
 use App\Dto\TicketFiltersDto;
 use App\Entity\Ticket;
+use App\Response\PaginateCollection;
 use App\Trait\PaginateRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\Tools\Pagination\Paginator;
-use App\Response\PaginateCollection;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Ticket>
  */
 class TicketRepository extends ServiceEntityRepository
 {
-
     use PaginateRepositoryTrait;
 
     public function __construct(ManagerRegistry $registry)
@@ -39,7 +38,7 @@ class TicketRepository extends ServiceEntityRepository
         /** @var Paginator<Ticket> */
         $paginator = new Paginator($qb, fetchJoinCollection: false);
 
-        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
+        return new PaginateCollection($paginator, $paginationDto, $paginator->count());
     }
 
     /**
@@ -64,7 +63,7 @@ class TicketRepository extends ServiceEntityRepository
         /** @var Paginator<Ticket> */
         $paginator = new Paginator($qb, fetchJoinCollection: false);
 
-        return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
+        return new PaginateCollection($paginator, $paginationDto, $paginator->count());
     }
 
     private function applyTicketFilter(QueryBuilder &$qb, TicketFiltersDto $ticketFiltersDto): void
@@ -121,7 +120,7 @@ class TicketRepository extends ServiceEntityRepository
                 ->setParameter('endDate', $endDate);
         }
 
-        if ($ticketFiltersDto->endTime && !$ticketFiltersDto->endDate) {
+        if ($ticketFiltersDto->endTime && ! $ticketFiltersDto->endDate) {
             $endDate = new \DateTime($ticketFiltersDto->startDate);
             [$hour, $minutes, $second] = array_map('intval', explode(':', $ticketFiltersDto->endTime));
             $endDate->setTime($hour, $minutes, $second);

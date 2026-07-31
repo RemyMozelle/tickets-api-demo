@@ -37,13 +37,13 @@ class TicketListByUserTest extends WebTestCase
                 'ticket_titles' => [
                     'Issue 1',
                     'Issue 2',
-                ]
+                ],
             ],
             [
                 'user_id' => 3,
                 'ticket_titles' => [
                     'Issue 3',
-                ]
+                ],
             ],
             [
                 'user_id' => 4,
@@ -55,8 +55,8 @@ class TicketListByUserTest extends WebTestCase
                     'Issue 8',
                     'Issue 9',
                     'Issue 10',
-                ]
-            ]
+                ],
+            ],
         ];
 
         foreach ($cases as $key => $case) {
@@ -133,10 +133,10 @@ class TicketListByUserTest extends WebTestCase
         $this->assertCount(2, $currentPaginateTickets);
         $this->assertSame(
             [
-                "total" => 4,
-                "per_page" => 2,
-                "current_page" => 2,
-                "total_pages" => 2,
+                'total' => 4,
+                'per_page' => 2,
+                'current_page' => 2,
+                'total_pages' => 2,
             ],
             $meta
         );

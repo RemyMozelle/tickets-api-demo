@@ -26,7 +26,7 @@ class CommentCreateTest extends ApiTestCase
     public function testShouldCreateACommentForATicket(array $body, array $data, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $ticketRepositoty  = $this->getService(TicketRepository::class);
+        $ticketRepositoty = $this->getService(TicketRepository::class);
         $ticketId = $data['ticket_id'];
 
         $uri = sprintf('/tickets/%s/comments', $ticketId);
@@ -38,12 +38,14 @@ class CommentCreateTest extends ApiTestCase
 
         $this->assertResponseApiField(ApiResponseField::COMMENT_READ, $commentFromResponse);
 
-        //Check BDD
-        $ticket = $ticketRepositoty->findOneBy(['id' => $ticketId]);
+        // Check BDD
+        $ticket = $ticketRepositoty->findOneBy([
+            'id' => $ticketId,
+        ]);
         $ticketComments = $ticket->getComments();
         $this->assertCount($data['expected_nb_comments'], $ticketComments);
 
-        //Check JSON
+        // Check JSON
         $this->assertSame($body['content'], $commentFromResponse['content']);
     }
 
@@ -56,7 +58,7 @@ class CommentCreateTest extends ApiTestCase
                 ],
                 'data' => [
                     'ticket_id' => 1,
-                    'expected_nb_comments' => 4
+                    'expected_nb_comments' => 4,
                 ],
                 'status_code' => 201,
             ],
@@ -66,7 +68,7 @@ class CommentCreateTest extends ApiTestCase
                 ],
                 'data' => [
                     'ticket_id' => 3,
-                    'expected_nb_comments' => 3
+                    'expected_nb_comments' => 3,
                 ],
                 'status_code' => 201,
             ],
@@ -137,7 +139,7 @@ class CommentCreateTest extends ApiTestCase
     public function testShouldAllowUserToCreateCommentWhenOwnerOfTicket(): void
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
-        $ticketRepository  = $this->getService(TicketRepository::class);
+        $ticketRepository = $this->getService(TicketRepository::class);
         $commentRepository = $this->getService(CommentRepository::class);
         $security = $this->getService(Security::class);
 
@@ -153,13 +155,14 @@ class CommentCreateTest extends ApiTestCase
 
         $this->assertSame(
             $authenticatedUser->getId(),
-            $ticket->getUser()->getId()
+            $ticket->getUser()
+                ->getId()
         );
 
         $uri = sprintf('/tickets/%s/comments', $ticket->getId());
 
         $client->jsonRequest(method: 'POST', uri: $uri, parameters: [
-            'content' => 'Comment test'
+            'content' => 'Comment test',
         ]);
 
         $this->assertResponseStatusCodeSame(201);
@@ -173,7 +176,6 @@ class CommentCreateTest extends ApiTestCase
 
         $this->assertNotNull($commentAfterRequest);
     }
-
 
     public function testShouldAllowUserToCreateCommentWhenTicketIsNotOwnedByUser(): void
     {
@@ -202,14 +204,15 @@ class CommentCreateTest extends ApiTestCase
 
         $this->assertNotSame(
             $authenticatedUser->getId(),
-            $ticket->getUser()->getId()
+            $ticket->getUser()
+                ->getId()
         );
 
         $client->jsonRequest(
             method: 'POST',
             uri: sprintf('/tickets/%s/comments', $ticket->getId()),
             parameters: [
-                'content' => 'Comment test'
+                'content' => 'Comment test',
             ]
         );
 

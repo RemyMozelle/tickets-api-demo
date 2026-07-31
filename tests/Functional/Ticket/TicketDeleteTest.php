@@ -20,9 +20,13 @@ class TicketDeleteTest extends ApiTestCase
 
         $ticketToDelete = $ticketRepository->find(1);
 
-        $commentIds = $ticketToDelete->getComments()->map(fn($c) => $c->getId())->toArray();
+        $commentIds = $ticketToDelete->getComments()
+            ->map(fn ($c) => $c->getId())
+            ->toArray();
 
-        $commentsBefore = $commentRepository->findBy(['id' => $commentIds]);
+        $commentsBefore = $commentRepository->findBy([
+            'id' => $commentIds,
+        ]);
 
         $this->assertCount(3, $commentsBefore);
 
@@ -35,9 +39,10 @@ class TicketDeleteTest extends ApiTestCase
 
         // check BDD
         $this->assertNull($ticketRepository->find(1));
-        $this->assertSame([], $commentRepository->findBy(['id' => $commentIds]));
+        $this->assertSame([], $commentRepository->findBy([
+            'id' => $commentIds,
+        ]));
     }
-
 
     public function testShouldDenyTicketDeleteWhenUserIsNotOwner(): void
     {
@@ -50,7 +55,7 @@ class TicketDeleteTest extends ApiTestCase
         $userRepository = $this->getService(UserRepository::class);
 
         $otherUser = $userRepository->findOneBy([
-            'email' => 'user_2_with_2_tickets@gmail.com'
+            'email' => 'user_2_with_2_tickets@gmail.com',
         ]);
 
         $otherUserTicket = $ticketRepository->findOneBy([

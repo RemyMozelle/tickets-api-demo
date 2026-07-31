@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class CommentListByUserTest extends WebTestCase
 {
     use ApiTestAssertionsTrait;
-    
+
     /**
      * @param list<string> $expectedCommentContent
      */
@@ -41,7 +41,7 @@ class CommentListByUserTest extends WebTestCase
                     'comment 3 from ticket 1',
                     'comment 3 from ticket 2',
                     'comment 2 from ticket 3',
-                ]
+                ],
             ],
             [
                 'user_id' => 2,
@@ -50,14 +50,14 @@ class CommentListByUserTest extends WebTestCase
                     'comment 2 from ticket 1',
                     'comment 1 from ticket 2',
                     'comment 2 from ticket 2',
-                ]
+                ],
             ],
             [
                 'user_id' => 3,
                 'comment_content' => [
                     'comment 1 from ticket 3',
-                ]
-            ]
+                ],
+            ],
         ];
 
         foreach ($cases as $key => $case) {

@@ -2,14 +2,14 @@
 
 namespace App\Controller;
 
-use App\Dto\PaginationDto;
+use App\Constant\CommentGroups;
 use App\Dto\CommentInputPatchDto;
 use App\Dto\CommentInputPostDto;
+use App\Dto\PaginationDto;
 use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Entity\User;
 use App\Repository\CommentRepository;
-use App\Constant\CommentGroups;
 use App\Security\Voter\CommentVoter;
 use App\Service\CurrentUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,14 +27,17 @@ final class CommentController extends AbstractController
 {
     public function __construct(
         private readonly ObjectMapperInterface $objectMapper,
-    ) {}
+    ) {
+    }
 
     #[Route('/comments/{id}', name: 'app_comment_show', methods: ['GET'])]
     #[IsGranted(CommentVoter::SHOW)]
     public function show(
         Comment $comment,
     ): JsonResponse {
-        return $this->json(data: $comment, context: ['groups' => CommentGroups::READ], status: 200);
+        return $this->json(data: $comment, context: [
+            'groups' => CommentGroups::READ,
+        ], status: 200);
     }
 
     #[Route('/comments/{id}', name: 'app_comment_update', methods: ['PATCH'])]
@@ -42,14 +45,17 @@ final class CommentController extends AbstractController
     public function patch(
         EntityManagerInterface $entityManager,
         Comment $comment,
-        #[MapRequestPayload(acceptFormat: 'json')] CommentInputPatchDto $ticketCommentDto,
+        #[MapRequestPayload(acceptFormat: 'json')]
+        CommentInputPatchDto $ticketCommentDto,
     ): JsonResponse {
 
         $this->objectMapper->map(source: $ticketCommentDto, target: $comment);
 
         $entityManager->flush();
 
-        return $this->json(data: $comment, context: ['groups' => CommentGroups::READ], status: 200);
+        return $this->json(data: $comment, context: [
+            'groups' => CommentGroups::READ,
+        ], status: 200);
     }
 
     #[Route('/comments/{id}', name: 'app_comment_delete', methods: ['DELETE'])]
@@ -67,9 +73,11 @@ final class CommentController extends AbstractController
 
     #[Route('/tickets/{ticket_id}/comments', name: 'app_ticket_comment_list', methods: ['GET'])]
     public function listCommentByTicket(
-        #[MapEntity(id: 'ticket_id')] Ticket $ticket,
+        #[MapEntity(id: 'ticket_id')]
+        Ticket $ticket,
         CommentRepository $commentRepository,
-        #[MapQueryString()] PaginationDto $paginationDto,
+        #[MapQueryString()]
+        PaginationDto $paginationDto,
         Request $request,
     ): JsonResponse {
 
@@ -82,7 +90,7 @@ final class CommentController extends AbstractController
                 'route_name' => $request->get('_route'),
                 'route_params' => [
                     ...$request->query->all(),
-                    ...$request->attributes->get('_route_params')
+                    ...$request->attributes->get('_route_params'),
                 ],
                 'current_url' => $request->getUri(),
             ],
@@ -97,7 +105,8 @@ final class CommentController extends AbstractController
         EntityManagerInterface $entityManager,
         #[MapEntity(id: 'ticket_id')]
         Ticket $ticket,
-        #[MapRequestPayload(acceptFormat: 'json')] CommentInputPostDto $ticketCommentDto,
+        #[MapRequestPayload(acceptFormat: 'json')]
+        CommentInputPostDto $ticketCommentDto,
     ): JsonResponse {
 
         $comment = new Comment();
@@ -110,14 +119,17 @@ final class CommentController extends AbstractController
         $entityManager->persist($comment);
         $entityManager->flush();
 
-        return $this->json(data: $comment, context: ['groups' => CommentGroups::READ], status: 201);
+        return $this->json(data: $comment, context: [
+            'groups' => CommentGroups::READ,
+        ], status: 201);
     }
 
     #[Route('/users/{user_id}/comments', name: 'app_user_comments_list', methods: 'GET')]
     public function listCommentByUser(
         #[MapEntity(id: 'user_id')]
         User $user,
-        #[MapQueryString()] PaginationDto $paginationDto,
+        #[MapQueryString()]
+        PaginationDto $paginationDto,
         Request $request,
         CommentRepository $commentRepository
     ): JsonResponse {
