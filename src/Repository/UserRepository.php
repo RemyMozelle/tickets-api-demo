@@ -53,6 +53,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $this->paginate($qb, $paginationDto);
 
-        return (new PaginateCollection(new Paginator($qb), $paginationDto, $count));
+        /** @var Paginator<User> */
+        $paginator = new Paginator($qb);
+
+        return (new PaginateCollection($paginator, $paginationDto, $count));
     }
 }

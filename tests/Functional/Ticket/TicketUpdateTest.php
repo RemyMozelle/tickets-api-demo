@@ -9,15 +9,15 @@ use App\Enum\Status;
 use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
 use App\Tests\Factory\TicketFactory;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\AuthHelper;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 
-class TicketUpdateTest extends WebTestCase
+class TicketUpdateTest extends ApiTestCase
 {
     // #[DataProvider('provideTicketData')]
     // public function testShouldUpdateTicket(int $ticketId, array $ticketValues, $post, int $expectedStatusCode): void
@@ -100,16 +100,17 @@ class TicketUpdateTest extends WebTestCase
     public function testShouldUpdateTicket(Ticket $ticketBeforeExist, array $expected, array $body): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $ticketRepositoty = static::getContainer()->get(TicketRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
-        $manager = static::getContainer()->get(EntityManagerInterface::class);
+
+        $ticketRepository = $this->getService(TicketRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
+        $manager = $this->getService(EntityManagerInterface::class);
 
         $ticketBeforeExist->setUser($userRepository->findOneBy(['email' => 'admin_1@gmail.com']));
 
         $manager->persist($ticketBeforeExist);
         $manager->flush();
 
-        $ticket = $ticketRepositoty->findOneBy(['title' => $ticketBeforeExist->getTitle()]);
+        $ticket = $ticketRepository->findOneBy(['title' => $ticketBeforeExist->getTitle()]);
         $expected = $expected['expected'];
 
         $client->jsonRequest(method: 'PATCH', uri: '/tickets/' . $ticket->getId(), parameters: $body);
@@ -118,7 +119,7 @@ class TicketUpdateTest extends WebTestCase
 
 
         // Check BDD
-        $ticketAfterUpdate = $ticketRepositoty->findOneBy(['title' => $ticket->getTitle()]);
+        $ticketAfterUpdate = $ticketRepository->findOneBy(['title' => $ticket->getTitle()]);
         $this->assertSame($expected['title'], $ticketAfterUpdate->getTitle());
         $this->assertSame($expected['description'], $ticketAfterUpdate->getDescription());
         $this->assertEquals($expected['status'], $ticketAfterUpdate->getStatus());
@@ -201,8 +202,8 @@ class TicketUpdateTest extends WebTestCase
             'user'
         );
 
-        $ticketRepository = static::getContainer()->get(TicketRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $ticketRepository = $this->getService(TicketRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
 
         $otherUser = $userRepository->findOneBy([
             'email' => 'user_2_with_2_tickets@gmail.com'
@@ -233,8 +234,8 @@ class TicketUpdateTest extends WebTestCase
             'user'
         );
 
-        $ticketRepository = static::getContainer()->get(TicketRepository::class);
-        $security = static::getContainer()->get(Security::class);
+        $ticketRepository = $this->getService(TicketRepository::class);
+        $security = $this->getService(Security::class);
 
         $currentUser = $security->getUser();
 

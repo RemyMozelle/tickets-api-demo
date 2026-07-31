@@ -36,6 +36,7 @@ class TicketRepository extends ServiceEntityRepository
 
         $this->paginate($qb, $paginationDto);
 
+        /** @var Paginator<Ticket> */
         $paginator = new Paginator($qb, fetchJoinCollection: false);
 
         return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));
@@ -60,6 +61,7 @@ class TicketRepository extends ServiceEntityRepository
 
         $this->paginate($qb, $paginationDto);
 
+        /** @var Paginator<Ticket> */
         $paginator = new Paginator($qb, fetchJoinCollection: false);
 
         return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));

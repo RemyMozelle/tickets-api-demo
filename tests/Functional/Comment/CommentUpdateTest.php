@@ -5,15 +5,15 @@ namespace App\Tests\Functional\Comment;
 use App\Entity\Comment;
 use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 
-class CommentUpdateTest extends WebTestCase
+class CommentUpdateTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -25,7 +25,7 @@ class CommentUpdateTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
         $oldContent = $commentRepository->find($commentId)->getContent();
         $this->assertNotSame($oldContent, $body['content']);
 
@@ -66,7 +66,7 @@ class CommentUpdateTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
         $contentBefore = $commentRepository->find($commentId)->getContent();
 
         $uri = sprintf('/comments/%s', $commentId);
@@ -115,8 +115,8 @@ class CommentUpdateTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient('user_3_with_1_ticket@gmail.com', 'user');
 
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $security = static::getContainer()->get(Security::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $security = $this->getService(Security::class);
 
         $authenticatedUser = $security->getUser();
 
@@ -150,8 +150,8 @@ class CommentUpdateTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient('user_3_with_1_ticket@gmail.com', 'user');
 
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
 
         $commentOwner = $userRepository->findOneBy([
             'email' => 'user_2_with_2_tickets@gmail.com',
@@ -189,8 +189,8 @@ class CommentUpdateTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
 
         $commentOwner = $userRepository->findOneBy([
             'email' => 'user_2_with_2_tickets@gmail.com',

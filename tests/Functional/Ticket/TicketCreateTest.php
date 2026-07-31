@@ -5,12 +5,12 @@ namespace App\Tests\Functional\Ticket;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Repository\TicketRepository;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Tests\Helper\AuthHelper;
 
-class TicketCreateTest extends WebTestCase
+class TicketCreateTest extends ApiTestCase
 {
     /**
      * @param array<string, string> $data
@@ -111,7 +111,7 @@ class TicketCreateTest extends WebTestCase
     public function testShouldSuccessAddTicket(array $data, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $ticketRepositoty  = static::getContainer()->get(TicketRepository::class);
+        $ticketRepositoty = $this->getService(TicketRepository::class);
 
         $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: $data);
 
@@ -192,7 +192,7 @@ class TicketCreateTest extends WebTestCase
     public function testShouldAllowTicketCreateWhenUserIsNotAdmin(): void
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
-        $ticketRepositoty  = static::getContainer()->get(TicketRepository::class);
+        $ticketRepositoty = $this->getService(TicketRepository::class);
 
         $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: [
             'title' => 'Title',

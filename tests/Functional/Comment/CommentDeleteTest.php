@@ -4,14 +4,14 @@ namespace App\Tests\Functional\Comment;
 
 use App\Repository\CommentRepository;
 use App\Repository\UserRepository;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 
-class CommentDeleteTest extends WebTestCase
+class CommentDeleteTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -19,7 +19,7 @@ class CommentDeleteTest extends WebTestCase
     public function testShouldDeleteCommentForATicket(int $commentId, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
 
         $client->jsonRequest(method: 'DELETE', uri: sprintf('/comments/%s', $commentId));
         $this->assertResponseStatusCodeSame($expectedStatusCode);
@@ -54,8 +54,8 @@ class CommentDeleteTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient('user_3_with_1_ticket@gmail.com', 'user');
 
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $security = static::getContainer()->get(Security::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $security = $this->getService(Security::class);
 
         $authenticatedUser = $security->getUser();
 
@@ -78,8 +78,8 @@ class CommentDeleteTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient('user_3_with_1_ticket@gmail.com', 'user');
 
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
 
         $commentOwner = $userRepository->findOneBy([
             'email' => 'user_2_with_2_tickets@gmail.com',
@@ -106,8 +106,9 @@ class CommentDeleteTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
+        $security = $this->getService(Security::class);
 
         $commentOwner = $userRepository->findOneBy([
             'email' => 'user_2_with_2_tickets@gmail.com',

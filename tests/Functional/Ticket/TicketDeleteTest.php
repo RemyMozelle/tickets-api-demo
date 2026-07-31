@@ -5,18 +5,18 @@ namespace App\Tests\Functional\Ticket;
 use App\Repository\CommentRepository;
 use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\AuthHelper;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 
-class TicketDeleteTest extends WebTestCase
+class TicketDeleteTest extends ApiTestCase
 {
     public function testShouldDeleteTicketWithCommentsLinked(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $ticketRepository = static::getContainer()->get(TicketRepository::class);
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
+        $ticketRepository = $this->getService(TicketRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
 
         $ticketToDelete = $ticketRepository->find(1);
 
@@ -46,8 +46,8 @@ class TicketDeleteTest extends WebTestCase
             'user'
         );
 
-        $ticketRepository = static::getContainer()->get(TicketRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $ticketRepository = $this->getService(TicketRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
 
         $otherUser = $userRepository->findOneBy([
             'email' => 'user_2_with_2_tickets@gmail.com'
@@ -72,8 +72,8 @@ class TicketDeleteTest extends WebTestCase
             'user'
         );
 
-        $ticketRepository = static::getContainer()->get(TicketRepository::class);
-        $security = static::getContainer()->get(Security::class);
+        $ticketRepository = $this->getService(TicketRepository::class);
+        $security = $this->getService(Security::class);
 
         $currentUser = $security->getUser();
 

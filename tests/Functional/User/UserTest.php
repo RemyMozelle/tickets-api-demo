@@ -27,7 +27,7 @@ class UserTest extends WebTestCase
         $client = static::createClient();
         $client->jsonRequest('GET', '/users/1');
 
-        $user = json_decode($client->getResponse()->getContent());
+        $user = ApiHelper::getResponseDecoded(client: $client, associative: false);
 
         $this->assertResponseIsSuccessful();
 
