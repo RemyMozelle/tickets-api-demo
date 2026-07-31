@@ -2,6 +2,7 @@
 
 namespace App\Tests\Helper;
 
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AuthHelper extends WebTestCase
@@ -14,7 +15,7 @@ class AuthHelper extends WebTestCase
      *
      * @return \Symfony\Bundle\FrameworkBundle\KernelBrowser
      */
-    public static function createAuthenticatedClient($username = 'admin_1@gmail.com', $password = 'admin')
+    public static function createAuthenticatedClient($username = 'admin_1@gmail.com', $password = 'admin'): KernelBrowser
     {
         $client = static::createClient();
         
@@ -34,7 +35,13 @@ class AuthHelper extends WebTestCase
             ));
         }
 
-        $data = json_decode($response->getContent(), true);
+        $content = $response->getContent();
+
+        if ($content === false) {
+            throw new \RuntimeException('Authentication failed: empty response content.');
+        }
+
+        $data = json_decode($content, true);
 
         if (!isset($data['token'])) {
             throw new \RuntimeException('Authentication failed: token not found in response.');

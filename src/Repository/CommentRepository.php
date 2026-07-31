@@ -39,7 +39,10 @@ class CommentRepository extends ServiceEntityRepository
 
         $this->paginate($qb, $paginationDto);
 
-        return (new PaginateCollection(new Paginator($qb), $paginationDto, $count));
+        /** @var Paginator<Comment> */
+        $paginator = new Paginator($qb);
+        
+        return (new PaginateCollection($paginator, $paginationDto, $count));
     }
 
     /**
@@ -59,6 +62,7 @@ class CommentRepository extends ServiceEntityRepository
 
         $this->paginate($qb, $paginationDto);
 
+        /** @var Paginator<Comment> */
         $paginator = new Paginator($qb);
         
         return (new PaginateCollection($paginator, $paginationDto, $paginator->count()));

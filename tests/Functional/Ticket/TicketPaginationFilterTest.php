@@ -63,19 +63,26 @@ class TicketPaginationFilterTest extends WebTestCase
                 continue;
             }
 
+            $expectedLinkQuery = parse_url($expectedLink, PHP_URL_QUERY);
+            $actualQuery = parse_url($links[$name], PHP_URL_QUERY);
+
+            $this->assertIsString($expectedLinkQuery);
+            $this->assertIsString($actualQuery);
+
             parse_str(
-                parse_url($expectedLink, PHP_URL_QUERY),
+                $expectedLinkQuery,
                 $expectedParameters
             );
 
             parse_str(
-                parse_url($links[$name], PHP_URL_QUERY),
+                $actualQuery,
                 $actualParameters
             );
 
             $this->assertEqualsCanonicalizing(
                 $expectedParameters,
-                $actualParameters
+                $actualParameters,
+                'Parameters from url are not equals.'
             );
         }
 

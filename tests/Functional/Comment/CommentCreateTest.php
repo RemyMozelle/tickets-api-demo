@@ -2,20 +2,19 @@
 
 namespace App\Tests\Functional\Comment;
 
-use App\Entity\Ticket;
 use App\Entity\User;
 use App\Repository\CommentRepository;
 use App\Repository\TicketRepository;
 use App\Repository\UserRepository;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 
-class CommentCreateTest extends WebTestCase
+class CommentCreateTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -27,7 +26,7 @@ class CommentCreateTest extends WebTestCase
     public function testShouldCreateACommentForATicket(array $body, array $data, int $expectedStatusCode): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $ticketRepositoty  = static::getContainer()->get(TicketRepository::class);
+        $ticketRepositoty  = $this->getService(TicketRepository::class);
         $ticketId = $data['ticket_id'];
 
         $uri = sprintf('/tickets/%s/comments', $ticketId);
@@ -138,9 +137,9 @@ class CommentCreateTest extends WebTestCase
     public function testShouldAllowUserToCreateCommentWhenOwnerOfTicket(): void
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
-        $ticketRepository  = static::getContainer()->get(TicketRepository::class);
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $security = static::getContainer()->get(Security::class);
+        $ticketRepository  = $this->getService(TicketRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $security = $this->getService(Security::class);
 
         /** @var User $authenticatedUser */
         $authenticatedUser = $security->getUser();
@@ -180,10 +179,10 @@ class CommentCreateTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient('user_3_with_1_ticket@gmail.com', 'user');
 
-        $ticketRepository = static::getContainer()->get(TicketRepository::class);
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
-        $security = static::getContainer()->get(Security::class);
+        $ticketRepository = $this->getService(TicketRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
+        $security = $this->getService(Security::class);
 
         /** @var User $authenticatedUser */
         $authenticatedUser = $security->getUser();
@@ -229,9 +228,9 @@ class CommentCreateTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $ticketRepository = static::getContainer()->get(TicketRepository::class);
-        $commentRepository = static::getContainer()->get(CommentRepository::class);
-        $userRepository = static::getContainer()->get(UserRepository::class);
+        $ticketRepository = $this->getService(TicketRepository::class);
+        $commentRepository = $this->getService(CommentRepository::class);
+        $userRepository = $this->getService(UserRepository::class);
 
         $ownerUser = $userRepository->findOneBy([
             'email' => 'user_2_with_2_tickets@gmail.com',
