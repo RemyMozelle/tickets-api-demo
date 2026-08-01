@@ -224,6 +224,6 @@ ddev ecs --fix
     * [ ] Rector
 * [x] GitHub Actions (CI)
     - [x] Exécuter les tests dans la CI
-    - [ ] Exécuter PHPStan dans la CI
-    - [ ] Exécuter ECS dans la CI
+    - [x] Exécuter PHPStan dans la CI
+    - [x] Exécuter ECS dans la CI
 * [ ] Documentation OpenAPI
