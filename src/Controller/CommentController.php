@@ -87,7 +87,7 @@ final class CommentController extends AbstractController
             data: $comments,
             context: [
                 'groups' => CommentGroups::READ,
-                'route_name' => $request->get('_route'),
+                'route_name' => $request->attributes->get('_route'),
                 'route_params' => [
                     ...$request->query->all(),
                     ...$request->attributes->get('_route_params'),
@@ -140,7 +140,7 @@ final class CommentController extends AbstractController
             status: 200,
             context: [
                 'groups' => CommentGroups::READ,
-                'route_name' => $request->get('_route'),
+                'route_name' => $request->attributes->get('_route'),
                 'route_params' => [
                     ...$request->query->all(),
                     ...$request->attributes->get('_route_params'),
