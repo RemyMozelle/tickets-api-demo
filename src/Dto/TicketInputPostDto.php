@@ -16,7 +16,7 @@ class TicketInputPostDto
         public ?string $title,
         #[Assert\NotBlank()]
         public ?string $description,
-        #[Assert\NotBlank()]
+
         public Status $status = Status::Open,
         public Priority $priority = Priority::Low,
     ) {
