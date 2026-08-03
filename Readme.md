@@ -217,7 +217,7 @@ ddev ecs --fix
 * [x] Filtres
 * [x] Tests fonctionnels
 * [x] Permissions via Voters
-* [ ] Migration de Symfony 7 vers Symfony 8
+* [x] Migration de Symfony 7 vers Symfony 8
 * [ ] Qualités
     * [x] Phpstan
     * [X] Ecs
