@@ -33,7 +33,7 @@ final class UserController extends AbstractController
             status: 200,
             context: [
                 'groups' => UserGroups::READ,
-                'route_name' => $request->get('_route'),
+                'route_name' => $request->attributes->get('_route'),
                 'route_params' => $request->query->all(),
                 'current_url' => $request->getUri(),
             ],

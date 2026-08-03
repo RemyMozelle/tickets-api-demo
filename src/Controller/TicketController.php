@@ -46,7 +46,7 @@ final class TicketController extends AbstractController
             status: 200,
             context: [
                 'groups' => TicketGroups::READ,
-                'route_name' => $request->get('_route'),
+                'route_name' => $request->attributes->get('_route'),
                 'route_params' => $request->query->all(),
                 'current_url' => $request->getUri(),
             ],
@@ -133,7 +133,7 @@ final class TicketController extends AbstractController
             status: 200,
             context: [
                 'groups' => TicketGroups::READ,
-                'route_name' => $request->get('_route'),
+                'route_name' => $request->attributes->get('_route'),
                 'route_params' => [
                     ...$request->query->all(),
                     ...$request->attributes->get('_route_params'),
