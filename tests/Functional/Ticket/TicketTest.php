@@ -2,20 +2,23 @@
 
 namespace App\Tests\Functional\Ticket;
 
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketTest extends WebTestCase
+class TicketTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
     public function testShouldHaveAllTickets(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->jsonRequest('GET', '/tickets');
+
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->jsonRequest('GET', $uri);
 
         $response = ApiHelper::getResponseDecoded($client);
 
@@ -28,7 +31,10 @@ class TicketTest extends WebTestCase
     public function testShouldAllowTicketShowWhenUserIsAdmin(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->jsonRequest('GET', '/tickets/1');
+
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
 
         $ticket = ApiHelper::getResponseDecoded($client);
 
@@ -40,7 +46,10 @@ class TicketTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
 
-        $client->jsonRequest('GET', '/tickets/1');
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
+
         $ticket = ApiHelper::getResponseDecoded($client);
 
         $this->assertResponseIsSuccessful();
@@ -50,7 +59,10 @@ class TicketTest extends WebTestCase
     public function testShouldAllowTicketShowWhenUserIsNotOwner(): void
     {
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
-        $client->jsonRequest('GET', '/tickets/10');
+
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, 10);
+
+        $client->jsonRequest('GET', $uri);
 
         $ticket = ApiHelper::getResponseDecoded($client);
 

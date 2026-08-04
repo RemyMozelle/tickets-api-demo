@@ -21,7 +21,9 @@ class CommentDeleteTest extends ApiTestCase
         $client = AuthHelper::createAuthenticatedClient();
         $commentRepository = $this->getService(CommentRepository::class);
 
-        $client->jsonRequest(method: 'DELETE', uri: sprintf('/comments/%s', $commentId));
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentId);
+
+        $client->jsonRequest(method: 'DELETE', uri: $uri);
         $this->assertResponseStatusCodeSame($expectedStatusCode);
 
         $contentFromResponse = ApiHelper::getResponseDecoded($client);
@@ -45,7 +47,9 @@ class CommentDeleteTest extends ApiTestCase
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $client->jsonRequest(method: 'DELETE', uri: sprintf('/comments/%d', 10000));
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, 10000);
+
+        $client->jsonRequest(method: 'DELETE', uri: $uri);
         $this->assertResponseStatusCodeSame(404);
     }
 
@@ -64,7 +68,9 @@ class CommentDeleteTest extends ApiTestCase
 
         $this->assertNotNull($commentToDelete);
 
-        $client->jsonRequest(method: 'DELETE', uri: sprintf('/comments/%d', $commentToDelete->getId()));
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentToDelete->getId());
+
+        $client->jsonRequest(method: 'DELETE', uri: $uri);
 
         $this->assertResponseStatusCodeSame(204);
 
@@ -92,7 +98,9 @@ class CommentDeleteTest extends ApiTestCase
 
         $this->assertNotNull($commentToDelete);
 
-        $client->jsonRequest(method: 'DELETE', uri: sprintf('/comments/%d', $commentToDelete->getId()));
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentToDelete->getId());
+
+        $client->jsonRequest(method: 'DELETE', uri: $uri);
 
         $this->assertResponseStatusCodeSame(403);
 
@@ -121,7 +129,9 @@ class CommentDeleteTest extends ApiTestCase
 
         $this->assertNotNull($commentToDelete);
 
-        $client->jsonRequest(method: 'DELETE', uri: sprintf('/comments/%d', $commentToDelete->getId()));
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentToDelete->getId());
+
+        $client->jsonRequest(method: 'DELETE', uri: $uri);
 
         $this->assertResponseStatusCodeSame(401);
 

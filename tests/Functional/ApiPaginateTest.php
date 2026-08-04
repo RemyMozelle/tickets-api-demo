@@ -6,9 +6,8 @@ use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ApiPaginateTest extends WebTestCase
+class ApiPaginateTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -48,10 +47,12 @@ class ApiPaginateTest extends WebTestCase
      */
     public static function providePaginatedEndpoints(): \Generator
     {
-        yield 'users endpoint' => ['/users'];
-        yield 'tickets endpoint' => ['/tickets'];
-        yield 'user tickets endpoint' => ['/users/2/tickets'];
-        yield 'user comments endpoint' => ['/users/2/comments'];
-        yield 'ticket comments endpoint' => ['/tickets/1/comments'];
+        yield 'users endpoint' => [
+            ApiTestCase::API_PREFIX .
+            '/users'];
+        yield 'tickets endpoint' => [ApiTestCase::API_PREFIX . '/tickets'];
+        yield 'user tickets endpoint' => [ApiTestCase::API_PREFIX . '/users/2/tickets'];
+        yield 'user comments endpoint' => [ApiTestCase::API_PREFIX . '/users/2/comments'];
+        yield 'ticket comments endpoint' => [ApiTestCase::API_PREFIX . '/tickets/1/comments'];
     }
 }

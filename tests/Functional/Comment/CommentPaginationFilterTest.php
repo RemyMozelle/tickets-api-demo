@@ -2,13 +2,13 @@
 
 namespace App\Tests\Functional\Comment;
 
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class CommentPaginationFilterTest extends WebTestCase
+class CommentPaginationFilterTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -22,7 +22,10 @@ class CommentPaginationFilterTest extends WebTestCase
     public function testShouldFilterCommentsByMultipleQueryParameters(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedCommentContent): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->request(method: 'GET', uri: '/users/2/comments', parameters: $queryParameters);
+
+        $uri = sprintf('%s/users/%d/comments', ApiTestCase::API_PREFIX, 2);
+
+        $client->request(method: 'GET', uri: $uri, parameters: $queryParameters);
         $this->assertResponseIsSuccessful();
 
         $response = ApiHelper::getResponseDecoded($client);
@@ -47,7 +50,9 @@ class CommentPaginationFilterTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $client->request(method: 'GET', uri: '/users/2/comments', parameters: $queryParameters);
+        $uri = sprintf('%s/users/%d/comments', ApiTestCase::API_PREFIX, 2);
+
+        $client->request(method: 'GET', uri: $uri, parameters: $queryParameters);
         $this->assertResponseIsSuccessful();
 
         $response = ApiHelper::getResponseDecoded($client);

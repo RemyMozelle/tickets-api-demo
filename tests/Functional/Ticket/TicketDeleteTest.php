@@ -30,7 +30,9 @@ class TicketDeleteTest extends ApiTestCase
 
         $this->assertCount(3, $commentsBefore);
 
-        $client->jsonRequest('DELETE', '/tickets/' . $ticketToDelete->getId());
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, $ticketToDelete->getId());
+
+        $client->jsonRequest('DELETE', $uri);
         $response = $client->getResponse();
 
         $this->assertSame(204, $response->getStatusCode());
@@ -65,7 +67,9 @@ class TicketDeleteTest extends ApiTestCase
 
         $this->assertNotNull($otherUserTicket);
 
-        $client->jsonRequest('DELETE', '/tickets/' . $otherUserTicket->getId());
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, $otherUserTicket->getId());
+
+        $client->jsonRequest('DELETE', $uri);
 
         $this->assertResponseStatusCodeSame(403);
     }
@@ -91,7 +95,9 @@ class TicketDeleteTest extends ApiTestCase
 
         $this->assertNotNull($ticket);
 
-        $client->jsonRequest('DELETE', '/tickets/' . $ticket->getId());
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, $ticket->getId());
+
+        $client->jsonRequest('DELETE', $uri);
 
         $this->assertResponseStatusCodeSame(204);
 

@@ -3,13 +3,13 @@
 namespace App\Tests\Functional\Ticket;
 
 use App\Enum\Status;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketStatusFilterTest extends WebTestCase
+class TicketStatusFilterTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -20,7 +20,10 @@ class TicketStatusFilterTest extends WebTestCase
     public function testShouldFilterTicketsByStatus(array $queryParameters, int $expectedNbTickets): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->request(method: 'GET', uri: '/tickets', parameters: $queryParameters);
+
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->request(method: 'GET', uri: $uri, parameters: $queryParameters);
 
         $response = ApiHelper::getResponseDecoded($client);
 
@@ -55,7 +58,10 @@ class TicketStatusFilterTest extends WebTestCase
     public function testShouldFilterTicketsByMultipleStatuses(array $queryParameters, int $expectedNbTickets): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->request(method: 'GET', uri: '/tickets', parameters: $queryParameters);
+
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->request(method: 'GET', uri: $uri, parameters: $queryParameters);
 
         $response = ApiHelper::getResponseDecoded($client);
 

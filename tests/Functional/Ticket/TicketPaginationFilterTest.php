@@ -4,13 +4,13 @@ namespace App\Tests\Functional\Ticket;
 
 use App\Enum\Priority;
 use App\Enum\Status;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketPaginationFilterTest extends WebTestCase
+class TicketPaginationFilterTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -25,7 +25,9 @@ class TicketPaginationFilterTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $client->request(method: 'GET', uri: '/tickets', parameters: $queryParameters);
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->request(method: 'GET', uri: $uri, parameters: $queryParameters);
 
         $response = ApiHelper::getResponseDecoded($client);
 
@@ -51,7 +53,9 @@ class TicketPaginationFilterTest extends WebTestCase
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $client->request(method: 'GET', uri: '/tickets', parameters: $queryParameters);
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->request(method: 'GET', uri: $uri, parameters: $queryParameters);
 
         $response = ApiHelper::getResponseDecoded($client);
 
