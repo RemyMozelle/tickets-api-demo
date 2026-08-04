@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Comment;
 
 use App\Tests\Helper\ApiHelper;
+use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -20,7 +21,7 @@ class CommentPaginationFilterTest extends WebTestCase
     #[DataProvider('provideMultipleFilterData')]
     public function testShouldFilterCommentsByMultipleQueryParameters(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedCommentContent): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->request(method: 'GET', uri: '/users/2/comments', parameters: $queryParameters);
         $this->assertResponseIsSuccessful();
 
@@ -44,7 +45,7 @@ class CommentPaginationFilterTest extends WebTestCase
     #[DataProvider('provideMultipleFilterData')]
     public function testShouldGeneratePaginationLinks(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedCommentContent): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
 
         $client->request(method: 'GET', uri: '/users/2/comments', parameters: $queryParameters);
         $this->assertResponseIsSuccessful();

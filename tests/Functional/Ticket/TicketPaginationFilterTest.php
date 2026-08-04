@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Ticket;
 use App\Enum\Priority;
 use App\Enum\Status;
 use App\Tests\Helper\ApiHelper;
+use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -22,7 +23,7 @@ class TicketPaginationFilterTest extends WebTestCase
     #[DataProvider('provideMultipleFilterData')]
     public function testShouldFilterTicketsByMultipleQueryParameters(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedTicketTitles): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
 
         $client->request(method: 'GET', uri: '/tickets', parameters: $queryParameters);
 
@@ -48,7 +49,7 @@ class TicketPaginationFilterTest extends WebTestCase
     #[DataProvider('provideMultipleFilterData')]
     public function testShouldGeneratePaginationLinks(array $queryParameters, array $expectedMeta, array $expectedLinks, array $expectedTicketTitles): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
 
         $client->request(method: 'GET', uri: '/tickets', parameters: $queryParameters);
 

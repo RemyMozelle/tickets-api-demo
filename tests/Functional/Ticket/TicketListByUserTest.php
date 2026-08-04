@@ -4,6 +4,7 @@ namespace App\Tests\Functional\Ticket;
 
 use App\Enum\Status;
 use App\Tests\Helper\ApiHelper;
+use App\Tests\Helper\AuthHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -15,7 +16,7 @@ class TicketListByUserTest extends WebTestCase
     #[DataProvider('provideFilterUserData')]
     public function testShouldReturnAllTicketsForGivenUser(int $userId, array $expectedTicketTitles): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->request(method: 'GET', uri: sprintf('/users/%d/tickets', $userId));
 
         $response = ApiHelper::getResponseDecoded($client);
@@ -82,7 +83,7 @@ class TicketListByUserTest extends WebTestCase
 
     public function testShouldReturnEmptyCollectionWhenUserHasNoTickets(): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->request(method: 'GET', uri: '/users/7/tickets');
 
         $response = ApiHelper::getResponseDecoded($client);
@@ -95,7 +96,7 @@ class TicketListByUserTest extends WebTestCase
 
     public function testShouldReturnFilteredTicketsForGivenUser(): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->request(method: 'GET', uri: '/users/4/tickets', parameters: [
             'status' => Status::Open->value,
         ]);
@@ -117,7 +118,7 @@ class TicketListByUserTest extends WebTestCase
 
     public function testShouldPaginateTicketsForGivenUser(): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->request(method: 'GET', uri: '/users/4/tickets', parameters: [
             'status' => Status::Open->value,
             'limit' => 2,

@@ -23,6 +23,8 @@ final class CommentVoter extends Voter
 
     public const DELETE = 'COMMENT_DELETE';
 
+    public const LIST = 'COMMENT_LIST';
+
     public function __construct(
         private readonly AccessDecisionManagerInterface $accessDecisionManager
     ) {
@@ -31,6 +33,7 @@ final class CommentVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return match ($attribute) {
+            self::LIST,
             self::CREATE,
             self::SHOW => true,
             self::EDIT,

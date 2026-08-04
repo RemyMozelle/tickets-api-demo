@@ -31,6 +31,7 @@ final class TicketController extends AbstractController
     ) {
     }
 
+    #[IsGranted(TicketVoter::LIST)]
     #[Route('/tickets', name: 'app_ticket_list', methods: ['GET'])]
     public function list(
         #[MapQueryString()]
@@ -116,6 +117,7 @@ final class TicketController extends AbstractController
         return $this->json(data: null, status: 204);
     }
 
+    #[IsGranted(TicketVoter::LIST)]
     #[Route('/users/{user_id}/tickets', name: 'app_user_ticket_list', methods: ['GET'])]
     public function listTicketByUser(
         #[MapEntity(id: 'user_id')]
