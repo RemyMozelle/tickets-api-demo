@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class ApiTestCase extends WebTestCase
 {
-    private const API_PREFIX = '/api';
+    public const API_PREFIX = '/api';
 
     /**
      * @template T of object

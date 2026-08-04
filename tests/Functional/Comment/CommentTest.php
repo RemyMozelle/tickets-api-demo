@@ -19,14 +19,20 @@ class CommentTest extends ApiTestCase
     public function testShouldDenyShowCommentWhenUserIsNotAuthenticated(): void
     {
         $client = static::createClient();
-        $client->jsonRequest('GET', '/comments/1');
+
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
         $this->assertResponseStatusCodeSame(401);
     }
 
     public function testShouldReturnNotFoundIfNoCommentExist(): void
     {
-        $client = static::createClient();
-        $client->jsonRequest('GET', '/comments/10000');
+        $client = AuthHelper::createAuthenticatedClient();
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, 10000);
+
+        $client->jsonRequest('GET', $uri);
+
         $this->assertResponseStatusCodeSame(404);
     }
 
@@ -51,7 +57,9 @@ class CommentTest extends ApiTestCase
                 ->getId()
         );
 
-        $client->jsonRequest('GET', sprintf('/comments/%s', $commentAuthenticatedUser->getId()));
+        $uri = sprintf('%s/comments/%s', ApiTestCase::API_PREFIX, $commentAuthenticatedUser->getId());
+
+        $client->jsonRequest('GET', $uri);
         $this->assertResponseStatusCodeSame(200);
 
         $commentFromResponse = ApiHelper::getResponseDecoded($client);
@@ -84,7 +92,9 @@ class CommentTest extends ApiTestCase
                 ->getId()
         );
 
-        $client->jsonRequest('GET', sprintf('/comments/%s', $commentToShow->getId()));
+        $uri = sprintf('%s/comments/%s', ApiTestCase::API_PREFIX, $commentToShow->getId());
+
+        $client->jsonRequest('GET', $uri);
         $this->assertResponseStatusCodeSame(200);
 
         $commentFromResponse = ApiHelper::getResponseDecoded($client);

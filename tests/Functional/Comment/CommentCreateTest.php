@@ -29,7 +29,7 @@ class CommentCreateTest extends ApiTestCase
         $ticketRepositoty = $this->getService(TicketRepository::class);
         $ticketId = $data['ticket_id'];
 
-        $uri = sprintf('/tickets/%s/comments', $ticketId);
+        $uri = sprintf('%s/tickets/%s/comments', APITESTCASE::API_PREFIX, $ticketId);
         $client->jsonRequest(method: 'POST', uri: $uri, parameters: $body);
 
         $this->assertResponseStatusCodeSame($expectedStatusCode);
@@ -100,7 +100,7 @@ class CommentCreateTest extends ApiTestCase
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $uri = sprintf('/tickets/%s/comments', $ticketId);
+        $uri = sprintf('%s/tickets/%s/comments', APITESTCASE::API_PREFIX, $ticketId);
 
         $client->jsonRequest(method: 'POST', uri: $uri, parameters: $body);
 
@@ -159,7 +159,7 @@ class CommentCreateTest extends ApiTestCase
                 ->getId()
         );
 
-        $uri = sprintf('/tickets/%s/comments', $ticket->getId());
+        $uri = sprintf('%s/tickets/%s/comments', APITESTCASE::API_PREFIX, $ticket->getId());
 
         $client->jsonRequest(method: 'POST', uri: $uri, parameters: [
             'content' => 'Comment test',
@@ -208,9 +208,11 @@ class CommentCreateTest extends ApiTestCase
                 ->getId()
         );
 
+        $uri = sprintf('%s/tickets/%s/comments', APITESTCASE::API_PREFIX, $ticket->getId());
+
         $client->jsonRequest(
             method: 'POST',
-            uri: sprintf('/tickets/%s/comments', $ticket->getId()),
+            uri: $uri,
             parameters: [
                 'content' => 'Comment test',
             ]
@@ -252,9 +254,11 @@ class CommentCreateTest extends ApiTestCase
             'content' => 'Comment test',
         ];
 
+        $uri = sprintf('%s/tickets/%s/comments', APITESTCASE::API_PREFIX, $ticket->getId());
+
         $client->jsonRequest(
             method: 'POST',
-            uri: sprintf('/tickets/%s/comments', $ticket->getId()),
+            uri: $uri,
             parameters: $body
         );
 

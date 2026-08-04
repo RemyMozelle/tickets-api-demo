@@ -10,7 +10,7 @@
 controllers:
     resource: routing.controllers
     format: json
-    # prefix: /api
+    prefix: /api
 
 api_login_check:
     path: /api/login_check

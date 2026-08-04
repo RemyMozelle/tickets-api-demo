@@ -19,10 +19,11 @@ class TicketCreateTest extends ApiTestCase
     #[DataProvider('provideFailTicketData')]
     public function testShouldFailToAddTicket(array $data, int $expectedStatusCode, array $expectedFields): void
     {
-
         $client = AuthHelper::createAuthenticatedClient();
 
-        $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: $data);
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->jsonRequest(method: 'POST', uri: $uri, parameters: $data);
         $response = ApiHelper::getResponseDecoded($client);
 
         $violations = $response['violations'];
@@ -112,7 +113,9 @@ class TicketCreateTest extends ApiTestCase
         $client = AuthHelper::createAuthenticatedClient();
         $ticketRepositoty = $this->getService(TicketRepository::class);
 
-        $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: $data);
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->jsonRequest(method: 'POST', uri: $uri, parameters: $data);
 
         $ticket = ApiHelper::getResponseDecoded($client, false);
 
@@ -180,7 +183,9 @@ class TicketCreateTest extends ApiTestCase
     {
         $client = static::createClient();
 
-        $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: [
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->jsonRequest(method: 'POST', uri: $uri, parameters: [
             'title' => 'Title',
             'description' => 'Ticket without "Title"',
             'status' => Status::InProgress->value,
@@ -195,7 +200,9 @@ class TicketCreateTest extends ApiTestCase
         $client = AuthHelper::createAuthenticatedClient('user_2_with_2_tickets@gmail.com', 'user');
         $ticketRepositoty = $this->getService(TicketRepository::class);
 
-        $client->jsonRequest(method: 'POST', uri: '/tickets', parameters: [
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->jsonRequest(method: 'POST', uri: $uri, parameters: [
             'title' => 'Title',
             'description' => 'Ticket without "Title"',
             'status' => Status::InProgress->value,

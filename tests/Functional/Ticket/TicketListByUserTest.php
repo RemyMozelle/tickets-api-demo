@@ -3,12 +3,12 @@
 namespace App\Tests\Functional\Ticket;
 
 use App\Enum\Status;
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\AuthHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class TicketListByUserTest extends WebTestCase
+class TicketListByUserTest extends ApiTestCase
 {
     /**
      * @param list<string> $expectedTicketTitles
@@ -17,7 +17,10 @@ class TicketListByUserTest extends WebTestCase
     public function testShouldReturnAllTicketsForGivenUser(int $userId, array $expectedTicketTitles): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->request(method: 'GET', uri: sprintf('/users/%d/tickets', $userId));
+
+        $uri = sprintf('%s/users/%d/tickets', ApiTestCase::API_PREFIX, $userId);
+
+        $client->request(method: 'GET', uri: $uri);
 
         $response = ApiHelper::getResponseDecoded($client);
 
@@ -75,8 +78,11 @@ class TicketListByUserTest extends WebTestCase
 
     public function testShouldReturnNotFoundWhenUserDoesNotExist(): void
     {
-        $client = static::createClient();
-        $client->request(method: 'GET', uri: '/users/999/tickets');
+        $client = AuthHelper::createAuthenticatedClient();
+
+        $uri = sprintf('%s/users/%d/tickets', ApiTestCase::API_PREFIX, 10000);
+
+        $client->request(method: 'GET', uri: $uri);
 
         $this->assertResponseStatusCodeSame(404);
     }
@@ -84,7 +90,10 @@ class TicketListByUserTest extends WebTestCase
     public function testShouldReturnEmptyCollectionWhenUserHasNoTickets(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->request(method: 'GET', uri: '/users/7/tickets');
+
+        $uri = sprintf('%s/users/%d/tickets', ApiTestCase::API_PREFIX, 7);
+
+        $client->request(method: 'GET', uri: $uri);
 
         $response = ApiHelper::getResponseDecoded($client);
 
@@ -97,7 +106,10 @@ class TicketListByUserTest extends WebTestCase
     public function testShouldReturnFilteredTicketsForGivenUser(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->request(method: 'GET', uri: '/users/4/tickets', parameters: [
+
+        $uri = sprintf('%s/users/%d/tickets', ApiTestCase::API_PREFIX, 4);
+
+        $client->request(method: 'GET', uri: $uri, parameters: [
             'status' => Status::Open->value,
         ]);
 
@@ -119,7 +131,10 @@ class TicketListByUserTest extends WebTestCase
     public function testShouldPaginateTicketsForGivenUser(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->request(method: 'GET', uri: '/users/4/tickets', parameters: [
+
+        $uri = sprintf('%s/users/%d/tickets', ApiTestCase::API_PREFIX, 4);
+
+        $client->request(method: 'GET', uri: $uri, parameters: [
             'status' => Status::Open->value,
             'limit' => 2,
             'page' => 2,

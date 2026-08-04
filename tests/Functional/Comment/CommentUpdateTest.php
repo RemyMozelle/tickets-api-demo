@@ -30,7 +30,7 @@ class CommentUpdateTest extends ApiTestCase
             ->getContent();
         $this->assertNotSame($oldContent, $body['content']);
 
-        $uri = sprintf('/comments/%s', $commentId);
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentId);
 
         $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $body);
         $this->assertResponseStatusCodeSame($expectedStatusCode);
@@ -71,7 +71,7 @@ class CommentUpdateTest extends ApiTestCase
         $contentBefore = $commentRepository->find($commentId)
             ->getContent();
 
-        $uri = sprintf('/comments/%s', $commentId);
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentId);
 
         $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $body);
 
@@ -106,7 +106,9 @@ class CommentUpdateTest extends ApiTestCase
     {
         $client = AuthHelper::createAuthenticatedClient();
 
-        $client->jsonRequest(method: 'PATCH', uri: '/comments/10000', parameters: [
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, 10000);
+
+        $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: [
             'content' => '',
         ]);
 
@@ -132,9 +134,11 @@ class CommentUpdateTest extends ApiTestCase
             'content' => 'currentUser try to comment',
         ];
 
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentToUpdate->getId());
+
         $client->jsonRequest(
             method: 'PATCH',
-            uri: sprintf('/comments/%d', $commentToUpdate->getId()),
+            uri: $uri,
             parameters: $body
         );
 
@@ -169,9 +173,11 @@ class CommentUpdateTest extends ApiTestCase
 
         $originalContent = $commentToUpdate->getContent();
 
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentToUpdate->getId());
+
         $client->jsonRequest(
             method: 'PATCH',
-            uri: sprintf('/comments/%d', $commentToUpdate->getId()),
+            uri: $uri,
             parameters: [
                 'content' => 'currentUser try to comment',
             ]
@@ -208,9 +214,11 @@ class CommentUpdateTest extends ApiTestCase
 
         $originalContent = $commentToUpdate->getContent();
 
+        $uri = sprintf('%s/comments/%d', ApiTestCase::API_PREFIX, $commentToUpdate->getId());
+
         $client->jsonRequest(
             method: 'PATCH',
-            uri: sprintf('/comments/%d', $commentToUpdate->getId()),
+            uri: $uri,
             parameters: [
                 'content' => 'currentUser try to comment',
             ]

@@ -2,14 +2,14 @@
 
 namespace App\Tests\Functional\Comment;
 
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class CommentListByUserTest extends WebTestCase
+class CommentListByUserTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
@@ -20,7 +20,10 @@ class CommentListByUserTest extends WebTestCase
     public function testShouldReturnCommentsForGivenUser(int $userId, array $expectedCommentContent): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->request(method: 'GET', uri: sprintf('/users/%d/comments', $userId));
+
+        $uri = sprintf('%s/users/%d/comments', ApiTestCase::API_PREFIX, $userId);
+
+        $client->request(method: 'GET', uri: $uri);
 
         $response = ApiHelper::getResponseDecoded($client);
         $this->assertResponseIsSuccessful();

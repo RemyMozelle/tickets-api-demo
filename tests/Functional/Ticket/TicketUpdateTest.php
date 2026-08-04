@@ -116,7 +116,9 @@ class TicketUpdateTest extends ApiTestCase
         ]);
         $expected = $expected['expected'];
 
-        $client->jsonRequest(method: 'PATCH', uri: '/tickets/' . $ticket->getId(), parameters: $body);
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, $ticket->getId());
+
+        $client->jsonRequest(method: 'PATCH', uri: $uri, parameters: $body);
 
         $this->assertResponseStatusCodeSame(200);
 
@@ -219,9 +221,11 @@ class TicketUpdateTest extends ApiTestCase
 
         $this->assertNotNull($otherUserTicket);
 
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, $otherUserTicket->getId());
+
         $client->jsonRequest(
             method: 'PATCH',
-            uri: '/tickets/' . $otherUserTicket->getId(),
+            uri: $uri,
             parameters: [
                 'title' => 'test',
             ]
@@ -253,9 +257,11 @@ class TicketUpdateTest extends ApiTestCase
             'title' => 'issue 1 tested',
         ];
 
+        $uri = sprintf('%s/tickets/%d', ApiTestCase::API_PREFIX, $ticket->getId());
+
         $client->jsonRequest(
             method: 'PATCH',
-            uri: '/tickets/' . $ticket->getId(),
+            uri: $uri,
             parameters: $body
         );
 

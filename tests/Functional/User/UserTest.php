@@ -2,17 +2,20 @@
 
 namespace App\Tests\Functional\User;
 
+use App\Tests\Functional\ApiTestCase;
 use App\Tests\Helper\ApiHelper;
 use App\Tests\Helper\ApiResponseField;
 use App\Tests\Helper\AuthHelper;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class UserTest extends WebTestCase
+class UserTest extends ApiTestCase
 {
     public function testShouldReturnUsers(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->jsonRequest('GET', '/users');
+
+        $uri = sprintf('%s/users', ApiTestCase::API_PREFIX);
+
+        $client->jsonRequest('GET', $uri);
 
         $response = ApiHelper::getResponseDecoded(client: $client, associative: true);
         $users = $response['data'];
@@ -26,7 +29,10 @@ class UserTest extends WebTestCase
     public function testShouldAllowUserDetailWhenUserIsNotAdmin(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
-        $client->jsonRequest('GET', '/users/1');
+
+        $uri = sprintf('%s/users/%d', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
 
         $user = ApiHelper::getResponseDecoded(client: $client, associative: false);
 
@@ -38,7 +44,10 @@ class UserTest extends WebTestCase
     public function testDenyUserDetailIfNotAdmin(): void
     {
         $client = static::createClient();
-        $client->jsonRequest('GET', '/users/1');
+
+        $uri = sprintf('%s/users/%d', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
 
         $response = ApiHelper::getResponseDecoded(client: $client);
 
