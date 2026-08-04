@@ -7,6 +7,7 @@ use App\Dto\PaginationDto;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\Voter\UserVoter;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[OA\Tag(name: 'Users')]
 #[Route('/users')]
 final class UserController extends AbstractController
 {

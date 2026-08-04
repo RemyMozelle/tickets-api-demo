@@ -1,0 +1,93 @@
+nelmio_api_doc:
+    documentation:
+        #servers:
+        #  - url: http://api.example.com/unsafe
+        #    description: API over HTTP
+        #  - url: https://api.example.com/secured
+        #    description: API over HTTPS
+
+        info:
+            title: My App
+            description: This is an awesome app!
+            version: 1.0.0
+
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+
+        security:
+            - Bearer: []
+
+        tags:
+            - name: Auth
+            - name: Tickets
+            - name: Comments
+            - name: Users
+
+        paths:
+            /api/login_check:
+                post:
+                    tags: 
+                        - Auth
+                    security: []
+                    summary: Get JWT For Authorize
+                    requestBody:
+                        required: true
+                        content:
+                            application/json:
+                                schema:
+                                    type: object
+                                    required:
+                                        - username
+                                        - password
+                                    properties:
+                                        username:
+                                            type: string
+                                        password:
+                                            type: string
+                                examples:
+                                    admin:
+                                        summary: Login as administrator
+                                        value:
+                                            username: admin_1@gmail.com
+                                            password: admin
+                                    user:
+                                        summary: Login as user
+                                        value:
+                                            username: user_2_with_2_tickets@gmail.com
+                                            password: user
+                    responses:
+                        "200":
+                            description: JWT
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            token:
+                                                type: string
+                                        example:
+                                            token: eyJ0eXAiOiJKV1QiLCJhb.eyJpYXQiOjE3ODU5V9BRE1uXzFAZ21haWwuY29tIn0.fBCs8aGIf4KHCOVYMvWpmKIG9LHiE63wwIwBll6rcOzDJg-21LWR1Wwq2SVKMmg
+                        "401":
+                            description: Invalide Credentials
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        required:
+                                            - code
+                                            - message
+                                        properties:
+                                            code:
+                                                type: integer
+                                            message:
+                                                type: string
+                                        example:
+                                            code: 401
+                                            message: Invalid credentials.
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
