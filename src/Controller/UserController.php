@@ -6,11 +6,13 @@ use App\Constant\UserGroups;
 use App\Dto\PaginationDto;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Security\Voter\UserVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/users')]
 final class UserController extends AbstractController
@@ -20,6 +22,7 @@ final class UserController extends AbstractController
     ) {
     }
 
+    #[IsGranted(UserVoter::LIST)]
     #[Route(path: '', name: 'app_user_list', methods: ['GET'])]
     public function list(
         #[MapQueryString()]
@@ -40,6 +43,7 @@ final class UserController extends AbstractController
         );
     }
 
+    #[IsGranted(UserVoter::SHOW)]
     #[Route(path: '/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(
         User $user

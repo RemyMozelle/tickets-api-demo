@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Ticket;
 
 use App\Tests\Helper\ApiHelper;
+use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -18,7 +19,7 @@ class TicketDateFilterTest extends WebTestCase
     #[DataProvider('ticketWithDateParameters')]
     public function testShouldHaveTicketWithSpecificsDates(array $queryParameters, array $expected): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->request(
             method: 'GET',
             uri: '/tickets',

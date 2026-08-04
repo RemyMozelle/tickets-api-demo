@@ -14,7 +14,7 @@ class TicketTest extends WebTestCase
 
     public function testShouldHaveAllTickets(): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->jsonRequest('GET', '/tickets');
 
         $response = ApiHelper::getResponseDecoded($client);

@@ -71,6 +71,7 @@ final class CommentController extends AbstractController
         return $this->json(data: null, status: 204);
     }
 
+    #[IsGranted(CommentVoter::LIST)]
     #[Route('/tickets/{ticket_id}/comments', name: 'app_ticket_comment_list', methods: ['GET'])]
     public function listCommentByTicket(
         #[MapEntity(id: 'ticket_id')]
@@ -124,6 +125,7 @@ final class CommentController extends AbstractController
         ], status: 201);
     }
 
+    #[IsGranted(CommentVoter::LIST)]
     #[Route('/users/{user_id}/comments', name: 'app_user_comments_list', methods: 'GET')]
     public function listCommentByUser(
         #[MapEntity(id: 'user_id')]

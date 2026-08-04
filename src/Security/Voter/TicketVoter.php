@@ -23,6 +23,8 @@ final class TicketVoter extends Voter
 
     public const DELETE = 'TICKET_DELETE';
 
+    public const LIST = 'TICKET_LIST';
+
     public function __construct(
         private readonly AccessDecisionManagerInterface $accessDecisionManager
     ) {
@@ -31,6 +33,7 @@ final class TicketVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return match ($attribute) {
+            self::LIST,
             self::CREATE => true,
             self::EDIT,
             self::SHOW,
@@ -60,15 +63,6 @@ final class TicketVoter extends Voter
         };
     }
 
-    private function canShow(Ticket $ticket, User $user): bool
-    {
-        if ($user === $ticket->getUser()) {
-            return true;
-        }
-
-        return false;
-    }
-
     private function canEdit(Ticket $ticket, User $user): bool
     {
         if ($user === $ticket->getUser()) {
@@ -90,7 +84,6 @@ final class TicketVoter extends Voter
     private function isAllowedForTicket(Ticket $ticket, User $user, string $attribute): bool
     {
         return match ($attribute) {
-            self::SHOW => $this->canShow($ticket, $user),
             self::EDIT => $this->canEdit($ticket, $user),
             self::DELETE => $this->canDelete($ticket, $user),
             default => false

@@ -4,6 +4,7 @@ namespace App\Tests\Functional\Ticket;
 
 use App\Enum\Priority;
 use App\Tests\Helper\ApiHelper;
+use App\Tests\Helper\AuthHelper;
 use App\Tests\Trait\ApiTestAssertionsTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -18,7 +19,7 @@ class TicketPriorityFilterTest extends WebTestCase
     #[DataProvider('providePriorityFilterData')]
     public function testShouldFilterTicketsByPriority(array $queryParameters, int $expectedNbTickets): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->request(method: 'GET', uri: '/tickets', parameters: $queryParameters);
 
         $response = ApiHelper::getResponseDecoded($client);
@@ -53,7 +54,7 @@ class TicketPriorityFilterTest extends WebTestCase
     #[DataProvider('provideMultiplePriorityFilterData')]
     public function testShouldFilterTicketsByMultiplePriorities(array $queryParameters, int $expectedNbTickets): void
     {
-        $client = static::createClient();
+        $client = AuthHelper::createAuthenticatedClient();
         $client->request(method: 'GET', uri: '/tickets', parameters: $queryParameters);
 
         $response = ApiHelper::getResponseDecoded($client);
