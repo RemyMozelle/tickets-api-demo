@@ -12,7 +12,7 @@ class TicketTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
-    public function testShouldHaveAllTickets(): void
+    public function testShouldHaveAllTicketsForWhenUserIsAdmin(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
 
@@ -24,7 +24,23 @@ class TicketTest extends ApiTestCase
 
         $tickets = $response['data'];
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertCount(10, $tickets);
+    }
+
+    public function testShouldHaveAllTicketsForWhenUserIsAuthenticated(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient(username: 'user_2_with_2_tickets@gmail.com', password: 'user');
+
+        $uri = sprintf('%s/tickets', ApiTestCase::API_PREFIX);
+
+        $client->jsonRequest('GET', $uri);
+
+        $response = ApiHelper::getResponseDecoded($client);
+
+        $tickets = $response['data'];
+
+        $this->assertResponseStatusCodeSame(200);
         $this->assertCount(10, $tickets);
     }
 

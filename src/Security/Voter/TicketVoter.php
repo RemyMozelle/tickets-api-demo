@@ -55,6 +55,7 @@ final class TicketVoter extends Voter
         }
 
         return match ($attribute) {
+            self::LIST,
             self::CREATE,
             self::SHOW => true,
             self::EDIT,

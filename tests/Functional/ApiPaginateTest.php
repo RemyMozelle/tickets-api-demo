@@ -47,9 +47,7 @@ class ApiPaginateTest extends ApiTestCase
      */
     public static function providePaginatedEndpoints(): \Generator
     {
-        yield 'users endpoint' => [
-            ApiTestCase::API_PREFIX .
-            '/users'];
+        yield 'users endpoint' => [ApiTestCase::API_PREFIX . '/users'];
         yield 'tickets endpoint' => [ApiTestCase::API_PREFIX . '/tickets'];
         yield 'user tickets endpoint' => [ApiTestCase::API_PREFIX . '/users/2/tickets'];
         yield 'user comments endpoint' => [ApiTestCase::API_PREFIX . '/users/2/comments'];

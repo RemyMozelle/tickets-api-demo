@@ -16,6 +16,41 @@ class CommentTest extends ApiTestCase
 {
     use ApiTestAssertionsTrait;
 
+    public function testShouldDenyAccessToTicketCommentsWhenUserIsNotAuthenticated(): void
+    {
+        $client = static::createClient();
+
+        $uri = sprintf('%s/tickets/%d/comments', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
+
+        $response = ApiHelper::getResponseDecoded(client: $client);
+
+        $this->assertResponseStatusCodeSame(401);
+        $this->assertArrayHasKey('code', $response);
+        $this->assertArrayHasKey('message', $response);
+    }
+
+    public function testShouldReturnAllCommentsFromTicketWhenUserIsAdmin(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient();
+
+        $uri = sprintf('%s/tickets/%d/comments', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testShouldReturnAllCommentsFromTicketWhenUserIsAuthenticated(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient(username: 'user_2_with_2_tickets@gmail.com', password: 'user');
+
+        $uri = sprintf('%s/tickets/%d/comments', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
+        $this->assertResponseStatusCodeSame(200);
+    }
+
     public function testShouldDenyShowCommentWhenUserIsNotAuthenticated(): void
     {
         $client = static::createClient();
