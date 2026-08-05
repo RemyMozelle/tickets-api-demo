@@ -9,7 +9,7 @@ use App\Tests\Helper\AuthHelper;
 
 class UserTest extends ApiTestCase
 {
-    public function testShouldReturnUsers(): void
+    public function testShouldReturnAllUsersWhenUserIsAdmin(): void
     {
         $client = AuthHelper::createAuthenticatedClient();
 
@@ -24,6 +24,17 @@ class UserTest extends ApiTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertEqualsCanonicalizing(ApiResponseField::USER_READ, array_keys($user));
+    }
+
+    public function testShouldDenyAccessToUsersWhenUserIsNotAdmin(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient(username: 'user_2_with_2_tickets@gmail.com', password: 'user');
+
+        $uri = sprintf('%s/users', ApiTestCase::API_PREFIX);
+
+        $client->jsonRequest('GET', $uri);
+
+        $this->assertResponseStatusCodeSame(403);
     }
 
     public function testShouldAllowUserDetailWhenUserIsNotAdmin(): void
@@ -41,7 +52,7 @@ class UserTest extends ApiTestCase
         $this->assertEquals($user->id, 1);
     }
 
-    public function testDenyUserDetailIfNotAdmin(): void
+    public function testShouldDenyAccessToUserDetailWhenUserIsNotAuthenticated(): void
     {
         $client = static::createClient();
 
@@ -54,5 +65,16 @@ class UserTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(401);
         $this->assertArrayHasKey('code', $response);
         $this->assertArrayHasKey('message', $response);
+    }
+
+    public function testShouldDenyAccessToUserDetailWhenUserIsNotAdmin(): void
+    {
+        $client = AuthHelper::createAuthenticatedClient(username: 'user_2_with_2_tickets@gmail.com', password: 'user');
+
+        $uri = sprintf('%s/users/%d', ApiTestCase::API_PREFIX, 1);
+
+        $client->jsonRequest('GET', $uri);
+
+        $this->assertResponseStatusCodeSame(403);
     }
 }
