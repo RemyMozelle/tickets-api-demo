@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Constant\UserGroups;
 use App\Dto\PaginationDto;
 use App\Entity\User;
+use App\OpenApi\Tags;
 use App\Repository\UserRepository;
 use App\Security\Voter\UserVoter;
 use OpenApi\Attributes as OA;
@@ -15,7 +16,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[OA\Tag(name: 'Users')]
+#[OA\Tag(name: Tags::USERS)]
 #[Route('/users')]
 final class UserController extends AbstractController
 {

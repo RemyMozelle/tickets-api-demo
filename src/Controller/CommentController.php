@@ -9,6 +9,7 @@ use App\Dto\PaginationDto;
 use App\Entity\Comment;
 use App\Entity\Ticket;
 use App\Entity\User;
+use App\OpenApi\Tags;
 use App\Repository\CommentRepository;
 use App\Security\Voter\CommentVoter;
 use App\Service\CurrentUserProvider;
@@ -24,7 +25,7 @@ use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[OA\Tag(name: 'Comments')]
+#[OA\Tag(name: Tags::COMMENTS)]
 final class CommentController extends AbstractController
 {
     public function __construct(

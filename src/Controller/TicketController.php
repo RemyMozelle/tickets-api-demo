@@ -9,6 +9,12 @@ use App\Dto\TicketInputPatchDto;
 use App\Dto\TicketInputPostDto;
 use App\Entity\Ticket;
 use App\Entity\User;
+use App\OpenApi\Attribute\NotFoundResponse;
+use App\OpenApi\Attribute\PaginatedResponse;
+use App\OpenApi\Attribute\UnauthorizedResponse;
+use App\OpenApi\Attribute\ViolationResponse;
+use App\OpenApi\Example\TicketExamples;
+use App\OpenApi\Tags;
 use App\Repository\TicketRepository;
 use App\Security\Voter\TicketVoter;
 use App\Service\CurrentUserProvider;
@@ -18,13 +24,14 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[OA\Tag(name: 'Tickets')]
+#[OA\Tag(name: Tags::TICKETS)]
 final class TicketController extends AbstractController
 {
     public function __construct(
@@ -33,15 +40,20 @@ final class TicketController extends AbstractController
     ) {
     }
 
+    #[NotFoundResponse()]
+    #[UnauthorizedResponse()]
+    #[PaginatedResponse(type: Ticket::class, groups: [TicketGroups::READ], example: TicketExamples::PAGINATED_LIST)]
+    #[ViolationResponse()]
     #[IsGranted(TicketVoter::LIST)]
     #[Route('/tickets', name: 'app_ticket_list', methods: ['GET'])]
     public function list(
-        #[MapQueryString()]
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         PaginationDto $paginationDto,
-        #[MapQueryString()]
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         TicketFiltersDto $ticketFiltersDto,
         Request $request,
     ): JsonResponse {
+
         $tickets = $this->ticketRepository->getTickets(paginationDto: $paginationDto, ticketFiltersDto: $ticketFiltersDto);
 
         return $this->json(
