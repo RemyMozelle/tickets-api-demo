@@ -43,6 +43,27 @@ class ApiPaginateTest extends ApiTestCase
     }
 
     /**
+     * @param array<string, int> $queryParameters
+     */
+    #[DataProvider('provideInvalidPaginatedEndpoints')]
+    public function testShouldReturnUnprocessableEntityForInvalidPaginationParameters(string $endPoint, array $queryParameters): void
+    {
+        $client = AuthHelper::createAuthenticatedClient();
+
+        $client->request(
+            method: 'GET',
+            uri: $endPoint,
+            parameters: $queryParameters,
+        );
+
+        $response = ApiHelper::getResponseDecoded($client);
+
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertArrayHasKey('violations', $response);
+        $this->assertNotEmpty($response['violations']);
+    }
+
+    /**
      * TODO: Ajouter le endpoint "/comments"
      */
     public static function providePaginatedEndpoints(): \Generator
@@ -52,5 +73,19 @@ class ApiPaginateTest extends ApiTestCase
         yield 'user tickets endpoint' => [ApiTestCase::API_PREFIX . '/users/2/tickets'];
         yield 'user comments endpoint' => [ApiTestCase::API_PREFIX . '/users/2/comments'];
         yield 'ticket comments endpoint' => [ApiTestCase::API_PREFIX . '/tickets/1/comments'];
+    }
+
+    /**
+     * @return \Generator<string, array{string, array<string, int>}>
+     */
+    public static function provideInvalidPaginatedEndpoints(): \Generator
+    {
+        foreach (self::providePaginatedEndpoints() as $name => [$endPoint]) {
+            yield $name => [
+                $endPoint, [
+                    'page' => 0,
+                    'limit' => 0,
+                ]];
+        }
     }
 }

@@ -9,20 +9,31 @@ use App\Dto\TicketInputPatchDto;
 use App\Dto\TicketInputPostDto;
 use App\Entity\Ticket;
 use App\Entity\User;
+use App\OpenApi\Attribute\ModelResponse;
+use App\OpenApi\Attribute\NoContentResponse;
+use App\OpenApi\Attribute\NotFoundResponse;
+use App\OpenApi\Attribute\PaginatedResponse;
+use App\OpenApi\Attribute\UnauthorizedResponse;
+use App\OpenApi\Attribute\ViolationResponse;
+use App\OpenApi\Example\TicketExamples;
+use App\OpenApi\Tags;
 use App\Repository\TicketRepository;
 use App\Security\Voter\TicketVoter;
 use App\Service\CurrentUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[OA\Tag(name: Tags::TICKETS)]
 final class TicketController extends AbstractController
 {
     public function __construct(
@@ -31,15 +42,19 @@ final class TicketController extends AbstractController
     ) {
     }
 
+    #[UnauthorizedResponse()]
+    #[PaginatedResponse(type: Ticket::class, groups: [TicketGroups::READ], example: TicketExamples::PAGINATED_LIST)]
+    #[ViolationResponse()]
     #[IsGranted(TicketVoter::LIST)]
     #[Route('/tickets', name: 'app_ticket_list', methods: ['GET'])]
     public function list(
-        #[MapQueryString()]
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         PaginationDto $paginationDto,
-        #[MapQueryString()]
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         TicketFiltersDto $ticketFiltersDto,
         Request $request,
     ): JsonResponse {
+
         $tickets = $this->ticketRepository->getTickets(paginationDto: $paginationDto, ticketFiltersDto: $ticketFiltersDto);
 
         return $this->json(
@@ -55,6 +70,9 @@ final class TicketController extends AbstractController
     }
 
     #[IsGranted(TicketVoter::SHOW, 'ticket')]
+    #[ModelResponse(type: Ticket::class, groups: [TicketGroups::READ], example: TicketExamples::SHOW)]
+    #[NotFoundResponse()]
+    #[UnauthorizedResponse()]
     #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET'])]
     public function show(
         Ticket $ticket
@@ -64,6 +82,9 @@ final class TicketController extends AbstractController
         ], status: 200);
     }
 
+    #[UnauthorizedResponse()]
+    #[ModelResponse(type: Ticket::class, groups: [TicketGroups::READ], example: TicketExamples::SHOW, response: 201, description: 'Ticket created')]
+    #[ViolationResponse()]
     #[Route('/tickets', name: 'app_ticket_create', methods: ['POST'])]
     #[IsGranted(TicketVoter::CREATE)]
     public function create(
@@ -86,6 +107,10 @@ final class TicketController extends AbstractController
         ], status: 201);
     }
 
+    #[NotFoundResponse()]
+    #[UnauthorizedResponse()]
+    #[ModelResponse(type: Ticket::class, groups: [TicketGroups::READ], example: TicketExamples::SHOW)]
+    #[ViolationResponse(example: TicketExamples::EMPTY_FIELD)]
     #[Route('/tickets/{id}', name: 'app_ticket_update', methods: ['PATCH'])]
     #[IsGranted(TicketVoter::EDIT, 'ticket')]
     public function update(
@@ -105,6 +130,9 @@ final class TicketController extends AbstractController
     }
 
     #[IsGranted(TicketVoter::DELETE, 'ticket')]
+    #[NoContentResponse()]
+    #[NotFoundResponse()]
+    #[UnauthorizedResponse()]
     #[Route('/tickets/{id}', name: 'app_ticket_delete', methods: ['DELETE'])]
     public function delete(
         Ticket $ticket,
@@ -118,13 +146,17 @@ final class TicketController extends AbstractController
     }
 
     #[IsGranted(TicketVoter::LIST)]
+    #[NotFoundResponse()]
+    #[UnauthorizedResponse()]
+    #[PaginatedResponse(type: Ticket::class, groups: [TicketGroups::READ], example: TicketExamples::PAGINATED_LIST)]
+    #[ViolationResponse()]
     #[Route('/users/{user_id}/tickets', name: 'app_user_ticket_list', methods: ['GET'])]
     public function listTicketByUser(
         #[MapEntity(id: 'user_id')]
         User $user,
-        #[MapQueryString()]
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         PaginationDto $paginationDto,
-        #[MapQueryString()]
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         TicketFiltersDto $ticketFiltersDto,
         Request $request
     ): JsonResponse {
