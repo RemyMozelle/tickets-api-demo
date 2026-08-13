@@ -4,6 +4,19 @@ namespace App\OpenApi\Example;
 
 final readonly class TicketExamples
 {
+    public const SHOW = [
+        'id' => 3,
+        'title' => 'Issue 3',
+        'description' => 'Eveniet unde iste inventore similique nemo labore fuga. Id sequi asperiores aut unde expedita. Eos sint eveniet tempore alias est est odit. Itaque saepe est aliquam asperiores repudiandae.',
+        'status' => 'closed',
+        'priority' => 'high',
+        'created_at' => '2024-10-03T09:00:00+04:00',
+        'updated_at' => '2024-10-04T14:00:00+04:00',
+        'user' => [
+            'id' => 3,
+        ],
+    ];
+
     public const PAGINATED_LIST = [
         'data' => [
             [
@@ -43,6 +56,23 @@ final readonly class TicketExamples
             'prev' => 'https://tickets.ddev.site/api/tickets?page=1&limit=2',
             'next' => 'https://tickets.ddev.site/api/tickets?page=3&limit=2',
             'current' => 'https://tickets.ddev.site/api/tickets?limit=2&page=2',
+        ],
+    ];
+
+    public const EMPTY_FIELD = [
+        'type' => 'https://symfony.com/errors/validation',
+        'title' => 'Validation Failed',
+        'status' => 422,
+        'detail' => 'title: This value should not be blank.',
+        'violations' => [
+            [
+                'propertyPath' => 'title',
+                'title' => 'This value should not be blank.',
+                'template' => 'This value should not be blank.',
+                'parameters' => [
+                    '{{ value }}' => '""',
+                ],
+            ],
         ],
     ];
 }
