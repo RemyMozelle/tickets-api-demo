@@ -1,5 +1,5 @@
 # Ticketing API
-Une API REST de gestion de tickets développée avec **Symfony 7** afin de présenter une architecture backend et une bonne couverture de tests fonctionnels.
+Une API REST de gestion de tickets développée avec **Symfony 8** afin de présenter une architecture backend et une bonne couverture de tests fonctionnels.
 
 #### ***⚠️ Ce projet est fourni à des fins de démonstration et de portfolio.***
 
