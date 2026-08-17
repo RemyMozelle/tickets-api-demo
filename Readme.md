@@ -226,4 +226,4 @@ ddev ecs --fix
     - [x] Exécuter les tests dans la CI
     - [x] Exécuter PHPStan dans la CI
     - [x] Exécuter ECS dans la CI
-* [ ] Documentation OpenAPI
+* [x] Documentation OpenAPI
